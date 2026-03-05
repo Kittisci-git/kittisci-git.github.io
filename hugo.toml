@@ -1,0 +1,15 @@
+baseURL = 'https://kittisci-git.github.io/'
+languageCode = 'en-gb'
+title = 'Kittisci'
+theme = 'hugo-coder'
+
+[params]
+  author = 'Kittisci'
+  description = 'Space, science, and games'
+  avatarURL = ''
+  darkModeToggle = true
+  colorScheme = 'auto'
+
+[[params.social]]
+  name = 'GitHub'
+  url = 'https://github.com/Kittisci-git'
