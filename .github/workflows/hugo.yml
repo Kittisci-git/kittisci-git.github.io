@@ -38,20 +38,3 @@ jobs:
       - name: Deploy to GitHub Pages
         id: deployment
         uses: actions/deploy-pages@v4
-```
-
-Save and close Notepad.
-
----
-
-**Step 8 — Push everything to GitHub**
-
-Now type these commands one at a time:
-```
-git add .
-```
-```
-git commit -m "Initial site setup"
-```
-```
-git push -u origin main
