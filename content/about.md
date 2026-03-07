@@ -14,7 +14,7 @@ I have created this site as a way to collect my interests and tools into a singl
 ## What am I up to at the moment?
 ### Active projects
 - Building this site
-- Sea of Thieves Commondation Tracker
+- Sea of Thieves Commendation Tracker
 
 ### Games
 - Sea of Thieves
