@@ -176,8 +176,91 @@ A tool box for Elite: Dangerous players. Currently, the only tool is the Colony 
         color: #dadada;
     }
 
-    html body div #return-to-top {
-        background-color :red !important
+    .news-container {
+        display: flex;
+        gap: 2rem;
+    }
+
+    .news-column {
+        flex: 1;
+    }
+
+    .news-item {
+        margin-bottom: 1rem;
+        padding-bottom: 1rem;
+        border-bottom: 1px solid #424242;
+    }
+
+    .news-item a {
+        display: block;
+        margin-bottom: 0.25rem;
+    }
+
+    .news-item small {
+        opacity: 0.6;
+        font-size: 0.8rem;
+    }
+
+    .news-tabs {
+        display: flex;
+        gap: 0.5rem;
+        margin-bottom: 1.5rem;
+        flex-wrap: wrap;
+    }
+
+    .news-tab {
+        padding: 0.4rem 1rem;
+        border: 1px solid #424242;
+        background: transparent;
+        color: #dadada;
+        cursor: pointer;
+        border-radius: 0.2rem;
+        transition: all 0.2s ease-in;
+        -webkit-appearance: none;
+        appearance: none;
+    }
+
+    .news-tab:hover {
+        border-color: #42a5f5;
+        color: #42a5f5;
+    }
+
+    .news-tab.active {
+        background: #424242;
+        color: #dadada;
+    }
+
+    body.colorscheme-light .news-tab {
+        border-color: #212121;
+        color: #212121;
+    }
+
+    body.colorscheme-light .news-tab:hover {
+        border-color: #1565c0;
+        color: #1565c0;
+    }
+
+    body.colorscheme-light .news-tab.active {
+        background: #212121;
+        color: #fafafa;
+    }
+
+    .hidden {
+        display: none;
+    }
+
+    .news-layout {
+        display: flex;
+        gap: 2rem;
+    }
+
+    .news-left {
+        width: 300px;
+        flex-shrink: 0;
+    }
+
+    .news-right {
+        flex: 1;
     }
 </style>
 
@@ -236,6 +319,10 @@ A tool box for Elite: Dangerous players. Currently, the only tool is the Colony 
           
             <li class="navigation-item">
               <a class="navigation-link " href="/about/">About</a>
+            </li>
+          
+            <li class="navigation-item">
+              <a class="navigation-link " href="/news/">News</a>
             </li>
           
             <li class="navigation-item">

@@ -4,7 +4,7 @@ date: 2026-03-07
 type: "page"
 menu:
   main:
-    weight: 3
+    weight: 4
 ---
 
 - [Board Games](#board-games)
