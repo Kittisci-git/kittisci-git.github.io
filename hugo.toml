@@ -14,6 +14,8 @@ theme = 'hugo-coder'
   avatarURL = ''
   darkModeToggle = true
   colorScheme = 'dark'
+  favicon_32 = "/favicon-32x32.png"
+  favicon_16 = "/favicon-32x32.png"
 
 [[params.social]]
   name = 'GitHub'
