@@ -1,4 +1,4 @@
-baseURL = 'https://kittisci-git.github.io/'
+baseURL = 'https://kittisci.co.uk/'
 languageCode = 'en-gb'
 title = 'Kittisci'
 theme = 'hugo-coder'
