@@ -20,19 +20,19 @@
     Link to heading
   
 
-A colony planning tool for Elite: Dangerous.">
+A tool box for Elite: Dangerous players. Currently, the only tool is the Colony Planner which provides users with the ability to recreate system maps and place installations and construction projects throughout it while automatically tracking system statistics and construction points. The Planner can be saved in-browser, allowing users to return and load previous projects without having to share any data or download any save files.">
 <meta name="keywords" content="">
 
 
 
   <meta name="twitter:card" content="summary">
   <meta name="twitter:title" content="Projects">
-  <meta name="twitter:description" content="ED:KITLink to headingA colony planning tool for Elite: Dangerous.">
+  <meta name="twitter:description" content="ED:KITLink to headingA tool box for Elite: Dangerous players. Currently, the only tool is the Colony Planner which provides users with the ability to recreate system maps and place installations and construction projects throughout it while automatically tracking system statistics and construction points. The Planner can be saved in-browser, allowing users to return and load previous projects without having to share any data or download any save files.">
 
 <meta property="og:url" content="http://localhost:1313/projects/">
   <meta property="og:site_name" content="Kittisci">
   <meta property="og:title" content="Projects">
-  <meta property="og:description" content="ED:KITLink to headingA colony planning tool for Elite: Dangerous.">
+  <meta property="og:description" content="ED:KITLink to headingA tool box for Elite: Dangerous players. Currently, the only tool is the Colony Planner which provides users with the ability to recreate system maps and place installations and construction projects throughout it while automatically tracking system statistics and construction points. The Planner can be saved in-browser, allowing users to return and load previous projects without having to share any data or download any save files.">
   <meta property="og:locale" content="en_gb">
   <meta property="og:type" content="article">
     <meta property="article:published_time" content="2026-03-07T00:00:00+00:00">
@@ -66,10 +66,129 @@ A colony planning tool for Elite: Dangerous.">
 
 
 
- 
+<style>
+    .heading-link {
+        display: none;
+    }
 
+    nav.navigation {
+        position: fixed;
+        top: 0;
+        width: 100%;
+        z-index: 100;
+    }
 
+    nav.navigation .colorscheme-toggle {
+        position: static;
+        display: inline-block;
+        width: auto;
+        height: auto;
+        background-color: transparent;
+        border-radius: 0;
+        opacity: 1;
+        font-size: 1em;
+    }
 
+    .navigation #dark-mode-toggle {
+        position: static !important;
+        bottom: auto !important;
+        left: auto !important;
+        z-index: auto !important;
+        margin-left: auto;
+    }
+
+    ul.navigation-list {
+        display: flex;
+        align-items: center;
+        width: 100%;
+        margin: 0;
+        padding: 0;
+        justify-content: flex-end;
+    }
+
+    nav.navigation .container {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 0 2rem;
+        width: 100%;
+        box-sizing: border-box;
+    }
+
+    .navigation-title {
+        flex-shrink: 0;
+        margin-right: 2rem;
+    }
+    
+    body.colorscheme-light nav.navigation {
+        background-color: #fafafa;
+    }
+
+    body.colorscheme-dark nav.navigation{
+        background-color: #212121;
+    }
+
+    .wrapper {
+        padding-top: 3rem;
+    }
+</style>
+
+<style>
+    #return-to-top {
+        -webkit-appearance: none;
+        appearance: none;
+        position: fixed;
+        bottom: 2rem;
+        right: 2rem;
+        border: none;
+        border-radius: 50%;
+        width: 3rem;
+        height: 3rem;
+        font-size: 1.9rem;
+        cursor: pointer;
+        display: none;
+        z-index: 999;
+        opacity: 0.5;
+        transition: all 0.25s ease-in;
+        align-items: center;
+        justify-content: center;
+        background: #dadada;
+        color: #212121;
+    }
+
+    body.colorscheme-dark #return-to-top {
+        background: #dadada;
+        color: #212121;
+    }
+
+    body.colorscheme-dark #return-to-top:hover {
+        background: #42a5f5;
+        color: #212121;
+    }
+
+    body.colorscheme-light #return-to-top {
+        background: #212121;
+        color: #dadada;
+    }
+
+    body.colorscheme-light #return-to-top:hover {
+        background: #1565c0;
+        color: #dadada;
+    }
+
+    html body div #return-to-top {
+        background-color :red !important
+    }
+</style>
+
+<button id="return-to-top" onclick="window.scrollTo({top: 0, behavior: 'smooth'})"><i class="fa-solid fa-arrow-up"></i></button>
+
+<script>
+    window.addEventListener('scroll', function() {
+        const btn = document.getElementById('return-to-top');
+        btn.style.display = window.scrollY > 300 ? 'block' : 'none';
+    });
+</script>
 
 <link rel="icon" type="image/svg+xml" href="/images/favicon.svg" sizes="any">
 <link rel="icon" type="image/png" href="/images/favicon-32x32.png" sizes="32x32">
@@ -99,13 +218,6 @@ A colony planning tool for Elite: Dangerous.">
 
 <body class="preload-transitions colorscheme-dark">
   
-<div class="float-container">
-    <a id="dark-mode-toggle" class="colorscheme-toggle">
-        <i class="fa-solid fa-adjust fa-fw" aria-hidden="true"></i>
-    </a>
-</div>
-
-
   <main class="wrapper">
     <nav class="navigation">
   <section class="container">
@@ -136,6 +248,11 @@ A colony planning tool for Elite: Dangerous.">
           
         
         
+        <li class="navigation-item">
+        <a id="dark-mode-toggle" class="colorscheme-toggle">
+            <i class="fa-solid fa-adjust fa-fw" aria-hidden="true"></i>
+        </a>
+        </li>
       </ul>
     
   </section>
@@ -161,7 +278,7 @@ A colony planning tool for Elite: Dangerous.">
     <span class="sr-only">Link to heading</span>
   </a>
 </h2>
-<p>A colony planning tool for Elite: Dangerous.</p>
+<p>A tool box for Elite: Dangerous players. Currently, the only tool is the Colony Planner which provides users with the ability to recreate system maps and place installations and construction projects throughout it while automatically tracking system statistics and construction points. The Planner can be saved in-browser, allowing users to return and load previous projects without having to share any data or download any save files.</p>
 
   </article>
 </section>

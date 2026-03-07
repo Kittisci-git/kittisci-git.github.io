@@ -24,5 +24,5 @@ I have created this site as a way to collect my interests and tools into a singl
 - The Elsewhere Express by Samantha Sotto Yambao
 
 ## Site info
-Kittisci went live on 2026-03-05 at kittisci-git.gihub.io using Hugo and the Coder theme
+Kittisci went live on 2026-03-05 at kittisci-git.gihub.io using Hugo and the Coder theme<br>
 Domain changed on 2026-03-07 to kittisci.co.uk

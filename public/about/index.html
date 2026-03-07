@@ -71,14 +71,16 @@ Domain changed on 2026-03-07 to kittisci.co.uk">
   <meta name="twitter:title" content="About">
   <meta name="twitter:description" content="Hi, I’m Kittisci. I am a British physics and maths teacher with an astrophysics degree. I love space, playing games, and building things!
 I have created this site as a way to collect my interests and tools into a single place while sharing these with any and all who happen across it.
-What am I up to at the moment?Link to headingActive projectsLink to headingBuilding this site GamesLink to headingSea of Thieves Umamusume Pretty Derby Overwatch ReadingLink to headingThe Elsewhere Express by Samantha Sotto Yambao Site infoLink to headingKittisci went live on 2026-03-05 at kittisci-git.gihub.io using Hugo and the Coder theme Domain changed on 2026-03-07 to kittisci.co.uk">
+What am I up to at the moment?Link to headingActive projectsLink to headingBuilding this site GamesLink to headingSea of Thieves Umamusume Pretty Derby Overwatch ReadingLink to headingThe Elsewhere Express by Samantha Sotto Yambao Site infoLink to headingKittisci went live on 2026-03-05 at kittisci-git.gihub.io using Hugo and the Coder theme
+Domain changed on 2026-03-07 to kittisci.co.uk">
 
 <meta property="og:url" content="http://localhost:1313/about/">
   <meta property="og:site_name" content="Kittisci">
   <meta property="og:title" content="About">
   <meta property="og:description" content="Hi, I’m Kittisci. I am a British physics and maths teacher with an astrophysics degree. I love space, playing games, and building things!
 I have created this site as a way to collect my interests and tools into a single place while sharing these with any and all who happen across it.
-What am I up to at the moment?Link to headingActive projectsLink to headingBuilding this site GamesLink to headingSea of Thieves Umamusume Pretty Derby Overwatch ReadingLink to headingThe Elsewhere Express by Samantha Sotto Yambao Site infoLink to headingKittisci went live on 2026-03-05 at kittisci-git.gihub.io using Hugo and the Coder theme Domain changed on 2026-03-07 to kittisci.co.uk">
+What am I up to at the moment?Link to headingActive projectsLink to headingBuilding this site GamesLink to headingSea of Thieves Umamusume Pretty Derby Overwatch ReadingLink to headingThe Elsewhere Express by Samantha Sotto Yambao Site infoLink to headingKittisci went live on 2026-03-05 at kittisci-git.gihub.io using Hugo and the Coder theme
+Domain changed on 2026-03-07 to kittisci.co.uk">
   <meta property="og:locale" content="en_gb">
   <meta property="og:type" content="article">
     <meta property="article:published_time" content="2026-03-07T00:00:00+00:00">
@@ -112,10 +114,129 @@ What am I up to at the moment?Link to headingActive projectsLink to headingB
 
 
 
- 
+<style>
+    .heading-link {
+        display: none;
+    }
 
+    nav.navigation {
+        position: fixed;
+        top: 0;
+        width: 100%;
+        z-index: 100;
+    }
 
+    nav.navigation .colorscheme-toggle {
+        position: static;
+        display: inline-block;
+        width: auto;
+        height: auto;
+        background-color: transparent;
+        border-radius: 0;
+        opacity: 1;
+        font-size: 1em;
+    }
 
+    .navigation #dark-mode-toggle {
+        position: static !important;
+        bottom: auto !important;
+        left: auto !important;
+        z-index: auto !important;
+        margin-left: auto;
+    }
+
+    ul.navigation-list {
+        display: flex;
+        align-items: center;
+        width: 100%;
+        margin: 0;
+        padding: 0;
+        justify-content: flex-end;
+    }
+
+    nav.navigation .container {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 0 2rem;
+        width: 100%;
+        box-sizing: border-box;
+    }
+
+    .navigation-title {
+        flex-shrink: 0;
+        margin-right: 2rem;
+    }
+    
+    body.colorscheme-light nav.navigation {
+        background-color: #fafafa;
+    }
+
+    body.colorscheme-dark nav.navigation{
+        background-color: #212121;
+    }
+
+    .wrapper {
+        padding-top: 3rem;
+    }
+</style>
+
+<style>
+    #return-to-top {
+        -webkit-appearance: none;
+        appearance: none;
+        position: fixed;
+        bottom: 2rem;
+        right: 2rem;
+        border: none;
+        border-radius: 50%;
+        width: 3rem;
+        height: 3rem;
+        font-size: 1.9rem;
+        cursor: pointer;
+        display: none;
+        z-index: 999;
+        opacity: 0.5;
+        transition: all 0.25s ease-in;
+        align-items: center;
+        justify-content: center;
+        background: #dadada;
+        color: #212121;
+    }
+
+    body.colorscheme-dark #return-to-top {
+        background: #dadada;
+        color: #212121;
+    }
+
+    body.colorscheme-dark #return-to-top:hover {
+        background: #42a5f5;
+        color: #212121;
+    }
+
+    body.colorscheme-light #return-to-top {
+        background: #212121;
+        color: #dadada;
+    }
+
+    body.colorscheme-light #return-to-top:hover {
+        background: #1565c0;
+        color: #dadada;
+    }
+
+    html body div #return-to-top {
+        background-color :red !important
+    }
+</style>
+
+<button id="return-to-top" onclick="window.scrollTo({top: 0, behavior: 'smooth'})"><i class="fa-solid fa-arrow-up"></i></button>
+
+<script>
+    window.addEventListener('scroll', function() {
+        const btn = document.getElementById('return-to-top');
+        btn.style.display = window.scrollY > 300 ? 'block' : 'none';
+    });
+</script>
 
 <link rel="icon" type="image/svg+xml" href="/images/favicon.svg" sizes="any">
 <link rel="icon" type="image/png" href="/images/favicon-32x32.png" sizes="32x32">
@@ -145,13 +266,6 @@ What am I up to at the moment?Link to headingActive projectsLink to headingB
 
 <body class="preload-transitions colorscheme-dark">
   
-<div class="float-container">
-    <a id="dark-mode-toggle" class="colorscheme-toggle">
-        <i class="fa-solid fa-adjust fa-fw" aria-hidden="true"></i>
-    </a>
-</div>
-
-
   <main class="wrapper">
     <nav class="navigation">
   <section class="container">
@@ -173,11 +287,20 @@ What am I up to at the moment?Link to headingActive projectsLink to headingB
             </li>
           
             <li class="navigation-item">
+              <a class="navigation-link " href="/projects/">Projects</a>
+            </li>
+          
+            <li class="navigation-item">
               <a class="navigation-link " href="/recommended/">Recommendations</a>
             </li>
           
         
         
+        <li class="navigation-item">
+        <a id="dark-mode-toggle" class="colorscheme-toggle">
+            <i class="fa-solid fa-adjust fa-fw" aria-hidden="true"></i>
+        </a>
+        </li>
       </ul>
     
   </section>
@@ -244,7 +367,7 @@ What am I up to at the moment?Link to headingActive projectsLink to headingB
     <span class="sr-only">Link to heading</span>
   </a>
 </h2>
-<p>Kittisci went live on 2026-03-05 at kittisci-git.gihub.io using Hugo and the Coder theme
+<p>Kittisci went live on 2026-03-05 at kittisci-git.gihub.io using Hugo and the Coder theme<br>
 Domain changed on 2026-03-07 to kittisci.co.uk</p>
 
   </article>

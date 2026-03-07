@@ -3,6 +3,11 @@ languageCode = 'en-gb'
 title = 'Kittisci'
 theme = 'hugo-coder'
 
+[markup]
+  [markup.goldmark]
+    [markup.goldmark.renderer]
+      unsafe = true
+
 [params]
   author = 'Kittisci'
   description = 'Space, science, and games'
