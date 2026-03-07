@@ -8,7 +8,7 @@ theme = 'hugo-coder'
   description = 'Space, science, and games'
   avatarURL = ''
   darkModeToggle = true
-  colorScheme = 'auto'
+  colorScheme = 'dark'
 
 [[params.social]]
   name = 'GitHub'
