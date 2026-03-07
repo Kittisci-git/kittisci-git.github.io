@@ -7,19 +7,21 @@ menu:
     weight: 1
 ---
 
-## About me
-Hi, I'm Kittisci. I am a physics and maths teacher holding an astrophysics degree and I love space, playing games, and building things!
+Hi, I'm Kittisci. I am a British physics and maths teacher with an astrophysics degree. I love space, playing games, and building things!
 
-I have created this site as a way to collect my interests and tools into one single place while sharing these things with any and all people who happen across it.
+I have created this site as a way to collect my interests and tools into a single place while sharing these with any and all who happen across it.
 
-## What I am playing
+## What am I up to at the moment?
+### Active projects
+- Building this site
+
+### Games
 - Sea of Thieves
 - Umamusume Pretty Derby
 - Overwatch
 
-## What I am working on
-- Building this site
+### Reading
+- The Elsewhere Express by Samantha Sotto Yambao
 
-## What I'm interested in
-- Black holes and large scale cosmology
-- Astrophysics news
+## Site info
+Kittisci went live on 2026-03-05 at kittisci-git.gihub.io using Hugo and the Coder theme
