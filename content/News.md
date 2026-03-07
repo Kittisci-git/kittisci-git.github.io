@@ -51,7 +51,7 @@ const oneMonthAgo = new Date();
 oneMonthAgo.setMonth(oneMonthAgo.getMonth() - 1);
 
 async function fetchFeed(url) {
-  const proxyUrl = `https://corsproxy.io/?url=${encodeURIComponent(url)}`;
+  const proxyUrl = `https://kittisci-proxy.kittisci.workers.dev/?url=${encodeURIComponent(url)}`;
   const response = await fetch(proxyUrl);
   const text = await response.text();
   const parser = new DOMParser();
@@ -127,7 +127,7 @@ async function loadArxivCategory(cat, containerId) {
 
   try {
     const apiUrl = `https://export.arxiv.org/api/query?search_query=cat:${cat}+AND+submittedDate:${dateRange}&max_results=50&sortBy=submittedDate&sortOrder=descending`;
-    const proxyUrl = `https://corsproxy.io/?url=${encodeURIComponent(apiUrl)}`;
+    const proxyUrl = `https://kittisci-proxy.kittisci.workers.dev/?url=${encodeURIComponent(apiUrl)}`;
     const response = await fetch(proxyUrl);
     const text = await response.text();
     const parser = new DOMParser();
