@@ -26,4 +26,5 @@ I have created this site as a way to collect my interests and tools into a singl
 
 ## Site info
 Kittisci went live on 2026-03-05 at kittisci-git.gihub.io using Hugo and the Coder theme<br>
-Domain changed on 2026-03-07 to kittisci.co.uk
+Domain changed on 2026-03-07 to kittisci.co.uk<br>
+Added Sea of Thieves Commendation Tracker to the Projects page<br>
