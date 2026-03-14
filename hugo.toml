@@ -7,6 +7,9 @@ theme = 'hugo-coder'
   [markup.goldmark]
     [markup.goldmark.renderer]
       unsafe = true
+  [markup.goldmark.extensions]
+    [markup.goldmark.extensions.typographer]
+      disable = true
 
 [params]
   author = 'Kittisci'

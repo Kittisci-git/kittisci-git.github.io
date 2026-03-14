@@ -124,6 +124,12 @@ A tool box for Elite: Dangerous players. Currently, the only tool is the Colony 
         margin-right: 2rem;
     }
     
+    body {
+        word-break: break-word;
+        overflow-wrap: break-word;
+        hyphens: none !important;
+    }
+
     body.colorscheme-light nav.navigation {
         background-color: #fafafa;
     }
@@ -135,9 +141,7 @@ A tool box for Elite: Dangerous players. Currently, the only tool is the Colony 
     .wrapper {
         padding-top: 3rem;
     }
-</style>
-
-<style>
+    
     #return-to-top {
         -webkit-appearance: none;
         appearance: none;
@@ -178,6 +182,14 @@ A tool box for Elite: Dangerous players. Currently, the only tool is the Colony 
     body.colorscheme-light #return-to-top:hover {
         background: #1565c0;
         color: #dadada;
+    }
+
+    small {
+        hyphens: none !important;
+    }
+
+    p {
+        hyphens: none !important;
     }
 
     .news-container {

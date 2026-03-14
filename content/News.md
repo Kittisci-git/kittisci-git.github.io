@@ -7,6 +7,265 @@ menu:
     weight: 2
 ---
 
+<style>
+.news-left {
+  width: 300px;
+  flex-shrink: 0;
+  padding-right: 1.5rem;
+  border-right: 1px solid #424242;
+}
+
+.news-right {
+  flex: 1;
+  padding-left: 1.5rem;
+  min-width: 0;
+}
+
+.news-item {
+  position: relative;
+  margin-bottom: 1rem;
+  padding-bottom: 1rem;
+  border-bottom: 1px solid #424242;
+}
+
+.news-item a {
+  display: block;
+  margin-bottom: 0.25rem;
+  padding-right: 2rem;
+}
+
+.news-item small {
+  font-size: 0.6em;
+  opacity: 0.6;
+}
+
+.star-btn {
+  position: absolute;
+  top: 0.1rem;
+  right: 0;
+  width: 24px;
+  height: 24px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  opacity: 0;
+  transition: opacity 0.15s;
+  padding: 0;
+  font-size: 1.5rem;
+  line-height: 1;
+  color: #888;
+}
+
+.news-item:hover .star-btn { opacity: 1; }
+
+.picks-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 1rem;
+}
+
+.picks-header h2 { margin: 0; }
+
+.admin-badge {
+  font-size: 0.7em;
+  padding: 2px 8px;
+  border-radius: 4px;
+  background: rgba(255,183,77,0.15);
+  color: #ffb74d;
+  border: 1px solid rgba(255,183,77,0.3);
+}
+
+.pick-item {
+  position: relative;
+  margin-bottom: 1rem;
+  padding-bottom: 1rem;
+  border-bottom: 1px solid #424242;
+}
+
+.pick-item:last-child { border-bottom: none; }
+
+.pick-item a {
+  display: block;
+  margin-bottom: 0.25rem;
+  padding-right: 2rem;
+}
+
+.pick-item small {
+  opacity: 0.6;
+}
+
+.pick-note {
+  font-size: 0.85em;
+  font-style: italic;
+  margin-top: 0.3rem;
+  line-height: 1.4;
+}
+
+.remove-btn {
+  position: absolute;
+  top: 0.1rem;
+  right: 0;
+  width: 24px;
+  height: 24px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  opacity: 0;
+  transition: opacity 0.15s;
+  padding: 0;
+  color: #ef9a9a;
+  font-size: 1rem;
+  line-height: 1;
+}
+
+.pick-item:hover .remove-btn { opacity: 1; }
+
+.see-older-btn {
+  margin-top: 0.5rem;
+  padding: 0.3rem 0.8rem;
+  border: 1px solid #424242;
+  background: transparent;
+  color: #888;
+  cursor: pointer;
+  border-radius: 0.2rem;
+  font-size: 0.8rem;
+  transition: all 0.2s;
+  width: 100%;
+  -webkit-appearance: none;
+  appearance: none;
+}
+
+.see-older-btn:hover { border-color: #42a5f5; color: #42a5f5; }
+
+.note-form {
+  margin-top: 0.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+}
+
+.note-form textarea {
+  background: #212121;
+  border: 1px solid #424242;
+  border-radius: 0.2rem;
+  color: #dadada;
+  font-size: 0.85em;
+  padding: 0.3rem 0.5rem;
+  font-family: inherit;
+  resize: none;
+}
+
+.note-form textarea:focus { outline: none; border-color: #42a5f5; }
+
+.note-form-btns {
+  display: flex;
+  gap: 0.4rem;
+}
+
+.note-form-btns button {
+  flex: 1;
+  padding: 0.3rem;
+  border-radius: 0.2rem;
+  border: 1px solid #424242;
+  background: transparent;
+  color: #888;
+  cursor: pointer;
+  font-size: 0.85em;
+  transition: all 0.2s;
+  -webkit-appearance: none;
+  appearance: none;
+}
+
+.note-form-btns button.confirm { border-color: #42a5f5; color: #42a5f5; }
+
+.pending-pick-box {
+  background: #2a2a2a;
+  border: 1px solid #424242;
+  border-radius: 0.4rem;
+  padding: 0.75rem;
+  margin-bottom: 0.75rem;
+}
+
+.pending-pick-title {
+  font-size: 0.85em;
+  color: #888;
+  margin-bottom: 0.4rem;
+  line-height: 1.4;
+}
+
+.admin-overlay {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.7);
+  z-index: 100;
+  align-items: center;
+  justify-content: center;
+}
+
+.admin-overlay.visible { display: flex; }
+
+.admin-box {
+  background: #2a2a2a;
+  border: 1px solid #424242;
+  border-radius: 0.5rem;
+  padding: 1.5rem;
+  width: 300px;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.admin-box h3 { font-size: 1.5em; margin: 0; }
+.admin-box p { font-size: 0.8em; color: #888; margin: 0; }
+
+.admin-box input[type="password"] {
+  background: #212121;
+  border: 1px solid #424242;
+  border-radius: 0.2rem;
+  color: #dadada;
+  font-size: 0.95em;
+  padding: 0.4rem 0.6rem;
+  font-family: inherit;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.admin-box input[type="password"]:focus { outline: none; border-color: #42a5f5; }
+.admin-error { font-size: 0.85em; color: #ef9a9a; display: none; }
+.admin-box-btns { display: flex; gap: 0.5rem; }
+
+.admin-box-btns button {
+  flex: 1;
+  padding: 0.4rem;
+  border-radius: 0.2rem;
+  border: 1px solid #424242;
+  background: transparent;
+  color: #888;
+  cursor: pointer;
+  font-size: 0.9em;
+  transition: all 0.2s;
+  -webkit-appearance: none;
+  appearance: none;
+}
+
+.admin-box-btns button.confirm { border-color: #42a5f5; color: #42a5f5; }
+</style>
+
+<div class="admin-overlay" id="admin-overlay">
+  <div class="admin-box">
+    <h3>Admin Access</h3>
+    <p>Enter your password to enable picks management.</p>
+    <input type="password" id="admin-password-input" placeholder="Password" />
+    <div class="admin-error" id="admin-error">Incorrect password.</div>
+    <div class="admin-box-btns">
+      <button onclick="closeAdminOverlay()">Cancel</button>
+      <button class="confirm" onclick="submitAdminPassword()">Unlock</button>
+    </div>
+  </div>
+</div>
+
 <div class="news-tabs">
   <button class="news-tab active" onclick="showTab('nasa', this)">NASA</button>
   <button class="news-tab" onclick="showTab('esa', this)">ESA</button>
@@ -22,8 +281,11 @@ menu:
 
 <div class="news-layout">
   <div class="news-left">
-    <h2>Kittisci's Picks</h2>
-    <p>Coming soon.</p>
+    <div class="picks-header">
+      <h2>Kittisci's Picks</h2>
+      <span class="admin-badge" id="admin-badge" style="display:none;">Admin</span>
+    </div>
+    <div id="picks-container"><p style="color:#888;font-size:0.85rem;">Loading picks...</p></div>
   </div>
   <div class="news-right">
     <div id="nasa" class="news-panel"><div id="nasa-feed"></div></div>
@@ -39,137 +301,4 @@ menu:
   </div>
 </div>
 
-<script>
-function showTab(id, btn) {
-  document.querySelectorAll('.news-panel').forEach(p => p.classList.add('hidden'));
-  document.querySelectorAll('.news-tab').forEach(t => t.classList.remove('active'));
-  document.getElementById(id).classList.remove('hidden');
-  btn.classList.add('active');
-}
-
-const oneMonthAgo = new Date();
-oneMonthAgo.setMonth(oneMonthAgo.getMonth() - 1);
-
-async function fetchFeed(url) {
-  const proxyUrl = `https://kittisci-proxy.kittisci.workers.dev/?url=${encodeURIComponent(url)}`;
-  const response = await fetch(proxyUrl);
-  const text = await response.text();
-  const parser = new DOMParser();
-  const doc = parser.parseFromString(text, 'text/html');
-  if (doc.getElementsByTagName('item').length === 0) {
-    return parser.parseFromString(text, 'text/xml');
-  }
-  return doc;
-}
-
-async function loadFeed(url, containerId, sourceName) {
-  const container = document.getElementById(containerId);
-  container.innerHTML = '<p>Loading...</p>';
-  let allItems = [];
-
-  try {
-    const xml = await fetchFeed(url);
-    const items = Array.from(xml.getElementsByTagName('item'));
-    items.forEach(item => {
-      const pubDateText = item.getElementsByTagName('pubDate')[0]?.textContent;
-      const pubDate = pubDateText ? new Date(pubDateText) : new Date();
-      
-      let link = item.getElementsByTagName('link')[0]?.textContent || '';
-      const guid = item.getElementsByTagName('guid')[0]?.textContent || '';
-
-      if (!link.startsWith('http') && guid.startsWith('http')) link = guid;
-
-      if (!link.startsWith('http')) {
-        link = 'https://www.esa.int/Science_Exploration/Space_Science';
-      }
-
-      const title = item.getElementsByTagName('title')[0]?.textContent?.trim() || 'Untitled';
-
-      if (!pubDateText || pubDate > oneMonthAgo) {
-        allItems.push({ title, link, date: pubDate, source: sourceName });
-      }
-    });
-  } catch (e) {
-    container.innerHTML = '<p>Failed to load feed.</p>';
-    return;
-  }
-
-  allItems.sort((a, b) => b.date - a.date);
-
-  if (allItems.length === 0) {
-    container.innerHTML = '<p>No recent stories found.</p>';
-    return;
-  }
-
-  container.innerHTML = allItems.map(item => `
-    <div class="news-item">
-      <a href="${item.link}" target="_blank">${item.title}</a>
-      <small>${item.source} — ${item.date.toLocaleDateString('en-GB')}</small>
-    </div>
-  `).join('');
-}
-
-function getArxivDateRange() {
-  const now = new Date();
-  const monthAgo = new Date();
-  monthAgo.setMonth(monthAgo.getMonth() - 1);
-  const format = d => d.getUTCFullYear().toString() +
-    String(d.getUTCMonth() + 1).padStart(2, '0') +
-    String(d.getUTCDate()).padStart(2, '0') + '0000';
-  return `[${format(monthAgo)}+TO+${format(now)}]`;
-}
-
-async function loadArxivCategory(cat, containerId) {
-  const container = document.getElementById(containerId);
-  container.innerHTML = '<p>Loading...</p>';
-  const dateRange = getArxivDateRange();
-  let allItems = [];
-
-  try {
-    const apiUrl = `https://export.arxiv.org/api/query?search_query=cat:${cat}+AND+submittedDate:${dateRange}&max_results=50&sortBy=submittedDate&sortOrder=descending`;
-    const proxyUrl = `https://kittisci-proxy.kittisci.workers.dev/?url=${encodeURIComponent(apiUrl)}`;
-    const response = await fetch(proxyUrl);
-    const text = await response.text();
-    const parser = new DOMParser();
-    const xml = parser.parseFromString(text, 'text/xml');
-    const entries = Array.from(xml.getElementsByTagName('entry'));
-
-    entries.forEach(entry => {
-      const published = entry.getElementsByTagName('published')[0]?.textContent;
-      const title = entry.getElementsByTagName('title')[0]?.textContent?.trim();
-      const id = entry.getElementsByTagName('id')[0]?.textContent?.trim();
-      if (title && id) {
-        allItems.push({ title, link: id, date: new Date(published), source: `arXiv:${cat}` });
-      }
-    });
-  } catch (e) {
-    container.innerHTML = '<p>Failed to load feed.</p>';
-    return;
-  }
-
-  allItems.sort((a, b) => b.date - a.date);
-
-  if (allItems.length === 0) {
-    container.innerHTML = '<p>No recent papers found.</p>';
-    return;
-  }
-
-  container.innerHTML = allItems.map(item => `
-    <div class="news-item">
-      <a href="${item.link}" target="_blank">${item.title}</a>
-      <small>${item.source} — ${item.date.toLocaleDateString('en-GB')}</small>
-    </div>
-  `).join('');
-}
-
-loadFeed('https://www.nasa.gov/rss/dyn/breaking_news.rss', 'nasa-feed', 'NASA');
-loadFeed('https://www.esa.int/rssfeed/Our_Activities/Space_Science', 'esa-feed', 'ESA');
-loadArxivCategory('astro-ph.GA', 'astro-ph-ga-feed');
-loadArxivCategory('astro-ph.CO', 'astro-ph-co-feed');
-loadArxivCategory('astro-ph.EP', 'astro-ph-ep-feed');
-loadArxivCategory('astro-ph.HE', 'astro-ph-he-feed');
-loadArxivCategory('astro-ph.IM', 'astro-ph-im-feed');
-loadArxivCategory('astro-ph.SR', 'astro-ph-sr-feed');
-loadArxivCategory('gr-qc', 'gr-qc-feed');
-loadArxivCategory('physics.space-ph', 'space-ph-feed');
-</script>
+<script src="/js/news.js"></script>
