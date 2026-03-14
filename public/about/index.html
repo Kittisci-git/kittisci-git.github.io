@@ -64,7 +64,8 @@ The Elsewhere Express by Samantha Sotto Yambao
 
 2026-03-05: Kittisci went live at kittisci-git.gihub.io using Hugo and the Coder theme
 2026-03-07: Domain changed to kittisci.co.uk
-2026-03-12: Added Sea of Thieves Commendation Tracker to the Projects page">
+2026-03-12: Added Sea of Thieves Commendation Tracker to the Projects page
+2026-03-14: Added Guestbook on the homepage">
 <meta name="keywords" content="">
 
 
@@ -75,7 +76,8 @@ The Elsewhere Express by Samantha Sotto Yambao
 I have created this site as a way to collect my interests and tools into a single place while sharing these with any and all who happen across it.
 What am I up to at the moment?Link to headingActive projectsLink to headingBuilding this site Sea of Thieves Commendation Tracker GamesLink to headingSea of Thieves Umamusume Pretty Derby Overwatch ReadingLink to headingThe Elsewhere Express by Samantha Sotto Yambao Site infoLink to heading2026-03-05: Kittisci went live at kittisci-git.gihub.io using Hugo and the Coder theme
 2026-03-07: Domain changed to kittisci.co.uk
-2026-03-12: Added Sea of Thieves Commendation Tracker to the Projects page">
+2026-03-12: Added Sea of Thieves Commendation Tracker to the Projects page
+2026-03-14: Added Guestbook on the homepage">
 
 <meta property="og:url" content="http://localhost:1313/about/">
   <meta property="og:site_name" content="Kittisci">
@@ -84,7 +86,8 @@ What am I up to at the moment?Link to headingActive projectsLink to headingB
 I have created this site as a way to collect my interests and tools into a single place while sharing these with any and all who happen across it.
 What am I up to at the moment?Link to headingActive projectsLink to headingBuilding this site Sea of Thieves Commendation Tracker GamesLink to headingSea of Thieves Umamusume Pretty Derby Overwatch ReadingLink to headingThe Elsewhere Express by Samantha Sotto Yambao Site infoLink to heading2026-03-05: Kittisci went live at kittisci-git.gihub.io using Hugo and the Coder theme
 2026-03-07: Domain changed to kittisci.co.uk
-2026-03-12: Added Sea of Thieves Commendation Tracker to the Projects page">
+2026-03-12: Added Sea of Thieves Commendation Tracker to the Projects page
+2026-03-14: Added Guestbook on the homepage">
   <meta property="og:locale" content="en_gb">
   <meta property="og:type" content="article">
     <meta property="article:published_time" content="2026-03-07T00:00:00+00:00">
@@ -341,6 +344,341 @@ What am I up to at the moment?Link to headingActive projectsLink to headingB
     });
 </script>
 
+
+<script src="/js/guestbook.js"></script>
+ 
+<style>
+ 
+#guestbook-btn {
+  -webkit-appearance: none;
+  appearance: none;
+  background: transparent;
+  border: 1px solid #424242;
+  border-radius: 0.2rem;
+  color: #dadada;
+  cursor: pointer;
+  font-size: 1em;
+  padding: 0.5rem 1.25rem;
+  transition: all 0.2s;
+  position: fixed;
+  bottom: 3rem;
+  right: 3rem;
+  z-index: 50;
+}
+ 
+#guestbook-btn:hover {
+  border-color: #42a5f5;
+  color: #42a5f5;
+}
+ 
+#guestbook-btn.gb-open {
+  display: none;
+}
+ 
+body.colorscheme-light #guestbook-btn {
+  border-color: #212121;
+  color: #212121;
+}
+ 
+body.colorscheme-light #guestbook-btn:hover,
+body.colorscheme-light #guestbook-btn.gb-open {
+  border-color: #1565c0;
+  color: #1565c0;
+  background: rgba(21,101,192,0.06);
+}
+ 
+ 
+#gb-panel {
+  position: fixed;
+  bottom: 3rem;
+  right: 3rem;
+  width: 400px;
+  max-height: 520px;
+  min-height: 300px;
+  background: #2a2a2a;
+  border: 1px solid #424242;
+  border-radius: 0.5rem;
+  z-index: 49;
+  flex-direction: column;
+  overflow: hidden;
+  box-shadow: 0 4px 24px rgba(0,0,0,0.4);
+  display: flex;
+  transform-origin: bottom right;
+  transform: scale(0);
+  opacity: 0;
+  pointer-events: none;
+  transition: transform 0.2s ease, opacity 0.15s ease;
+}
+
+#gb-panel.gb-visible {
+  transform: scale(1);
+  opacity: 1;
+  pointer-events: all;
+}
+ 
+body.colorscheme-light #gb-panel {
+  background: #fafafa;
+  border-color: #ccc;
+  box-shadow: 0 4px 24px rgba(0,0,0,0.15);
+}
+ 
+ 
+#gb-backdrop {
+  display: none;
+  position: fixed;
+  inset: 0;
+  z-index: 48;
+}
+ 
+#gb-backdrop.gb-visible { display: block; }
+ 
+ 
+#gb-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.85rem 1rem 0.7rem;
+  border-bottom: 1px solid #424242;
+  flex-shrink: 0;
+}
+ 
+body.colorscheme-light #gb-header { border-bottom-color: #ddd; }
+ 
+#gb-header h3 {
+  margin: 0;
+  font-size: 1em;
+  font-weight: 500;
+}
+ 
+#gb-header-right {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+}
+ 
+#gb-admin-badge {
+  font-size: 0.7em;
+  padding: 2px 8px;
+  border-radius: 4px;
+  background: rgba(255,183,77,0.15);
+  color: #ffb74d;
+  border: 1px solid rgba(255,183,77,0.3);
+}
+ 
+ 
+#gb-entries-wrap {
+  flex: 1;
+  overflow-y: auto;
+  padding: 0.6rem 1rem;
+  min-height: 0;
+}
+ 
+.gb-entry {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.4rem 0;
+  border-bottom: 1px solid #383838;
+  gap: 0.75rem;
+  position: relative;
+}
+ 
+body.colorscheme-light .gb-entry { border-bottom-color: #e0e0e0; }
+.gb-entry:last-child { border-bottom: none; }
+ 
+.gb-entry-name {
+  font-size: 0.9em;
+  font-weight: 500;
+  flex: 1;
+  word-break: break-word;
+}
+ 
+.gb-entry-date {
+  font-size: 0.75em;
+  color: #888;
+  flex-shrink: 0;
+}
+ 
+.gb-delete-btn {
+  -webkit-appearance: none;
+  appearance: none;
+  background: none;
+  border: none;
+  color: #ef9a9a;
+  cursor: pointer;
+  font-size: 0.85rem;
+  padding: 0 0.25rem;
+  opacity: 0;
+  transition: opacity 0.15s;
+  flex-shrink: 0;
+}
+ 
+.gb-entry:hover .gb-delete-btn { opacity: 1; }
+ 
+.gb-loading, .gb-empty {
+  color: #888;
+  font-size: 0.85em;
+  text-align: center;
+  padding: 1rem 0;
+}
+ 
+ 
+#gb-pagination {
+  padding: 0.4rem 1rem 0.2rem;
+  flex-shrink: 0;
+}
+ 
+.gb-pages {
+  display: flex;
+  gap: 0.3rem;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+ 
+.gb-page-btn {
+  -webkit-appearance: none;
+  appearance: none;
+  background: transparent;
+  border: 1px solid #424242;
+  border-radius: 0.2rem;
+  color: #888;
+  cursor: pointer;
+  font-size: 0.75em;
+  padding: 0.15rem 0.45rem;
+  transition: all 0.15s;
+  min-width: 26px;
+}
+ 
+.gb-page-btn:hover:not(:disabled) { border-color: #42a5f5; color: #42a5f5; }
+.gb-page-btn.active { border-color: #42a5f5; color: #42a5f5; background: rgba(66,165,245,0.1); }
+.gb-page-btn:disabled { opacity: 0.3; cursor: default; }
+ 
+ 
+#gb-form {
+  display: flex;
+  gap: 0.5rem;
+  padding: 0.6rem 1rem;
+  border-top: 1px solid #424242;
+  flex-shrink: 0;
+}
+ 
+body.colorscheme-light #gb-form { border-top-color: #ddd; }
+ 
+#gb-name-input {
+  flex: 1;
+  background: #212121;
+  border: 1px solid #424242;
+  border-radius: 0.2rem;
+  color: #dadada;
+  font-size: 0.85em;
+  padding: 0.35rem 0.5rem;
+  font-family: inherit;
+  transition: border-color 0.2s;
+}
+ 
+body.colorscheme-light #gb-name-input {
+  background: #f0f0f0;
+  border-color: #ccc;
+  color: #212121;
+}
+ 
+#gb-name-input:focus { outline: none; border-color: #42a5f5; }
+ 
+#gb-sign-btn {
+  -webkit-appearance: none;
+  appearance: none;
+  background: transparent;
+  border: 1px solid #42a5f5;
+  border-radius: 0.2rem;
+  color: #42a5f5;
+  cursor: pointer;
+  font-size: 0.85em;
+  padding: 0.35rem 0.8rem;
+  transition: all 0.2s;
+  font-family: inherit;
+}
+ 
+#gb-sign-btn:hover:not(:disabled) { background: rgba(66,165,245,0.1); }
+#gb-sign-btn:disabled { opacity: 0.5; cursor: default; }
+ 
+#gb-error {
+  font-size: 0.8em;
+  color: #ef9a9a;
+  padding: 0 1rem 0.4rem;
+  flex-shrink: 0;
+}
+ 
+#gb-success {
+  font-size: 0.8em;
+  color: #66bb6a;
+  padding: 0 1rem 0.4rem;
+  flex-shrink: 0;
+}
+ 
+ 
+#gb-admin-overlay {
+  position: absolute;
+  inset: 0;
+  background: rgba(0,0,0,0.7);
+  z-index: 10;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  border-radius: 0.5rem;
+}
+ 
+#gb-admin-overlay.gb-visible { display: flex; }
+ 
+#gb-admin-box {
+  background: #2a2a2a;
+  border: 1px solid #424242;
+  border-radius: 0.5rem;
+  padding: 1.25rem;
+  width: 260px;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+ 
+#gb-admin-box h3 { font-size: 1em; margin: 0; }
+#gb-admin-box p { font-size: 0.82em; color: #888; margin: 0; }
+ 
+#gb-admin-pw-input {
+  background: #212121;
+  border: 1px solid #424242;
+  border-radius: 0.2rem;
+  color: #dadada;
+  font-size: 0.9em;
+  padding: 0.4rem 0.6rem;
+  font-family: inherit;
+  width: 100%;
+  box-sizing: border-box;
+}
+ 
+#gb-admin-pw-input:focus { outline: none; border-color: #42a5f5; }
+#gb-admin-error { font-size: 0.82em; color: #ef9a9a; }
+#gb-admin-btns { display: flex; gap: 0.5rem; }
+ 
+#gb-admin-btns button {
+  flex: 1;
+  -webkit-appearance: none;
+  appearance: none;
+  padding: 0.4rem;
+  border-radius: 0.2rem;
+  border: 1px solid #424242;
+  background: transparent;
+  color: #888;
+  cursor: pointer;
+  font-size: 0.85em;
+  transition: all 0.2s;
+}
+ 
+#gb-admin-btns button.gb-confirm {
+  border-color: #42a5f5;
+  color: #42a5f5;
+}
+</style>
+
 <link rel="icon" type="image/svg+xml" href="/images/favicon.svg" sizes="any">
 <link rel="icon" type="image/png" href="/favicon-32x32.png" sizes="32x32">
 <link rel="icon" type="image/png" href="/favicon-32x32.png" sizes="16x16">
@@ -477,7 +815,8 @@ What am I up to at the moment?Link to headingActive projectsLink to headingB
 </h2>
 <p>2026-03-05: Kittisci went live at kittisci-git.gihub.io using Hugo and the Coder theme<br>
 2026-03-07: Domain changed to kittisci.co.uk<br>
-2026-03-12: Added Sea of Thieves Commendation Tracker to the Projects page<br></p>
+2026-03-12: Added Sea of Thieves Commendation Tracker to the Projects page<br>
+2026-03-14: Added Guestbook on the homepage<br></p>
 
   </article>
 </section>
