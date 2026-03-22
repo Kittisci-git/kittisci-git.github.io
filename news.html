@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="en-GB">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>News — Kittisci</title>
+  <meta name="description" content="Space, science, and games">
+  <link rel="icon" type="image/x-icon" href="/resources/favicon.ico">
+  <link rel="icon" type="image/png" sizes="32x32" href="/resources/favicon-32x32.png">
+  <link rel="apple-touch-icon" sizes="180x180" href="/resources/apple-touch-icon.png">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <link rel="stylesheet" href="/layouts/styles.css">
+</head>
+
+<body class="colorscheme-dark">
+  <main class="wrapper">
+
+    <nav class="navigation">
+      <section class="container">
+        <a class="navigation-title" href="/">Kittisci</a>
+        <input type="checkbox" id="menu-toggle">
+        <label class="menu-button float-right" for="menu-toggle">
+          <i class="fa-solid fa-bars fa-fw" aria-hidden="true"></i>
+        </label>
+        <ul class="navigation-list">
+          <li class="navigation-item"><a class="navigation-link" href="/about.html">About</a></li>
+          <li class="navigation-item"><a class="navigation-link" href="/news.html">News</a></li>
+          <li class="navigation-item"><a class="navigation-link" href="/projects.html">Projects</a></li>
+          <li class="navigation-item"><a class="navigation-link" href="/recommendations.html">Recommendations</a></li>
+          <li class="navigation-item">
+            <a id="dark-mode-toggle" class="colorscheme-toggle" href="#" aria-label="Toggle dark mode">
+              <i class="fa-solid fa-adjust fa-fw" aria-hidden="true"></i>
+            </a>
+          </li>
+        </ul>
+      </section>
+    </nav>
+
+    <div class="content">
+      <section class="container page">
+        <article>
+          <header>
+            <h1 class="title"><a class="title-link" href="/news.html">News</a></h1>
+          </header>
+
+          <div class="admin-overlay" id="admin-overlay">
+            <div class="admin-box">
+              <h3>Admin Access</h3>
+              <p>Enter your password to enable picks management.</p>
+              <input type="password" id="admin-password-input" placeholder="Password" />
+              <div class="admin-error" id="admin-error">Incorrect password.</div>
+              <div class="admin-box-btns">
+                <button onclick="closeAdminOverlay()">Cancel</button>
+                <button class="confirm" onclick="submitAdminPassword()">Unlock</button>
+              </div>
+            </div>
+          </div>
+
+          <div class="news-tabs">
+            <button class="news-tab active" onclick="showTab('nasa', this)">NASA</button>
+            <button class="news-tab" onclick="showTab('esa', this)">ESA</button>
+            <button class="news-tab" onclick="showTab('astro-ph-ga', this)">Galactic Astrophysics</button>
+            <button class="news-tab" onclick="showTab('astro-ph-co', this)">Cosmology and Nongalactic Astrophysics</button>
+            <button class="news-tab" onclick="showTab('astro-ph-ep', this)">Earth and Planetary Astrophysics</button>
+            <button class="news-tab" onclick="showTab('astro-ph-he', this)">High Energy Astrophysical Phenomena</button>
+            <button class="news-tab" onclick="showTab('astro-ph-im', this)">Instrumentation and Methods for Astrophysics</button>
+            <button class="news-tab" onclick="showTab('astro-ph-sr', this)">Solar and Stellar Astrophysics</button>
+            <button class="news-tab" onclick="showTab('gr-qc', this)">General Relativity and Quantum Cosmology</button>
+            <button class="news-tab" onclick="showTab('space-ph', this)">Space Physics</button>
+          </div>
+
+          <div class="news-layout">
+            <div class="news-left">
+              <div class="picks-header">
+                <h2>Kittisci's Picks</h2>
+                <span class="admin-badge" id="admin-badge" style="display:none;">Admin</span>
+              </div>
+              <div id="picks-container"><p style="color:var(--text-muted);">Loading picks...</p></div>
+            </div>
+            <div class="news-right">
+              <div id="nasa" class="news-panel"><div id="nasa-feed"></div></div>
+              <div id="esa" class="news-panel hidden"><div id="esa-feed"></div></div>
+              <div id="astro-ph-ga" class="news-panel hidden"><div id="astro-ph-ga-feed"></div></div>
+              <div id="astro-ph-co" class="news-panel hidden"><div id="astro-ph-co-feed"></div></div>
+              <div id="astro-ph-ep" class="news-panel hidden"><div id="astro-ph-ep-feed"></div></div>
+              <div id="astro-ph-he" class="news-panel hidden"><div id="astro-ph-he-feed"></div></div>
+              <div id="astro-ph-im" class="news-panel hidden"><div id="astro-ph-im-feed"></div></div>
+              <div id="astro-ph-sr" class="news-panel hidden"><div id="astro-ph-sr-feed"></div></div>
+              <div id="gr-qc" class="news-panel hidden"><div id="gr-qc-feed"></div></div>
+              <div id="space-ph" class="news-panel hidden"><div id="space-ph-feed"></div></div>
+            </div>
+          </div>
+
+        </article>
+      </section>
+    </div>
+
+    <footer class="footer">
+      <section class="container">
+        &copy; 2026 Kittisci
+      </section>
+    </footer>
+
+  </main>
+
+  <button id="return-to-top" onclick="window.scrollTo({top: 0, behavior: 'smooth'})" aria-label="Return to top">
+    <i class="fa-solid fa-arrow-up"></i>
+  </button>
+
+  <script src="/site.js"></script>
+  <script src="/js/news.js"></script>
+</body>
+</html>

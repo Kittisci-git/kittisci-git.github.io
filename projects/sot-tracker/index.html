@@ -1,0 +1,1121 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Sea of Thieves Commendation Tracker</title>
+  <style>
+    :root {
+      --bg: #212121;
+      --bg-card: #2a2a2a;
+      --bg-card-hover: #313131;
+      --text: #dadada;
+      --text-muted: #888;
+      --accent: #42a5f5;
+      --accent-hover: #64b5f6;
+      --border: #424242;
+      --complete: #66bb6a;
+      --grade-0: #555;
+      --grade-active: #42a5f5;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'Segoe UI', system-ui, sans-serif;
+      min-height: 100vh;
+      padding: 2rem;
+    }
+
+    h1 {
+      font-size: 1.8rem;
+      margin-bottom: 0.25rem;
+      color: var(--text);
+    }
+
+    .subtitle {
+      color: var(--text-muted);
+      margin-bottom: 2rem;
+      font-size: 0.9rem;
+    }
+
+    /* Overview screen */
+    #overview {
+      display: block;
+    }
+
+    #tracker {
+      display: none;
+    }
+
+    .overview-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+      gap: 1.5rem;
+      margin-top: 1rem;
+    }
+
+    .category-card {
+      position: relative;
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 0.75rem;
+      padding: 1rem;
+      cursor: pointer;
+      transition: border-color 0.2s, transform 0.15s;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      min-height: 130px;
+    }
+
+    .category-card:hover {
+      border-color: var(--accent);
+      transform: translateY(-2px);
+    }
+
+    .card-bg {
+      position: absolute;
+      right: -5px;
+      bottom: -10px;
+      width: 150px;
+      height: 150px;
+      opacity: 0.4;
+      pointer-events: none;
+      user-select: none;
+      transform: rotate(20deg);
+    }
+
+    .card-top {
+      display: flex;
+      flex-direction: column;
+      gap: 0.2rem;
+    }
+
+    .category-card .card-name {
+      font-size: 1.5rem;
+      font-weight: 700;
+      color: var(--text);
+      line-height: 1.2;
+      z-index: 1;
+      position: relative;
+      text-shadow: 0 0 5px #000, 0 0 5px #000;
+    }
+
+    .card-bottom {
+      display: flex;
+      flex-direction: column;
+      gap: 0.35rem;
+      z-index: 1;
+      position: relative;
+    }
+
+    .card-count {
+      font-size: 0.78rem;
+      color: var(--text-muted);
+    }
+
+    .card-progress-track {
+      height: 5px;
+      background: var(--border);
+      border-radius: 3px;
+      overflow: hidden;
+    }
+
+    .card-progress-fill {
+      height: 100%;
+      border-radius: 3px;
+      transition: width 0.4s ease;
+      /* colour set inline via style attribute */
+    }
+
+    /* Tracker background */
+    #tracker {
+      position: relative;
+    }
+
+    .tracker-bg {
+      position: fixed;
+      display: block;
+      right: 2rem;
+      top: 25%;
+      transform: rotate(20deg);
+      filter: blur(4px);
+      width: 600px;
+      height: 600px;
+      opacity: 0.07;
+      pointer-events: none;
+      user-select: none;
+      z-index: 0;
+    }
+
+    #tracker > * {
+      position: relative;
+      z-index: 1;
+    }
+
+    /* Back button */
+    .back-btn {
+      padding: 0.4rem 1rem;
+      border: 1px solid var(--border);
+      background: transparent;
+      color: var(--text-muted);
+      cursor: pointer;
+      border-radius: 0.2rem;
+      transition: all 0.2s ease;
+      font-size: 0.9rem;
+      -webkit-appearance: none;
+      appearance: none;
+      margin-bottom: 1rem;
+    }
+
+    .back-btn:hover {
+      border-color: var(--accent);
+      color: var(--accent);
+    }
+
+    /* Category header in tracker view */
+    .category-header {
+      flex: 1;
+      text-align: center;
+    }
+
+    .category-header h2 {
+      font-size: 2rem;
+      font-weight: 800;
+      letter-spacing: 0.02em;
+      text-shadow: 0 0 20px rgba(0,0,0,0.8), 0 2px 4px rgba(0,0,0,0.9);
+      line-height: 1.1;
+      margin-bottom: 0.6rem;
+    }
+
+    /* Category-level progress bar */
+    .category-progress-wrap {
+      width: 100%;
+      max-width: 500px;
+      margin: 0 auto;
+    }
+
+    .category-progress-label {
+      display: flex;
+      justify-content: space-between;
+      font-size: 0.72rem;
+      color: var(--text-muted);
+      margin-bottom: 0.25rem;
+    }
+
+    .category-progress-track {
+      height: 6px;
+      background: var(--border);
+      border-radius: 3px;
+      overflow: hidden;
+    }
+
+    .category-progress-fill {
+      height: 100%;
+      border-radius: 3px;
+      transition: width 0.4s ease;
+    }
+
+    /* Subcategory progress bar */
+    .subcategory-progress-wrap {
+      width: 100%;
+      max-width: 500px;
+      margin: 0 auto 1.5rem auto;
+    }
+
+    .subcategory-progress-label {
+      display: flex;
+      justify-content: space-between;
+      font-size: 0.72rem;
+      color: var(--text-muted);
+      margin-bottom: 0.25rem;
+    }
+
+    .subcategory-progress-track {
+      height: 5px;
+      background: var(--border);
+      border-radius: 3px;
+      overflow: hidden;
+    }
+
+    .subcategory-progress-fill {
+      height: 100%;
+      background: var(--accent);
+      border-radius: 3px;
+      transition: width 0.4s ease;
+    }
+
+    /* Tabs */
+    .tabs {
+      display: flex;
+      gap: 0.5rem;
+      flex-wrap: wrap;
+      margin-bottom: 2rem;
+    }
+
+    .tab {
+      padding: 0.4rem 1rem;
+      border: 1px solid var(--border);
+      background: transparent;
+      color: var(--text);
+      cursor: pointer;
+      border-radius: 0.2rem;
+      transition: all 0.2s ease;
+      font-size: 0.9rem;
+      -webkit-appearance: none;
+      appearance: none;
+    }
+
+    .tab:hover { border-color: var(--accent); color: var(--accent); }
+    .tab.active { background: var(--border); color: var(--text); }
+
+    /* Subcategory tabs */
+    .subtabs {
+      display: flex;
+      gap: 0.4rem;
+      flex-wrap: wrap;
+      margin-bottom: 1.5rem;
+    }
+
+    .subtab {
+      padding: 0.3rem 0.8rem;
+      border: 1px solid var(--border);
+      background: transparent;
+      color: var(--text-muted);
+      cursor: pointer;
+      border-radius: 0.2rem;
+      transition: all 0.2s ease;
+      font-size: 0.8rem;
+      -webkit-appearance: none;
+      appearance: none;
+    }
+
+    .subtab:hover { border-color: var(--cat-color, var(--accent)); color: var(--cat-color, var(--accent)); }
+    .subtab.active { border-color: var(--cat-color, var(--accent)); color: var(--cat-color, var(--accent)); background: rgba(0,0,0,0.15); }
+
+    /* Panel */
+    .panel { display: none; }
+    .panel.active { display: block; }
+
+    .subpanel { display: none; }
+    .subpanel.active { display: block; }
+
+    /* Commendation grid */
+    .commendation-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+      gap: 1rem;
+    }
+
+    /* Commendation card */
+    .commendation-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 0.4rem;
+      padding: 1rem;
+      transition: border-color 0.2s ease;
+      position: relative;
+    }
+
+    .commendation-card:hover { border-color: #555; }
+    .commendation-card.complete { border-color: var(--complete); }
+
+    .card-header {
+      display: flex;
+      gap: 0.75rem;
+      align-items: flex-start;
+      margin-bottom: 0.75rem;
+    }
+
+    .card-image {
+      width: 56px;
+      height: 56px;
+      border-radius: 0.3rem;
+      object-fit: cover;
+      background: var(--border);
+      flex-shrink: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--text-muted);
+      font-size: 0.6rem;
+      text-align: center;
+    }
+
+    .card-image img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      border-radius: 0.3rem;
+    }
+
+    .card-info { 
+      flex: 1;
+      padding-right: 1.5rem;
+    }
+
+    .card-name {
+      font-size: 0.9rem;
+      font-weight: 600;
+      margin-bottom: 0.3rem;
+      line-height: 1.3;
+    }
+
+    .card-description {
+      font-size: 0.75rem;
+      color: var(--text-muted);
+      margin-bottom: 0.4rem;
+      line-height: 1.4;
+    }
+
+    .reward-icon {
+      position: absolute;
+      top: 0.75rem;
+      right: 0.75rem;
+      width: 20px;
+      height: 20px;
+      cursor: help;
+    }
+    
+    .tooltip {
+      position: fixed;
+      background: #1a1a1a;
+      color: var(--text);
+      border: 1px solid var(--border);
+      border-radius: 0.3rem;
+      padding: 0.4rem 0.6rem;
+      font-size: 0.75rem;
+      white-space: nowrap;
+      z-index: 1000;
+      pointer-events: none;
+      display: none;
+    }
+
+    /* Grade indicators */
+    .grade-indicators {
+      display: flex;
+      gap: 3px;
+      margin-bottom: 0.75rem;
+    }
+
+    .grade-pip {
+      width: 18px;
+      height: 6px;
+      border-radius: 2px;
+      background: var(--grade-0);
+      transition: background 0.3s ease;
+    }
+
+    .grade-pip.earned { background: var(--accent); }
+    .grade-pip.complete { background: var(--complete); }
+
+    /* Progress bar */
+    .progress-section { margin-bottom: 0.5rem; }
+
+    .progress-label {
+      display: flex;
+      justify-content: space-between;
+      font-size: 0.75rem;
+      color: var(--text-muted);
+      margin-bottom: 0.3rem;
+    }
+
+    .progress-bar-track {
+      height: 6px;
+      background: var(--border);
+      border-radius: 3px;
+      overflow: hidden;
+      margin-bottom: 0.5rem;
+    }
+
+    .progress-bar-fill {
+      height: 100%;
+      background: var(--accent);
+      border-radius: 3px;
+      transition: width 0.3s ease;
+    }
+
+    .progress-bar-fill.complete { background: var(--complete); }
+
+    /* Numeric input */
+    .numeric-input {
+      display: flex;
+      gap: 0.4rem;
+      align-items: center;
+    }
+
+    .numeric-input input {
+      width: 100px;
+      padding: 0.3rem 0.5rem;
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: 0.2rem;
+      color: var(--text);
+      font-size: 0.85rem;
+      text-align: center;
+    }
+
+    .numeric-input input:focus {
+      outline: none;
+      border-color: var(--accent);
+    }
+
+    .numeric-input label {
+      font-size: 0.8rem;
+      color: var(--text-muted);
+    }
+
+    /* Checkbox input */
+    .checkbox-input {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      cursor: pointer;
+      font-size: 0.85rem;
+    }
+
+    .checkbox-input input[type="checkbox"] {
+      width: 16px;
+      height: 16px;
+      accent-color: var(--accent);
+      cursor: pointer;
+    }
+
+    /* Dependent commendation */
+    .dependent-status {
+      font-size: 0.8rem;
+      color: var(--text-muted);
+      font-style: italic;
+    }
+
+    .dependent-status.earned { color: var(--complete); font-style: normal; }
+
+    /* Complete badge */
+    .complete-badge {
+      font-size: 0.7rem;
+      color: var(--complete);
+      font-weight: 600;
+      letter-spacing: 0.05em;
+    }
+  </style>
+</head>
+<body>
+
+<div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:0.25rem;">
+  <h1>Sea of Thieves Commendation Tracker</h1>
+  <a href="https://kittisci.co.uk" style="padding:0.4rem 1rem; border:1px solid #dadada; border-radius:0.2rem; color:#dadada; text-decoration:none; font-size:0.9rem; transition:all 0.2s;">kittisci.co.uk</a>
+</div>
+<p class="subtitle">Track your progress across all commendations. Progress is saved in your browser. *Adventures at Sea is currently incomplete*</p>
+
+<div id="overview">
+  <img class="tracker-bg" id="overview-bg" src="images/SoT.png" alt="" aria-hidden="true">
+  <div class="overview-grid" id="overview-grid"></div>
+</div>
+
+<img class="tracker-bg" id="tracker-bg" src="" alt="" aria-hidden="true">
+<div id="tracker">
+  <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:0.75rem;">
+    <button class="back-btn" onclick="showOverview()">← Back to Categories</button>
+    <div class="category-header" id="category-header"></div>
+    <button class="tab" onclick="resetCurrentSubcategory()" style="border-color: #c62828; color: #ef9a9a;">Reset Current Subcategory</button>
+  </div>
+  <div id="category-progress-bar" class="category-progress-wrap" style="margin-bottom:1.5rem;"></div>
+  <div class="tabs" id="main-tabs"></div>
+  <div id="main-panels"></div>
+</div>
+
+<script>
+// ============================================================
+// INIT
+// ============================================================
+let data = {};
+
+async function init() {
+  const response = await fetch('sot_commendation_data.json');
+  data = await response.json();
+  buildUI();
+  buildOverview();
+  showOverview();
+}
+
+init();
+
+// ============================================================
+// STORAGE
+// ============================================================
+function loadProgress() {
+  try {
+    return JSON.parse(localStorage.getItem('sot-tracker') || '{}');
+  } catch { return {}; }
+}
+
+function saveProgress(progress) {
+  localStorage.setItem('sot-tracker', JSON.stringify(progress));
+}
+
+let progress = loadProgress();
+
+// ============================================================
+// GRADE CALCULATION
+// ============================================================
+function getGrade(commendation) {
+  if (commendation.type === 'numeric') {
+    const val = progress[commendation.id] || 0;
+    let grade = 0;
+    for (let i = 0; i < commendation.grades.length; i++) {
+      if (val >= commendation.grades[i]) grade = i + 1;
+    }
+    return grade;
+  }
+  if (commendation.type === 'action') {
+    return progress[commendation.id] ? 1 : 0;
+  }
+  if (commendation.type === 'dependent') {
+    const allMet = commendation.dependsOn.every(dep => {
+      const depComm = findCommendation(dep.id);
+      if (!depComm) return false;
+      return getGrade(depComm) >= dep.minGrade;
+    });
+    return allMet ? 1 : 0;
+  }
+  if (commendation.type === 'counted-dependent') {
+    const metCount = commendation.dependsOn.filter(dep => {
+      const depComm = findCommendation(dep.id);
+      return depComm && getGrade(depComm) >= dep.minGrade;
+    }).length;
+    return metCount >= commendation.required ? 1 : 0;
+  }
+  return 0;
+}
+
+function findCommendation(id) {
+  for (const cat of Object.values(data)) {
+    for (const comms of Object.values(cat.subcategories)) {
+      const found = comms.find(c => c.id === id);
+      if (found) return found;
+    }
+  }
+  return null;
+}
+
+function getMaxGrade(commendation) {
+  if (commendation.type === 'numeric') return commendation.grades.length;
+  return 1;
+}
+
+// ============================================================
+// RENDER
+// ============================================================
+function renderCard(commendation) {
+  const grade = getGrade(commendation);
+  const maxGrade = getMaxGrade(commendation);
+  const isComplete = grade >= maxGrade;
+
+  const pips = Array.from({ length: maxGrade }, (_, i) => {
+    const cls = i < grade ? (isComplete ? 'grade-pip complete' : 'grade-pip earned') : 'grade-pip';
+    return `<div class="${cls}"></div>`;
+  }).join('');
+
+  let progressSection = '';
+
+  if (commendation.type === 'numeric') {
+    const val = progress[commendation.id] || 0;
+    const nextThreshold = commendation.grades[grade] || commendation.grades[commendation.grades.length - 1];
+    const prevThreshold = grade > 0 ? commendation.grades[grade - 1] : 0;
+    const pct = isComplete ? 100 : Math.min(100, ((val - prevThreshold) / (nextThreshold - prevThreshold)) * 100);
+    const label = isComplete ? 'Complete!' : `${val} / ${nextThreshold}`;
+
+    progressSection = `
+      <div class="progress-section">
+        <div class="progress-label">
+          <span>${isComplete ? '✓ Complete' : `Next grade: ${nextThreshold}`}</span>
+          <span>${val} delivered</span>
+        </div>
+        <div class="progress-bar-track">
+          <div class="progress-bar-fill ${isComplete ? 'complete' : ''}" style="width:${pct}%"></div>
+        </div>
+        <div class="numeric-input">
+          <input type="number" min="0" value="${val}"
+            onchange="updateNumeric('${commendation.id}', this.value)"
+            oninput="updateNumeric('${commendation.id}', this.value)">
+          <label>delivered</label>
+        </div>
+      </div>`;
+  }
+
+  if (commendation.type === 'action') {
+    const checked = progress[commendation.id] ? 'checked' : '';
+    progressSection = `
+      <div class="progress-section">
+        <div class="progress-bar-track">
+          <div class="progress-bar-fill ${grade ? 'complete' : ''}" style="width:${grade ? 100 : 0}%"></div>
+        </div>
+        <label class="checkbox-input">
+          <input type="checkbox" ${checked} onchange="updateAction('${commendation.id}', this.checked)">
+          Completed
+        </label>
+      </div>`;
+  }
+
+  if (commendation.type === 'dependent') {
+    const remaining = commendation.dependsOn.filter(dep => {
+      const depComm = findCommendation(dep.id);
+      return !depComm || getGrade(depComm) < dep.minGrade;
+    });
+    const statusText = isComplete
+      ? '✓ Automatically unlocked'
+      : `Requires ${remaining.length} more commendation${remaining.length !== 1 ? 's' : ''}`;
+
+    progressSection = `
+      <div class="progress-section">
+        <div class="progress-bar-track">
+          <div class="progress-bar-fill ${isComplete ? 'complete' : ''}"
+            style="width:${((commendation.dependsOn.length - remaining.length) / commendation.dependsOn.length) * 100}%"></div>
+        </div>
+        <div class="dependent-status ${isComplete ? 'earned' : ''}">${statusText}</div>
+      </div>`;
+  }
+
+  if (commendation.type === 'counted-dependent') {
+    const metCount = commendation.dependsOn.filter(dep => {
+      const depComm = findCommendation(dep.id);
+      return depComm && getGrade(depComm) >= dep.minGrade;
+    }).length;
+    const isComplete = metCount >= commendation.required;
+
+    progressSection = `
+      <div class="progress-section">
+        <div class="progress-label">
+          <span>${isComplete ? '✓ Complete' : `${metCount} / ${commendation.required} Grade 5 commendations`}</span>
+        </div>
+        <div class="progress-bar-track">
+          <div class="progress-bar-fill ${isComplete ? 'complete' : ''}"
+            style="width:${Math.min(100, (metCount / commendation.required) * 100)}%"></div>
+        </div>
+        <div class="dependent-status ${isComplete ? 'earned' : ''}">
+          ${isComplete ? '✓ Automatically unlocked' : `Requires ${commendation.required - metCount} more Grade 5 commendation${commendation.required - metCount !== 1 ? 's' : ''}`}
+        </div>
+      </div>`;
+  }
+  const imagePath = `images/commendation_images/${commendation.id}.png`;
+  const imageContent = `<img src="${imagePath}" alt="${commendation.name}"
+    onerror="this.parentElement.innerHTML='<div style=\\'font-size:0.6rem;color:var(--text-muted);text-align:center;line-height:1.2\\'>Grade<br>${grade}/${maxGrade}</div>'">`;
+
+  return `
+    <div class="commendation-card ${isComplete ? 'complete' : ''}" id="card-${commendation.id}">
+      ${commendation.rewards ? `<span class="reward-icon" data-reward="Rewards ${commendation.rewards}"><img src="images/reward.png" style="width:20px;height:20px;object-fit:contain;" alt="Reward"></span>` : ''}
+      <div class="card-header">
+        <div class="card-image">${imageContent}</div>
+        <div class="card-info">
+          <div class="card-name">
+            ${commendation.name}
+          </div>
+          ${commendation.description ? `<div class="card-description">${commendation.description}</div>` : ''}
+          <div class="grade-indicators">${pips}</div>
+          ${isComplete ? '<div class="complete-badge">✓ COMPLETE</div>' : ''}
+        </div>
+      </div>
+      ${progressSection}
+    </div>`;
+}
+
+function renderSubpanel(commendations, id) {
+  return `<div class="subpanel active" id="${id}">
+    <div class="commendation-grid">
+      ${commendations.map(renderCard).join('')}
+    </div>
+  </div>`;
+}
+
+function buildUI() {
+  const tabsEl = document.createElement('div');
+  const panelsEl = document.getElementById('main-panels');
+  panelsEl.innerHTML = '';
+
+  Object.entries(data).forEach(([catName, catData], catIndex) => {
+    const catId = catName.replace(/[^a-z0-9]/gi, '-').toLowerCase();
+
+    const tab = document.createElement('button');
+    tab.className = 'tab' + (catIndex === 0 ? ' active' : '');
+    tab.textContent = catName;
+    tab.onclick = () => {
+      document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+      document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+      document.querySelectorAll('.subpanel').forEach(p => p.classList.remove('active'));
+      document.querySelectorAll('.subtab').forEach(t => t.classList.remove('active'));
+      tab.classList.add('active');
+      const panel = document.getElementById(`panel-${catId}`);
+      panel.classList.add('active');
+      const firstSubtab = panel.querySelector('.subtab');
+      const firstSubpanel = panel.querySelector('.subpanel');
+      if (firstSubtab) firstSubtab.classList.add('active');
+      if (firstSubpanel) firstSubpanel.classList.add('active');
+      // Update background, header colour, and progress bars
+      document.getElementById('tracker').style.setProperty('--cat-color', catData.color || 'var(--accent)');
+      const bg = document.getElementById('tracker-bg');
+      bg.style.display = 'block';
+      bg.onerror = null;
+      bg.src = catData.icon || 'images/SoT.png';
+      bg.onerror = () => { bg.onerror = null; bg.src = 'images/SoT.png'; };
+      document.getElementById('category-header').innerHTML = `<h2 style="color:${catData.color || 'var(--accent)'}">${catName}</h2>`;
+      renderCategoryProgressBar(catName, catData.color);
+      if (firstSubpanel) renderSubcategoryProgressBar(firstSubpanel.id, catName, catData.color);
+    };
+    tabsEl.appendChild(tab);
+
+    const subcats = Object.entries(catData.subcategories);
+    let panelHTML = `<div class="panel" id="panel-${catId}">`;
+
+    if (subcats.length > 0) {
+      panelHTML += `<div class="subtabs">`;
+      subcats.forEach(([subName], subIndex) => {
+        const subId = `${catId}-${subName.replace(/[^a-z0-9]/gi, '-').toLowerCase()}`;
+        panelHTML += `<button class="subtab" 
+          onclick="showSubtab('${catId}', '${subId}', this)">${subName}</button>`;
+      });
+      panelHTML += `</div>`;
+      panelHTML += `<div id="subprogress-${catId}" class="subcategory-progress-wrap"></div>`;
+
+      subcats.forEach(([subName, comms], subIndex) => {
+        const subId = `${catId}-${subName.replace(/[^a-z0-9]/gi, '-').toLowerCase()}`;
+        panelHTML += `<div class="subpanel" id="${subId}">
+          <div class="commendation-grid">
+            ${comms.map(renderCard).join('')}
+          </div>
+        </div>`;
+      });
+    } else {
+      panelHTML += `<p style="color:var(--text-muted)">No commendations added yet.</p>`;
+    }
+
+    panelHTML += `</div>`;
+    panelsEl.innerHTML += panelHTML;
+  });
+  positionTooltips();
+}
+
+function renderCategoryProgressBar(catName, catColor) {
+  const catData = data[catName];
+  const allComms = Object.values(catData.subcategories).flatMap(s => s);
+  const total = allComms.length;
+  const completed = allComms.filter(c => getGrade(c) >= getMaxGrade(c)).length;
+  const pct = total > 0 ? (completed / total) * 100 : 0;
+
+  document.getElementById('category-progress-bar').innerHTML = `
+    <div class="category-progress-label">
+      <span>Overall Progress</span>
+      <span>${completed} / ${total} complete</span>
+    </div>
+    <div class="category-progress-track">
+      <div class="category-progress-fill" style="width:${pct}%; background:${catColor || 'var(--accent)'};"></div>
+    </div>`;
+}
+
+function renderSubcategoryProgressBar(subpanelId, catName, catColor) {
+  const catData = data[catName];
+  const catId = catName.replace(/[^a-z0-9]/gi, '-').toLowerCase();
+  let subComms = null;
+  let subName = '';
+  for (const [sName, comms] of Object.entries(catData.subcategories)) {
+    const sId = `${catId}-${sName.replace(/[^a-z0-9]/gi, '-').toLowerCase()}`;
+    if (sId === subpanelId) { subComms = comms; subName = sName; break; }
+  }
+  const container = document.getElementById(`subprogress-${catId}`);
+  if (!subComms || !container) return;
+
+  const total = subComms.length;
+  const completed = subComms.filter(c => getGrade(c) >= getMaxGrade(c)).length;
+  const pct = total > 0 ? (completed / total) * 100 : 0;
+
+  container.innerHTML = `
+    <div class="subcategory-progress-label">
+      <span>${subName}</span>
+      <span>${completed} / ${total} complete</span>
+    </div>
+    <div class="subcategory-progress-track">
+      <div class="subcategory-progress-fill" style="width:${pct}%; background:${catColor};"></div>
+    </div>`;
+}
+
+function showSubtab(catId, subId, btn) {
+  document.querySelectorAll(`#panel-${catId} .subtab`).forEach(t => t.classList.remove('active'));
+  document.querySelectorAll(`#panel-${catId} .subpanel`).forEach(p => p.classList.remove('active'));
+  btn.classList.add('active');
+  document.getElementById(subId).classList.add('active');
+
+  // Find which category this catId belongs to and update subcategory progress bar
+  const catName = Object.keys(data).find(n => n.replace(/[^a-z0-9]/gi, '-').toLowerCase() === catId);
+  if (catName) renderSubcategoryProgressBar(subId, catName, data[catName].color);
+}
+
+// ============================================================
+// UPDATES
+// ============================================================
+function updateNumeric(id, val) {
+  progress[id] = Math.max(0, parseInt(val) || 0);
+  saveProgress(progress);
+  
+  // Update the active card's visuals without re-rendering it
+  const comm = findCommendation(id);
+  if (comm) {
+    const grade = getGrade(comm);
+    const maxGrade = getMaxGrade(comm);
+    const isComplete = grade >= maxGrade;
+    const value = progress[id];
+    const nextThreshold = comm.grades[grade] || comm.grades[comm.grades.length - 1];
+    const prevThreshold = grade > 0 ? comm.grades[grade - 1] : 0;
+    const pct = isComplete ? 100 : Math.min(100, ((value - prevThreshold) / (nextThreshold - prevThreshold)) * 100);
+
+    const card = document.getElementById(`card-${id}`);
+    if (card) {
+      // Update progress bar
+      const fill = card.querySelector('.progress-bar-fill');
+      if (fill) {
+        fill.style.width = `${pct}%`;
+        fill.className = `progress-bar-fill ${isComplete ? 'complete' : ''}`;
+      }
+      // Update label
+      const label = card.querySelector('.progress-label span:first-child');
+      if (label) label.textContent = isComplete ? '✓ Complete' : `Next grade: ${nextThreshold}`;
+      const countLabel = card.querySelector('.progress-label span:last-child');
+      if (countLabel) countLabel.textContent = `${value} delivered`;
+      // Update grade pips
+      const pips = card.querySelectorAll('.grade-pip');
+      pips.forEach((pip, i) => {
+        pip.className = i < grade ? (isComplete ? 'grade-pip complete' : 'grade-pip earned') : 'grade-pip';
+      });
+      // Update complete badge
+      const info = card.querySelector('.card-info');
+      const existingBadge = info.querySelector('.complete-badge');
+      if (isComplete && !existingBadge) {
+        info.innerHTML += '<div class="complete-badge">✓ COMPLETE</div>';
+      } else if (!isComplete && existingBadge) {
+        existingBadge.remove();
+      }
+      // Update card border
+      card.className = `commendation-card ${isComplete ? 'complete' : ''}`;
+    }
+  }
+
+  refreshCards();
+}
+
+function updateAction(id, checked) {
+  progress[id] = checked;
+  saveProgress(progress);
+  // Re-render this specific card immediately
+  const el = document.getElementById(`card-${id}`);
+  if (el) el.outerHTML = renderCard(findCommendation(id));
+  // Then refresh all others for dependent updates
+  refreshCards();
+  buildOverview();
+}
+
+function refreshCards() {
+  const activeInput = document.activeElement;
+  const activeId = activeInput?.closest('.commendation-card')?.id?.replace('card-', '');
+
+  Object.values(data).forEach(cat => {
+    Object.values(cat.subcategories).forEach(comms => {
+      comms.forEach(comm => {
+        if (comm.id === activeId) return;
+        const el = document.getElementById(`card-${comm.id}`);
+        if (el) el.outerHTML = renderCard(comm);
+      });
+    });
+  });
+
+  buildOverview();
+
+  // Refresh progress bars if in tracker view
+  if (document.getElementById('tracker').style.display !== 'none') {
+    const activeTab = document.querySelector('.tab.active');
+    if (activeTab) {
+      const catName = activeTab.textContent;
+      const catData = data[catName];
+      if (catData) {
+        renderCategoryProgressBar(catName, catData.color);
+        const activeSubpanel = document.querySelector('.subpanel.active');
+        if (activeSubpanel) renderSubcategoryProgressBar(activeSubpanel.id, catName, catData.color);
+      }
+    }
+  }
+}
+
+function resetCurrentSubcategory() {
+  if (!confirm('Reset all progress in the current subcategory?')) return;
+
+  const activeSubpanel = document.querySelector('.subpanel.active');
+  if (!activeSubpanel) return;
+
+  const activeSubpanelId = activeSubpanel.id;
+
+  let comms = null;
+  for (const [catName, catData] of Object.entries(data)) {
+    const catId = catName.replace(/[^a-z0-9]/gi, '-').toLowerCase();
+    for (const [subName, subComms] of Object.entries(catData.subcategories)) {
+      const subId = `${catId}-${subName.replace(/[^a-z0-9]/gi, '-').toLowerCase()}`;
+      if (subId === activeSubpanelId) {
+        comms = subComms;
+        break;
+      }
+    }
+    if (comms) break;
+  }
+
+  if (!comms) return;
+
+  comms.forEach(comm => {
+    if (comm.type === 'numeric') progress[comm.id] = 0;
+    if (comm.type === 'action') progress[comm.id] = false;
+  });
+
+  saveProgress(progress);
+  refreshCards();
+}
+
+function positionTooltips() {
+  let tooltip = document.getElementById('global-tooltip');
+  if (!tooltip) {
+    tooltip = document.createElement('div');
+    tooltip.id = 'global-tooltip';
+    tooltip.className = 'tooltip';
+    document.body.appendChild(tooltip);
+  }
+
+  document.querySelectorAll('.reward-icon').forEach(icon => {
+    icon.addEventListener('mouseenter', function() {
+      tooltip.textContent = this.dataset.reward;
+      tooltip.style.display = 'block';
+
+      const rect = this.getBoundingClientRect();
+      const tipW = tooltip.offsetWidth;
+      const tipH = tooltip.offsetHeight;
+
+      let left = rect.left + rect.width / 2 - tipW / 2;
+      let top = rect.top - tipH - 6;
+
+      left = Math.max(8, Math.min(left, window.innerWidth - tipW - 8));
+      if (top < 8) top = rect.bottom + 6;
+
+      tooltip.style.left = left + 'px';
+      tooltip.style.top = top + 'px';
+    });
+
+    icon.addEventListener('mouseleave', function() {
+      tooltip.style.display = 'none';
+    });
+  });
+}
+
+// ============================================================
+// OVERVIEW
+// ============================================================
+function getCategoryStats(catData) {
+  let total = 0;
+  let completed = 0;
+  Object.values(catData.subcategories).forEach(comms => {
+    comms.forEach(comm => {
+      total++;
+      if (getGrade(comm) >= getMaxGrade(comm)) completed++;
+    });
+  });
+  return { total, completed };
+}
+
+function buildOverview() {
+  const grid = document.getElementById('overview-grid');
+  grid.innerHTML = '';
+
+  for (const [catName, cat] of Object.entries(data)) {
+    const total = Object.values(cat.subcategories)
+      .flatMap(sub => sub)
+      .filter(c => c.type !== 'dependent' && c.type !== 'counted-dependent')
+      .length;
+
+    const completed = Object.values(cat.subcategories)
+      .flatMap(sub => sub)
+      .filter(c => getGrade(c) >= getMaxGrade(c)).length;
+
+    const pct = total > 0 ? (completed / total) * 100 : 0;
+    const barColor = cat.color || 'var(--accent)';
+
+    const card = document.createElement('div');
+    card.className = 'category-card';
+    card.setAttribute('data-cat', catName);
+    card.innerHTML = `
+      ${cat.icon ? `<img class="card-bg" src="${cat.icon}" alt="" aria-hidden="true">` : ''}
+      <div class="card-top">
+        <div class="card-name" style="color:${cat.color || 'var(--text)'};">${catName}</div>
+      </div>
+      <div class="card-bottom">
+        <div class="card-count">${completed} / ${total} commendations complete</div>
+        <div class="card-progress-track">
+          <div class="card-progress-fill" style="width:${pct}%; background:${barColor};"></div>
+        </div>
+      </div>
+    `;
+    card.addEventListener('click', () => showCategory(catName));
+    grid.appendChild(card);
+  }
+}
+
+function showOverview() {
+  buildOverview();
+  const bg = document.getElementById('tracker-bg');
+  bg.style.display = 'none';
+  document.getElementById('overview').style.display = 'block';
+  document.getElementById('tracker').style.display = 'none';
+}
+
+function showCategory(catName) {
+  document.getElementById('overview').style.display = 'none';
+  document.getElementById('tracker').style.display = 'block';
+
+  const catData = data[catName];
+  const catId = catName.replace(/[^a-z0-9]/gi, '-').toLowerCase();
+  const catColor = catData.color || 'var(--accent)';
+
+  // Set background image
+  const bgImg = document.getElementById('tracker-bg');
+  bgImg.style.display = 'block';
+  bgImg.onerror = null;
+  bgImg.src = catData.icon || 'images/SoT.png';
+  bgImg.onerror = () => {
+    bgImg.onerror = null;
+    bgImg.src = 'images/SoT.png';
+  };
+
+  // Set CSS variable for subtab colours
+  document.getElementById('tracker').style.setProperty('--cat-color', catColor);
+
+  // Set category header (name only, large, category colour)
+  const header = document.getElementById('category-header');
+  header.innerHTML = `<h2 style="color:${catColor};">${catName}</h2>`;
+
+  // Hide all panels and deactivate all subtabs/subpanels
+  document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.subpanel').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.subtab').forEach(t => t.classList.remove('active'));
+
+  // Activate the correct panel and its first subtab/subpanel
+  const panel = document.getElementById(`panel-${catId}`);
+  panel.classList.add('active');
+  const firstSubtab = panel.querySelector('.subtab');
+  const firstSubpanel = panel.querySelector('.subpanel');
+  if (firstSubtab) firstSubtab.classList.add('active');
+  if (firstSubpanel) firstSubpanel.classList.add('active');
+
+  // Render category progress bar
+  renderCategoryProgressBar(catName, catColor);
+
+  // Render subcategory progress bar for the first subcategory
+  if (firstSubpanel) renderSubcategoryProgressBar(firstSubpanel.id, catName, catColor);
+}
+</script>
+</body>
+</html>

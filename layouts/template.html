@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en-GB">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>PAGE TITLE — Kittisci</title>
+  <meta name="description" content="Space, science, and games">
+
+  <!-- Favicons -->
+  <link rel="icon" type="image/x-icon" href="/favicon.ico">
+  <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+  <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+
+  <!-- Font Awesome (for icons) -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+
+  <!-- Site styles -->
+  <link rel="stylesheet" href="/styles.css">
+</head>
+
+<body class="colorscheme-dark">
+
+  <main class="wrapper">
+
+    <!-- Navigation -->
+    <nav class="navigation">
+      <section class="container">
+        <a class="navigation-title" href="/">Kittisci</a>
+        <input type="checkbox" id="menu-toggle">
+        <label class="menu-button float-right" for="menu-toggle">
+          <i class="fa-solid fa-bars fa-fw" aria-hidden="true"></i>
+        </label>
+        <ul class="navigation-list">
+          <li class="navigation-item"><a class="navigation-link" href="/about.html">About</a></li>
+          <li class="navigation-item"><a class="navigation-link" href="/news.html">News</a></li>
+          <li class="navigation-item"><a class="navigation-link" href="/projects.html">Projects</a></li>
+          <li class="navigation-item"><a class="navigation-link" href="/recommendations.html">Recommendations</a></li>
+          <li class="navigation-item">
+            <a id="dark-mode-toggle" class="colorscheme-toggle" href="#" aria-label="Toggle dark mode">
+              <i class="fa-solid fa-adjust fa-fw" aria-hidden="true"></i>
+            </a>
+          </li>
+        </ul>
+      </section>
+    </nav>
+
+    <!-- Page content goes here -->
+    <div class="content">
+      <section class="container page">
+        <article>
+          <header>
+            <h1 class="title"><a class="title-link" href="#">Page Title</a></h1>
+          </header>
+
+          <!-- CONTENT HERE -->
+
+        </article>
+      </section>
+    </div>
+
+    <!-- Footer -->
+    <footer class="footer">
+      <section class="container">
+        &copy; 2026 Kittisci &middot;
+        Powered by <a href="https://pages.cloudflare.com/" target="_blank" rel="noopener">Cloudflare Pages</a>
+      </section>
+    </footer>
+
+  </main>
+
+  <!-- Return to top -->
+  <button id="return-to-top" onclick="window.scrollTo({top: 0, behavior: 'smooth'})" aria-label="Return to top">
+    <i class="fa-solid fa-arrow-up"></i>
+  </button>
+
+  <!-- Shared scripts -->
+  <script src="/site.js"></script>
+
+  <!-- PAGE-SPECIFIC SCRIPTS HERE -->
+
+</body>
+</html>
