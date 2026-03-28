@@ -5,58 +5,950 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Kittisci</title>
   <meta name="description" content="Space, science, and games">
-  <link rel="icon" type="image/x-icon" href="/resources/favicon.ico">
-  <link rel="icon" type="image/png" sizes="32x32" href="/resources/favicon-32x32.png">
-  <link rel="apple-touch-icon" sizes="180x180" href="/resources/apple-touch-icon.png">
+  <link rel="icon" type="image/x-icon" href="/favicon.ico">
+  <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+  <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
   <link rel="stylesheet" href="/layouts/styles.css">
+  <style>
+    body { overflow: hidden; }
+    #starfield { position: fixed; inset: 0; z-index: 0; }
+    #solar-canvas { position: fixed; inset: 0; z-index: 1; cursor: default; }
+    #mobile-nav { display: none; }
+    @media (max-width: 600px) {
+      #starfield, #solar-canvas { display: none; }
+      body { overflow: auto; background: var(--bg); }
+      #mobile-nav {
+        display: flex; flex-direction: column; align-items: center;
+        justify-content: center; min-height: 100vh; gap: 1.5rem; padding: 2rem;
+      }
+      .mobile-title { font-size: 3.2rem; font-weight: 700; color: var(--text); margin-bottom: 1rem; }
+      .mobile-links { display: flex; flex-direction: column; gap: 0.75rem; width: 100%; max-width: 260px; }
+      .mobile-links a {
+        display: block; text-align: center; padding: 0.6rem 1rem;
+        border: 1px solid var(--border); border-radius: var(--radius-sm);
+        color: var(--text-muted); font-size: 1.6rem; text-decoration: none; transition: all 0.2s;
+      }
+      .mobile-links a:hover { border-color: var(--accent); color: var(--accent); }
+    }
+
+    #dark-mode-toggle {
+      position: fixed;
+      top: 1.5rem;
+      right: 2rem;
+      z-index: 10;
+      color: var(--text-muted);
+      font-size: 1.6rem;
+      text-decoration: none;
+      transition: color 0.2s;
+      cursor: pointer;
+    }
+
+    #dark-mode-toggle:hover {
+      color: var(--text);
+    }
+
+    #label-toggle {
+      position: fixed;
+      top: 1.9rem;
+      right: 5rem;
+      z-index: 10;
+      color: var(--text-muted);
+      font-size: 1.6rem;
+      text-decoration: none;
+      transition: color 0.2s;
+      cursor: pointer;
+      background: none;
+      border: none;
+      padding: 0;
+    }
+
+    #label-toggle:hover { color: var(--accent); }
+    #label-toggle.active { color: var(--text); }
+  </style>
 </head>
-
 <body class="colorscheme-dark">
-  <main class="wrapper">
 
-    <nav class="navigation">
-      <section class="container">
-        <a class="navigation-title" href="/">Kittisci</a>
-        <input type="checkbox" id="menu-toggle">
-        <label class="menu-button float-right" for="menu-toggle">
-          <i class="fa-solid fa-bars fa-fw" aria-hidden="true"></i>
-        </label>
-        <ul class="navigation-list">
-          <li class="navigation-item"><a class="navigation-link" href="/about.html">About</a></li>
-          <li class="navigation-item"><a class="navigation-link" href="/news.html">News</a></li>
-          <li class="navigation-item"><a class="navigation-link" href="/projects.html">Projects</a></li>
-          <li class="navigation-item"><a class="navigation-link" href="/recommendations.html">Recommendations</a></li>
-          <li class="navigation-item">
-            <a id="dark-mode-toggle" class="colorscheme-toggle" href="#" aria-label="Toggle dark mode">
-              <i class="fa-solid fa-adjust fa-fw" aria-hidden="true"></i>
-            </a>
-          </li>
-        </ul>
-      </section>
-    </nav>
+<canvas id="starfield"></canvas>
+<canvas id="solar-canvas"></canvas>
+<a id="dark-mode-toggle" title="Toggle dark mode" aria-label="Toggle dark mode">
+  <i class="fa-solid fa-adjust fa-fw" aria-hidden="true"></i>
+</a>
+<button id="label-toggle" title="Toggle page labels">
+  <i class="fa-solid fa-tag fa-fw" aria-hidden="true"></i>
+</button>
 
-    <div class="content">
-      <section class="container centered">
-        <div class="about">
-          <h1 class="about-name">Kittisci</h1>
-          <p class="about-description">Space, science, and games</p>
-          <ul class="social-links">
-            <li><a href="https://github.com/Kittisci-git" target="_blank" rel="noopener">GitHub</a></li>
-          </ul>
-        </div>
-      </section>
-    </div>
+<div id="mobile-nav">
+  <div class="mobile-title">Kittisci</div>
+  <nav class="mobile-links">
+    <a href="/about.html">About</a>
+    <a href="/news.html">News</a>
+    <a href="/projects.html">Projects</a>
+    <a href="/recommendations.html">Recommendations</a>
+  </nav>
+  <a href="https://github.com/Kittisci-git" target="_blank" rel="noopener"
+     style="color:var(--text-muted);font-size:1.4rem;margin-top:1rem;">GitHub</a>
+</div>
 
-    <footer class="footer">
-      <section class="container">
-        &copy; 2026 Kittisci
-      </section>
-    </footer>
+<script src="/site.js"></script>
+<script src="/js/guestbook.js"></script>
+<script>
+// ============================================================
+// STARFIELD
+// ============================================================
+(function() {
+  const canvas = document.getElementById('starfield');
+  const ctx = canvas.getContext('2d');
+  let stars = [];
 
-  </main>
+  function resize() {
+    canvas.width  = window.innerWidth;
+    canvas.height = window.innerHeight;
+    initStars();
+  }
 
-  <script src="/site.js"></script>
-  <script src="/js/guestbook.js"></script>
+  function initStars() {
+    stars = [];
+    for (let i = 0; i < 280; i++) {
+      stars.push({
+        x: Math.random() * canvas.width,
+        y: Math.random() * canvas.height,
+        r: Math.random() * 1.2 + 0.2,
+        alpha: Math.random() * 0.6 + 0.2,
+        flicker: Math.random() * 0.003 + 0.001,
+        phase: Math.random() * Math.PI * 2
+      });
+    }
+  }
+
+  let t = 0;
+  function loop() {
+    const starCol = getComputedStyle(document.body).getPropertyValue('--text-muted').trim() || '#888888';
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    t += 0.016;
+    stars.forEach(s => {
+      const a = s.alpha + Math.sin(t * s.flicker * 60 + s.phase) * 0.15;
+      ctx.beginPath();
+      ctx.arc(s.x, s.y, s.r, 0, Math.PI * 2);
+      ctx.fillStyle = starCol;
+      ctx.globalAlpha = Math.max(0, Math.min(1, a));
+      ctx.fill();
+      ctx.globalAlpha = 1;
+    });
+    requestAnimationFrame(loop);
+  }
+
+  resize();
+  window.addEventListener('resize', resize);
+  loop();
+})();
+
+// ============================================================
+// SOLAR SYSTEM
+// ============================================================
+(function() {
+  const canvas = document.getElementById('solar-canvas');
+  const ctx    = canvas.getContext('2d');
+
+  ctx.imageSmoothingEnabled = true;
+  ctx.imageSmoothingQuality = 'high';
+
+  let COL_BG, COL_TEXT, COL_MUTED, COL_BORDER, COL_ACCENT;
+  let COL_PLANET_LIGHT, COL_PLANET_MID, COL_PLANET_DARK;
+  let COL_STAR_GLOW, COL_STAR_CORE, COL_STAR_MID, COL_STAR_EDGE;
+  let showLabels = true;
+  let starSurface = null;
+  const STAR_SPIN_SPEED = -0.5;
+
+  function readColours() {
+    const style  = getComputedStyle(document.body);
+    COL_BG     = style.getPropertyValue('--bg').trim()        || '#212121';
+    COL_TEXT   = style.getPropertyValue('--text').trim()      || '#dadada';
+    COL_MUTED  = style.getPropertyValue('--text-muted').trim()|| '#888888';
+    COL_BORDER = style.getPropertyValue('--border').trim()    || '#424242';
+    COL_ACCENT = style.getPropertyValue('--accent').trim()    || '#42a5f5';
+
+    const isDark = document.body.classList.contains('colorscheme-dark');
+    COL_PLANET_LIGHT = isDark ? '#c8c8d8' : '#606070';
+    COL_PLANET_MID   = isDark ? '#a0a0b0' : '#848494';
+    COL_PLANET_DARK  = isDark ? '#505060' : '#b8b8c8';
+    COL_STAR_GLOW    = isDark ? COL_TEXT  : '#303040';
+    COL_STAR_CORE    = isDark ? '#ffffff' : '#1a1a2a';
+    COL_STAR_MID     = isDark ? COL_TEXT  : '#404050';
+    COL_STAR_EDGE    = isDark ? COL_MUTED : '#686878';
+  }
+
+  const PAGE_DATA = [
+    { name: 'About',           url: '/about.html',           size: 2800 },
+    { name: 'News',            url: '/news.html',            size: 5200 },
+    { name: 'Projects',        url: '/projects.html',        size: 1800 },
+    { name: 'Recommendations', url: '/recommendations.html', size: 9400 },
+  ];
+
+  const MOONS = [
+    { name: 'ED:KIT', url: 'https://ed-kit.onrender.com', orbitOffset: 0},
+    { name: 'SoT Commendation Tracker',    url: '/projects/sot-tracker/', orbitOffset: Math.PI },
+  ];
+
+  // Colour hex to RGBA converter
+  function hexToRgba(hex, alpha) {
+    const h = hex.replace('#', '');
+    const r = parseInt(h.substring(0,2), 16);
+    const g = parseInt(h.substring(2,4), 16);
+    const b = parseInt(h.substring(4,6), 16);
+    return 'rgba(' + r + ',' + g + ',' + b + ',' + alpha + ')';
+  }
+
+  // Daily seed RNG
+  let seed = Math.floor(Date.now() / 86400000);
+  function rand() {
+    seed = (seed * 1664525 + 1013904223) & 0xffffffff;
+    return (seed >>> 0) / 4294967295;
+  }
+  function rr(a, b) { return a + rand() * (b - a); }
+  function ri(a, b) { return Math.floor(rr(a, b + 1)); }
+
+  function shuffle(arr) {
+    const a = arr.slice();
+    for (let i = a.length - 1; i > 0; i--) {
+      const j = Math.floor(rand() * (i + 1));
+      [a[i], a[j]] = [a[j], a[i]];
+    }
+    return a;
+  }
+
+  const MIN_R = 14, MAX_R = 32;
+  const sizes = PAGE_DATA.map(p => p.size);
+  const minSz = Math.min(...sizes), maxSz = Math.max(...sizes);
+
+  function planetR(sz) {
+    return MIN_R + ((sz - minSz) / (maxSz - minSz)) * (MAX_R - MIN_R);
+  }
+
+  const TILT     = 65 * Math.PI / 180;
+  const cosTilt  = Math.cos(TILT);
+
+  let W, H, cx, cy, planets = [], startTime = null;
+  let hitTargets = [];
+
+  function genSurface(r, isGas) {
+    const size = Math.ceil(r * 2) * 4; // texture is 4x planet circumference wide
+    const height = Math.ceil(r * 2);
+    const oc = document.createElement('canvas');
+    oc.width = size; oc.height = height;
+    const ox = oc.getContext('2d');
+    ox.imageSmoothingEnabled = true;
+    ox.imageSmoothingQuality = 'high';
+
+    // Base colour fill
+    ox.fillStyle = COL_PLANET_MID;
+    ox.fillRect(0, 0, size, height);
+
+    // Add gradient from top to bottom to give some spherical feel to the flat texture
+    const baseGrad = ox.createLinearGradient(0, 0, 0, height);
+    baseGrad.addColorStop(0, hexToRgba(COL_PLANET_LIGHT, 0.4));
+    baseGrad.addColorStop(0.5, hexToRgba(COL_PLANET_MID, 0));
+    baseGrad.addColorStop(1, hexToRgba(COL_PLANET_DARK, 0.4));
+    ox.fillStyle = baseGrad;
+    ox.fillRect(0, 0, size, height);
+
+    if (isGas) {
+      const n = ri(3, 7);
+      for (let i = 0; i < n; i++) {
+        const y     = rr(0, height);
+        const bh    = rr(height * 0.04, height * 0.18);
+        const alpha = rr(0.06, 0.2);
+        ox.fillStyle = hexToRgba(COL_BG, alpha);
+        ox.fillRect(0, y - bh / 2, size, bh);
+      }
+      // Storm spot
+      if (rand() < 0.5) {
+        const sx    = rr(0, size);
+        const sy    = rr(height * 0.2, height * 0.8);
+        const srx   = rr(size * 0.03, size * 0.07);
+        const sry   = rr(height * 0.06, height * 0.14);
+        const alpha = rr(0.08, 0.18);
+        ox.beginPath();
+        ox.ellipse(sx, sy, srx, sry, 0, 0, Math.PI * 2);
+        ox.fillStyle = hexToRgba(COL_BG, alpha);
+        ox.fill();
+      }
+    } else {
+      const n = ri(4, 12);
+      for (let i = 0; i < n; i++) {
+        const fx    = rr(0, size);
+        const fy    = rr(0, height);
+        const fr    = rr(r * 0.06, r * 0.22);
+        const alpha = rr(0.06, 0.18);
+        if (rand() < 0.5) {
+          // Crater
+          ox.beginPath();
+          ox.arc(fx, fy, fr, 0, Math.PI * 2);
+          ox.fillStyle = hexToRgba(COL_BG, alpha);
+          ox.fill();
+          ox.beginPath();
+          ox.arc(fx - fr * 0.2, fy - fr * 0.2, fr * 0.85, 0, Math.PI * 2);
+          ox.strokeStyle = hexToRgba(COL_PLANET_LIGHT, alpha * 0.6);
+          ox.lineWidth = 0.8; ox.stroke();
+          // Wrap crater if near edge
+          if (fx + fr > size) {
+            ox.beginPath(); ox.arc(fx - size, fy, fr, 0, Math.PI * 2);
+            ox.fillStyle = hexToRgba(COL_BG, alpha); ox.fill();
+          }
+          if (fx - fr < 0) {
+            ox.beginPath(); ox.arc(fx + size, fy, fr, 0, Math.PI * 2);
+            ox.fillStyle = hexToRgba(COL_BG, alpha); ox.fill();
+          }
+        } else {
+          // Landmass
+          ox.beginPath();
+          ox.ellipse(fx, fy, fr, fr * 0.6, rand() * Math.PI, 0, Math.PI * 2);
+          ox.fillStyle = hexToRgba(COL_BG, alpha);
+          ox.fill();
+          // Wrap landmass if near edge
+          if (fx + fr > size) {
+            ox.beginPath(); ox.ellipse(fx - size, fy, fr, fr * 0.6, 0, 0, Math.PI * 2);
+            ox.fillStyle = hexToRgba(COL_BG, alpha); ox.fill();
+          }
+          if (fx - fr < 0) {
+            ox.beginPath(); ox.ellipse(fx + size, fy, fr, fr * 0.6, 0, 0, Math.PI * 2);
+            ox.fillStyle = hexToRgba(COL_BG, alpha); ox.fill();
+          }
+        }
+      }
+    }
+
+    return { canvas: oc, width: size, height };
+  }
+
+  function buildPlanets() {
+    W = canvas.width; H = canvas.height;
+    cx = W / 2; cy = H / 2;
+    const base = Math.min(W, H) * 0.2;
+    const step = Math.min(W, H) * 0.1;
+    const shuffled = shuffle(PAGE_DATA);
+
+    planets = shuffled.map((page, i) => {
+      const r       = planetR(page.size);
+      const orbitR  = base + i * step;
+      const period  = 18 + Math.pow(orbitR / base, 3) * 15;
+      const start   = rand() * Math.PI * 2;
+      const spin    = rr(0.3, 1.8) * -1;
+      const sizeT   = (r - MIN_R) / (MAX_R - MIN_R);
+      const isGas   = rand() < (0.2 + sizeT * 0.7);
+      const hasRings = page.name !== 'Projects' && sizeT > 0.6 && rand() < 0.4;
+      return { page, r, orbitR, period, startAngle: start, spinSpeed: spin,
+               isGas, surface: genSurface(r, isGas), hasRings,
+               hasMoons: page.name === 'Projects', spin: rand() * Math.PI * 2 };
+    });
+  }
+
+  function drawOrbit(orbitR) {
+    ctx.beginPath();
+    ctx.ellipse(cx, cy, orbitR, orbitR * cosTilt, 0, 0, Math.PI * 2);
+    ctx.strokeStyle = hexToRgba(COL_TEXT, 0.07);
+    ctx.lineWidth = 1;
+    ctx.setLineDash([4, 8]);
+    ctx.stroke();
+    ctx.setLineDash([]);
+  }
+
+  function orbitPos(orbitR, angle) {
+    const x3 = Math.cos(angle) * orbitR;
+    const z3 = Math.sin(angle) * orbitR;
+    return { x: cx + x3, y: cy + z3 * cosTilt, z: z3 };
+  }
+
+  function drawSphericalSurface(r, surface, spin) {
+    const tex    = surface.canvas;
+    const texW   = surface.width;
+    const texH   = surface.height;
+    const diam   = Math.ceil(r * 2);
+
+    // Draw scanline by scanline
+    for (let dy = -r; dy <= r; dy += 1) {
+      // Half-width of the sphere at this latitude
+      const cosLat = Math.sqrt(Math.max(0, r * r - dy * dy));
+      if (cosLat === 0) continue;
+
+      // Latitude as fraction 0-1 (top to bottom)
+      const latFrac = (dy + r) / (r * 2);
+      // Texture y coordinate
+      const ty = latFrac * texH;
+
+      // The visible longitude range spans from -90° to +90° across the sphere face
+      // spin angle offsets which part of the texture is centred
+      const spinFrac = ((spin % (Math.PI * 2)) + Math.PI * 2) % (Math.PI * 2);
+      const centreU  = (spinFrac / (Math.PI * 2)) * texW;
+
+      // For each pixel column across the scanline, calculate texture x
+      const scanW = cosLat * 2;
+      const slices = Math.ceil(scanW * 2);
+
+      for (let i = 0; i <= slices; i++) {
+        const dx = -cosLat + (i / slices) * scanW;
+        // Longitude of this point on the sphere: arcsin(dx / cosLat)
+        const lon  = Math.asin(Math.max(-1, Math.min(1, dx / cosLat)));
+        // Map longitude (-PI/2 to PI/2) to texture x offset
+        const uOff = (lon / (Math.PI * 2)) * texW;
+        const tx   = ((centreU + uOff) % texW + texW) % texW;
+
+        ctx.drawImage(tex,
+          Math.floor(tx), Math.floor(ty), 1, 1,
+          Math.floor(dx) - 1, Math.floor(dy) - 0.5, 1, 1
+        );
+      }
+    }
+
+    // Atmosphere rim
+    const ag = ctx.createRadialGradient(0, 0, r * 0.75, 0, 0, r);
+    ag.addColorStop(0, hexToRgba(COL_TEXT, 0));
+    ag.addColorStop(1, hexToRgba(COL_TEXT, 0.12));
+    ctx.beginPath(); ctx.arc(0, 0, r, 0, Math.PI * 2);
+    ctx.fillStyle = ag; ctx.fill();
+  }
+
+  function drawRings(px, py, r, behind) {
+    ctx.beginPath();
+    ctx.ellipse(px, py, r * 1.8, r * 0.35, 0, behind ? Math.PI : 0, behind ? Math.PI * 2 : Math.PI);
+    ctx.strokeStyle = hexToRgba(COL_TEXT, 0.3);
+    ctx.lineWidth = r * 0.28; ctx.stroke();
+  }
+
+  function drawLabel(px, py, name) {
+    const starR  = Math.min(W, H) * 0.075;
+    const diagLen = 18, horzLen = 36;
+
+    // Always go left
+    const x1 = px + Math.cos(-Math.PI * 3 / 4) * diagLen;
+    const y1 = py + Math.sin(-Math.PI * 3 / 4) * diagLen;
+    const x2 = x1 - horzLen;
+
+    // Check if label endpoint overlaps the star
+    const dx = x2 - cx, dy = y1 - cy;
+    if (dx * dx + dy * dy < (starR * 2.2) * (starR * 2.2)) return;
+
+    ctx.strokeStyle = COL_MUTED; ctx.lineWidth = 0.8;
+    ctx.beginPath(); ctx.moveTo(px, py); ctx.lineTo(x1, y1); ctx.lineTo(x2, y1); ctx.stroke();
+
+    ctx.font = '12px "Segoe UI", system-ui, sans-serif';
+    ctx.fillStyle = COL_TEXT;
+    ctx.textAlign = 'right';
+    ctx.textBaseline = 'bottom';
+    ctx.fillText(name, x2 - 3, y1 + 1);
+  }
+
+  function genStarSurface() {
+    const r    = Math.min(W, H) * 0.075;
+    const size = Math.ceil(r * 2) * 4;
+    const h    = Math.ceil(r * 2);
+    const oc   = document.createElement('canvas');
+    oc.width = size; oc.height = h;
+    const ox = oc.getContext('2d');
+    ox.imageSmoothingEnabled = true;
+    ox.imageSmoothingQuality = 'high';
+
+    ox.fillStyle = COL_TEXT;
+    ox.fillRect(0, 0, size, h);
+
+    const grainCount = Math.floor(size * h / 100);
+    for (let i = 0; i < grainCount; i++) {
+      const gx    = rr(0, size);
+      const gy    = rr(0, h);
+      const gr    = rr(1.5, 4);
+      const alpha = rr(0.04, 0.12);
+      ox.beginPath();
+      ox.arc(gx, gy, gr, 0, Math.PI * 2);
+      ox.fillStyle = hexToRgba(COL_MUTED, alpha);
+      ox.fill();
+      if (gx + gr > size) { ox.beginPath(); ox.arc(gx - size, gy, gr, 0, Math.PI * 2); ox.fillStyle = hexToRgba(COL_MUTED, alpha); ox.fill(); }
+      if (gx - gr < 0)    { ox.beginPath(); ox.arc(gx + size, gy, gr, 0, Math.PI * 2); ox.fillStyle = hexToRgba(COL_MUTED, alpha); ox.fill(); }
+    }
+
+    const spotCount = ri(2, 5);
+    for (let i = 0; i < spotCount; i++) {
+      const sx    = rr(0, size);
+      const sy    = rr(h * 0.2, h * 0.8);
+      const srx   = rr(size * 0.01, size * 0.03);
+      const sry   = srx * rr(0.5, 1.0);
+      const alpha = rr(0.15, 0.35);
+      ox.beginPath();
+      ox.ellipse(sx, sy, srx, sry, 0, 0, Math.PI * 2);
+      ox.fillStyle = hexToRgba(COL_BORDER, alpha);
+      ox.fill();
+      ox.beginPath();
+      ox.ellipse(sx, sy, srx * 1.6, sry * 1.6, 0, 0, Math.PI * 2);
+      ox.fillStyle = hexToRgba(COL_MUTED, alpha * 0.4);
+      ox.fill();
+      if (sx + srx * 2 > size) {
+        ox.beginPath(); ox.ellipse(sx - size, sy, srx, sry, 0, 0, Math.PI * 2);
+        ox.fillStyle = hexToRgba(COL_BORDER, alpha); ox.fill();
+      }
+      if (sx - srx * 2 < 0) {
+        ox.beginPath(); ox.ellipse(sx + size, sy, srx, sry, 0, 0, Math.PI * 2);
+        ox.fillStyle = hexToRgba(COL_BORDER, alpha); ox.fill();
+      }
+    }
+
+    return { canvas: oc, width: size, height: h };
+  }
+
+  // ============================================================
+  // CME SYSTEM
+  // Coronal Mass Ejections — wispy arcs that build, peak, and eject
+  // Integrates with the existing solar system depth sorting
+  // ============================================================
+
+  // ── CME STATE ───────────────────────────────────────────────
+  const CME_LIST = [];
+  let cmeActivityPhase = Math.random() * Math.PI * 2; // random start in cycle
+  let cmeLastSpawn = 0;
+
+  // ── ACTIVITY CYCLE ──────────────────────────────────────────
+  // Returns 0 (quiet) to 1 (active) based on slow sine wave
+  function cmeActivity(t) {
+    // Primary cycle ~90 seconds, secondary ~40 seconds for variation
+    return Math.max(0,
+      Math.sin(t * (Math.PI * 2 / 90) + cmeActivityPhase) * 0.5 + 0.5
+    ) * (
+      0.7 + Math.sin(t * (Math.PI * 2 / 40) + cmeActivityPhase * 1.7) * 0.3
+    );
+  }
+
+  // ── SPAWN LOGIC ─────────────────────────────────────────────
+  function cmeMaybeSpawn(t, starR) {
+    const activity = cmeActivity(t);
+
+    // Base spawn interval: 15s quiet, 4s active
+    const interval = 1.5 - activity * 1.0;
+    if (t - cmeLastSpawn < interval) return;
+
+    // Chance to spawn multiple in quick succession during active periods
+    const count = activity > 0.7 && Math.random() < 0.5 ? ri(2, 4) : 1;
+    for (let c = 0; c < count; c++) {
+      CME_LIST.push(cmeCreate(t + c * rr(0.2, 1.5), starR, activity));
+    }
+    cmeLastSpawn = t;
+  }
+
+  // ── CREATE A CME ─────────────────────────────────────────────
+  function cmeCreate(t, starR, activity) {
+    // Longitude on the star's surface — rotates with the star
+    const longitude  = rand() * Math.PI * 2;
+    // Latitude — bias toward equator like real CMEs
+    const latitude   = rr(-Math.PI * 0.35, Math.PI * 0.35);
+    // Max height above surface
+    const sizeBias = Math.pow(rand(), 5);
+    const maxHeight = starR * (0.12 + sizeBias * (0.4 + activity * 0.4));
+    // Arc span angle
+    const arcSpan = rr(0.1, 0.2 + sizeBias * (0.6 + activity * 0.3));
+    // Timing
+    const buildTime = rr(0.5, 0.5 + sizeBias * 3);
+    const peakTime  = 0.0;
+    const ejectTime = rr(0.5, 0.5 + sizeBias * 4);
+    // Snap or slow fade?
+    const isSnap = sizeBias > 0.7 && Math.random() < 0.15 + activity * 0.1;
+    // Wisps — multiple overlapping strokes
+    const wispCount = Math.max(1, Math.round(3 + sizeBias * 4));
+    const wisps      = [];
+    for (let i = 0; i < wispCount; i++) {
+      wisps.push({
+        spanOffset:  rr(-0.08, 0.08),
+        heightScale: rr(0.7, 1.1),
+        opacity:     rr(0.3, 0.7),
+        width:       rr(0.8, 2.2),
+        noise:       Array.from({ length: 6 }, () => rr(-0.12, 0.12))
+      });
+    }
+
+    return {
+      longitude, latitude, arcSpan, maxHeight,
+      buildTime, peakTime, ejectTime, isSnap,
+      wispCount, wisps,
+      spawnT: t,
+      dead: false,
+      ejectProgress: 0,  // for planet collision tracking
+      ejectPos: null     // world position of eject tip
+    };
+  }
+
+  // ── LIFECYCLE ────────────────────────────────────────────────
+  function cmePhase(cme, t) {
+    const age = t - cme.spawnT;
+    if (age < 0) return { phase: 'waiting', progress: 0 };
+    if (age < cme.buildTime) return { phase: 'build', progress: age / cme.buildTime };
+    const postBuild = age - cme.buildTime;
+    if (postBuild < cme.peakTime) return { phase: 'peak', progress: postBuild / cme.peakTime };
+    const postPeak = postBuild - cme.peakTime;
+    if (postPeak < cme.ejectTime) return { phase: 'eject', progress: postPeak / cme.ejectTime };
+    return { phase: 'dead', progress: 1 };
+  }
+
+  // ── DRAW A SINGLE CME ────────────────────────────────────────
+  // starSpin: current star rotation angle (t * -0.04)
+  // planets: current planet state array for collision detection
+  function drawCME(cme, t, starR, starSpin, planetStates) {
+    const { phase, progress } = cmePhase(cme, t);
+    if (phase === 'waiting' || phase === 'dead') {
+      if (phase === 'dead') cme.dead = true;
+      return;
+    }
+
+    // Current longitude accounts for star rotation
+    const lon = cme.longitude + starSpin;
+    const lat = cme.latitude;
+
+    // Star surface point in screen space (3D projected)
+    // Using the same tilt system as the planets
+    const surfX = cx + Math.cos(lon) * Math.cos(lat) * starR;
+    const surfZ = Math.sin(lon) * Math.cos(lat) * starR;
+    const surfY = cy + surfZ * cosTilt - Math.sin(lat) * starR;
+
+    // Only draw if on the front hemisphere
+    const frontFacing = surfZ >= -starR * 0.3;
+
+    // Height multiplier based on phase
+    let heightMult = 0;
+    let globalAlpha = 1;
+
+    if (phase === 'build') {
+      heightMult = progress;
+      globalAlpha = 0.4 + progress * 0.6;
+    } else if (phase === 'peak') {
+      heightMult = 1;
+      globalAlpha = 1;
+    } else if (phase === 'eject') {
+      if (cme.isSnap) {
+        // Snap: arc collapses inward then shoots out
+        if (progress < 0.3) {
+          heightMult = 1 - progress * 1.5;
+          globalAlpha = 1 - progress * 1.5;
+        } else {
+          // Shoot outward
+          heightMult = (progress - 0.3) * 3.5;
+          globalAlpha = Math.max(0, 1 - (progress - 0.3) * 2);
+        }
+      } else {
+        // Slow fade: arc expands and dissipates
+        heightMult = 1 + progress * 1.2;
+        globalAlpha = Math.max(0, 1 - progress * 1.1);
+      }
+      cme.ejectProgress = progress;
+    }
+
+    const currentHeight = cme.maxHeight * heightMult;
+    if (currentHeight <= 0 || globalAlpha <= 0) return;
+
+    ctx.save();
+    ctx.globalAlpha = globalAlpha * (frontFacing ? 1 : 0.15);
+
+    // Draw each wisp
+    cme.wisps.forEach((wisp, wi) => {
+      const noiseT = t * 2.3 + wi * 1.7;
+
+      ctx.beginPath();
+      ctx.lineWidth = wisp.width;
+      ctx.strokeStyle = hexToRgba(COL_TEXT, wisp.opacity * globalAlpha);
+
+      // Build the arc as a series of points along a parabolic path
+      // that follows the star's limb
+      const steps = 20;
+      let first = true;
+      const tipX_arr = [], tipY_arr = [];
+
+      for (let s = 0; s <= steps; s++) {
+        const frac = s / steps;
+        // Angle along the arc (centred on CME longitude)
+        const arcAngle = lon + (frac - 0.5) * (cme.arcSpan + wisp.spanOffset);
+        // Height profile: parabola peaking at frac=0.5
+        const heightFrac = 1 - Math.pow((frac - 0.5) * 2, 2);
+        // Add noise for wispy effect
+        const noiseIdx = Math.floor(frac * 5);
+        const noise = wisp.noise[noiseIdx] * Math.sin(noiseT + frac * 3);
+        const h = currentHeight * wisp.heightScale * (heightFrac + noise * 0.3);
+
+        // 3D position: point on sphere surface + outward normal * h
+        const px3  = Math.cos(arcAngle) * Math.cos(lat) * (starR + h);
+        const pz3  = Math.sin(arcAngle) * Math.cos(lat) * (starR + h);
+        const py3  = -Math.sin(lat) * (starR + h);
+        const sx   = cx + px3;
+        const sy   = cy + pz3 * cosTilt + py3;
+
+        if (first) { ctx.moveTo(sx, sy); first = false; }
+        else ctx.lineTo(sx, sy);
+
+        if (s === steps) { tipX_arr.push(sx); tipY_arr.push(sy); }
+      }
+
+      ctx.stroke();
+
+      // Store tip position for collision detection (use last wisp)
+      if (wi === cme.wisps.length - 1 && tipX_arr.length > 0) {
+        cme.ejectPos = { x: tipX_arr[0], y: tipY_arr[0] };
+      }
+    });
+
+    ctx.restore();
+
+    // ── PLANET COLLISION ───────────────────────────────────────
+    if (phase === 'eject' && cme.ejectPos && planetStates) {
+      planetStates.forEach(ps => {
+        const px = ps.pos.x, py = ps.pos.y;
+        const pr = ps.p.r * (0.85 + (ps.pos.z / ps.p.orbitR) * 0.15);
+        const dx = cme.ejectPos.x - px;
+        const dy = cme.ejectPos.y - py;
+        const dist = Math.sqrt(dx * dx + dy * dy);
+
+        if (dist < pr * 2.5) {
+          // CME tip is near a planet — draw dissipation effect
+          const dissipAlpha = Math.max(0, 1 - dist / (pr * 2.5)) * globalAlpha;
+          ctx.save();
+          ctx.globalAlpha = dissipAlpha * 0.6;
+
+          // Expanding wispy ring over planet
+          const ringR = pr * (0.5 + progress * 1.5);
+          const ringGrad = ctx.createRadialGradient(px, py, ringR * 0.3, px, py, ringR);
+          ringGrad.addColorStop(0, hexToRgba(COL_TEXT, 0.4));
+          ringGrad.addColorStop(0.6, hexToRgba(COL_TEXT, 0.15));
+          ringGrad.addColorStop(1, hexToRgba(COL_TEXT, 0));
+          ctx.beginPath();
+          ctx.arc(px, py, ringR, 0, Math.PI * 2);
+          ctx.fillStyle = ringGrad;
+          ctx.fill();
+
+          // A few particle streaks
+          for (let p = 0; p < 4; p++) {
+            const pAngle = (p / 4) * Math.PI * 2 + progress * 3;
+            const pLen   = pr * rr(0.3, 0.8);
+            ctx.beginPath();
+            ctx.moveTo(px + Math.cos(pAngle) * pr * 0.3, py + Math.sin(pAngle) * pr * 0.3);
+            ctx.lineTo(px + Math.cos(pAngle) * (pr * 0.3 + pLen), py + Math.sin(pAngle) * (pr * 0.3 + pLen));
+            ctx.strokeStyle = hexToRgba(COL_TEXT, 0.3);
+            ctx.lineWidth = rr(0.5, 1.5);
+            ctx.stroke();
+          }
+
+          ctx.restore();
+        }
+      });
+    }
+  }
+
+  // ── MAIN CME DRAW CALL ───────────────────────────────────────
+  // Call this once per frame, passing current time, star radius,
+  // star spin angle, and the planet states array
+  function drawAllCMEs(t, starR, starSpin, planetStates) {
+    // Spawn new CMEs
+    cmeMaybeSpawn(t, starR);
+
+    // Draw all active CMEs
+    CME_LIST.forEach(cme => drawCME(cme, t, starR, starSpin, planetStates));
+
+    // Clean up dead CMEs
+    for (let i = CME_LIST.length - 1; i >= 0; i--) {
+      if (CME_LIST[i].dead) CME_LIST.splice(i, 1);
+    }
+  }
+
+  function drawStarSphere(t) {
+    const r     = Math.min(W, H) * 0.075;
+    const dr    = r;
+    const spin = t * STAR_SPIN_SPEED;
+    const tex   = starSurface.canvas;
+    const texW  = starSurface.width;
+    const texH  = starSurface.height;
+    const flicker = 1
+      + Math.sin(t * 1.5)  * 0.01
+      + Math.sin(t * 3)  * 0.007
+      + Math.sin(t * 7.5) * 0.004
+      + Math.sin(t * 9.3) * 0.002;
+    const glowR = dr * flicker;
+
+    // Outer glow
+    [0.03, 0.04, 0.08].forEach((a, i) => {
+      const gr = glowR * (3 - i * 0.5);
+      const g  = ctx.createRadialGradient(cx, cy, dr * 0.8, cx, cy, gr);
+      g.addColorStop(0, hexToRgba(COL_TEXT, a));
+      g.addColorStop(1, hexToRgba(COL_TEXT, 0));
+      ctx.beginPath(); ctx.arc(cx, cy, gr, 0, Math.PI * 2);
+      ctx.fillStyle = g; ctx.fill();
+    });
+
+    ctx.save();
+    ctx.translate(cx, cy);
+
+    // Scanline sphere render
+    for (let dy = -dr; dy <= dr; dy += 1) {
+      const cosLat  = Math.sqrt(Math.max(0, dr * dr - dy * dy));
+      if (cosLat === 0) continue;
+      const latFrac  = (dy + dr) / (dr * 2);
+      const ty       = latFrac * texH;
+      const spinFrac = ((spin % (Math.PI * 2)) + Math.PI * 2) % (Math.PI * 2);
+      const centreU  = (spinFrac / (Math.PI * 2)) * texW;
+      const scanW    = cosLat * 2;
+      const slices   = Math.ceil(scanW * 2);
+
+      for (let i = 0; i <= slices; i++) {
+        const dx   = -cosLat + (i / slices) * scanW;
+        const lon  = Math.asin(Math.max(-1, Math.min(1, dx / cosLat)));
+        const uOff = (lon / (Math.PI * 2)) * texW;
+        const tx   = ((centreU + uOff) % texW + texW) % texW;
+        ctx.drawImage(tex,
+          Math.floor(tx), Math.floor(ty), 1, 1,
+          Math.floor(dx) - 0.5, Math.floor(dy) - 0.5, 1, 1
+        );
+      }
+    }
+
+    // Limb darkening
+    const limbGrad = ctx.createRadialGradient(0, 0, 0, 0, 0, dr);
+    limbGrad.addColorStop(0,    hexToRgba(COL_TEXT,   0));
+    limbGrad.addColorStop(0.5,  hexToRgba(COL_TEXT,   0));
+    limbGrad.addColorStop(0.78, hexToRgba(COL_MUTED,  0.08));
+    limbGrad.addColorStop(0.90, hexToRgba(COL_BORDER, 0.25));
+    limbGrad.addColorStop(1.0,  hexToRgba(COL_BG,     0.55));
+    ctx.beginPath(); ctx.arc(0, 0, dr, 0, Math.PI * 2);
+    ctx.fillStyle = limbGrad; ctx.fill();
+
+    // Label
+    ctx.font      = 'bold ' + Math.round(dr * 0.38) + 'px "Segoe UI", system-ui, sans-serif';
+    ctx.fillStyle = COL_BG;
+    ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+    ctx.fillText('Kittisci', 0, 0);
+
+    ctx.restore();
+  }
+
+  function drawMoon(m) {
+    const mg = ctx.createRadialGradient(m.x - m.r * 0.3, m.y - m.r * 0.3, m.r * 0.1, m.x, m.y, m.r);
+    mg.addColorStop(0, COL_PLANET_LIGHT);
+    mg.addColorStop(1, COL_PLANET_DARK);
+    ctx.beginPath();
+    ctx.arc(m.x, m.y, m.r, 0, Math.PI * 2);
+    ctx.fillStyle = mg;
+    ctx.fill();
+  }
+
+  function renderPlanet(p, t, showLabel) {
+    const angle  = p.startAngle - (t / p.period) * Math.PI * 2;
+    const pos    = orbitPos(p.orbitR, angle);
+    const px = pos.x, py = pos.y;
+    const depthScale = 0.85 + (pos.z / p.orbitR) * 0.15;
+    const dr = p.r * depthScale;
+
+    if (p.hasRings) drawRings(px, py, dr, true);
+
+    // Build moon positions first
+    const moonPositions = [];
+    if (p.hasMoons) {
+      MOONS.forEach((moon, mi) => {
+        const morbitR = dr * 2.2 + mi * dr * 0.9;
+        const mangle  = moon.orbitOffset - t * (0.9 + mi * 0.3);
+        const mx = px + Math.cos(mangle) * morbitR;
+        const my = py + Math.sin(mangle) * morbitR * cosTilt;
+        const mz = Math.sin(mangle) * morbitR;
+        const mr = dr * 0.28;
+        moonPositions.push({ x: mx, y: my, z: mz, r: mr, name: moon.name, url: moon.url });
+      });
+    }
+
+    // Draw moons behind planet
+    moonPositions.filter(m => m.z < 0).forEach(m => drawMoon(m));
+
+    // Planet body
+    ctx.save();
+    ctx.translate(px, py);
+    drawSphericalSurface(dr, p.surface, p.spin);
+    const sg = ctx.createRadialGradient(dr * 0.4, 0, 0, 0, 0, dr);
+    ctx.beginPath(); ctx.arc(0, 0, dr, 0, Math.PI * 2);
+    ctx.fillStyle = sg; ctx.fill();
+    ctx.restore();
+
+    // Draw moons in front of planet
+    moonPositions.filter(m => m.z >= 0).forEach(m => drawMoon(m));
+
+    if (p.hasRings) drawRings(px, py, dr, false);
+
+    // Hit targets
+    hitTargets.push({ x: px, y: py, r: dr * 1.4, url: p.page.url });
+    moonPositions.forEach(mp => {
+      hitTargets.push({ x: mp.x, y: mp.y, r: mp.r * 2.5, url: mp.url });
+    });
+
+    if (showLabel && showLabels) drawLabel(px, py, p.page.name);
+    p.spin += p.spinSpeed * 0.004;
+  }
+
+  function render(ts) {
+    readColours();
+    if (!startTime) startTime = ts;
+    const t = (ts - startTime) / 1000;
+    ctx.clearRect(0, 0, W, H);
+    hitTargets = [];
+
+    // Pre-compute z for sorting
+    const states = planets.map(p => {
+      const angle = p.startAngle - (t / p.period) * Math.PI * 2;
+      const pos   = orbitPos(p.orbitR, angle);
+      return { p, pos };
+    });
+
+    // planets.forEach(p => drawOrbit(p.orbitR));
+
+    // Behind star
+    states.filter(s => s.pos.z < 0)
+          .sort((a, b) => a.pos.z - b.pos.z)
+          .forEach(s => renderPlanet(s.p, t, true));
+
+    drawStarSphere(t);
+    const starSpin = t * STAR_SPIN_SPEED;
+    drawAllCMEs(t, Math.min(W, H) * 0.075, starSpin, states);
+
+    // In front of star
+    states.filter(s => s.pos.z >= 0)
+          .sort((a, b) => a.pos.z - b.pos.z)
+          .forEach(s => renderPlanet(s.p, t, true));
+
+    requestAnimationFrame(render);
+  }
+
+  canvas.addEventListener('mousemove', e => {
+    const url = hitTargets.find(h => {
+      const dx = e.clientX - h.x, dy = e.clientY - h.y;
+      return dx * dx + dy * dy < h.r * h.r;
+    });
+    canvas.style.cursor = url ? 'pointer' : 'default';
+  });
+
+  canvas.addEventListener('click', e => {
+    const hit = hitTargets.find(h => {
+      const dx = e.clientX - h.x, dy = e.clientY - h.y;
+      return dx * dx + dy * dy < h.r * h.r;
+    });
+    if (hit) {
+      if (hit.url.startsWith('http')) window.open(hit.url, '_blank');
+      else window.location.href = hit.url;
+    }
+  });
+
+  function resize() {
+    canvas.width  = window.innerWidth;
+    canvas.height = window.innerHeight;
+    W = canvas.width; H = canvas.height;
+    cx = W / 2; cy = H / 2;
+    starSurface = genStarSurface();
+    buildPlanets();
+  }
+
+  readColours();
+  resize();
+    document.getElementById('label-toggle').addEventListener('click', function() {
+    showLabels = !showLabels;
+    this.classList.toggle('active', showLabels);
+  });
+  window.addEventListener('resize', resize);
+  requestAnimationFrame(render);
+})();
+</script>
 </body>
 </html>
