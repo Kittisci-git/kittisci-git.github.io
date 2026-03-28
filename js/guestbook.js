@@ -80,6 +80,14 @@ function buildGuestbook() {
   document.getElementById('gb-name-input').addEventListener('keydown', function(e) {
     if (e.key === 'Enter') signGuestbook();
   });
+
+  // Restore admin session if previously authenticated
+  var savedPw = sessionStorage.getItem('gbAdmin');
+  if (savedPw) {
+    gbIsAdmin = true;
+    gbAdminPassword = savedPw;
+    document.getElementById('gb-admin-badge').style.display = 'inline';
+  }
 }
 
 // ============================================================
@@ -143,6 +151,8 @@ function submitGuestbookAdminPassword() {
     }
     gbIsAdmin = true;
     gbAdminPassword = pw;
+    sessionStorage.setItem('gbAdmin', pw);
+    sessionStorage.setItem('gbAdminAuth', 'true');
     closeGuestbookAdminOverlay();
     document.getElementById('gb-admin-badge').style.display = 'inline';
     renderGuestbookEntries();

@@ -5,18 +5,19 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Kittisci</title>
   <meta name="description" content="Space, science, and games">
-  <link rel="icon" type="image/x-icon" href="/favicon.ico">
-  <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
-  <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+  <link rel="icon" type="image/x-icon" href="/resources/favicon.ico">
+  <link rel="icon" type="image/png" sizes="32x32" href="/resources/favicon-32x32.png">
+  <link rel="apple-touch-icon" sizes="180x180" href="/resources/apple-touch-icon.png">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
   <link rel="stylesheet" href="/layouts/styles.css">
   <style>
-    body { overflow: hidden; }
-    #starfield { position: fixed; inset: 0; z-index: 0; }
-    #solar-canvas { position: fixed; inset: 0; z-index: 1; cursor: default; }
+    body { overflow: hidden; margin: 0; background: var(--bg); }
+    #starfield  { position: fixed; inset: 0; z-index: 0; }
+    #gl-canvas  { position: fixed; inset: 0; z-index: 1; }
+    #hud-canvas { position: fixed; inset: 0; z-index: 2; pointer-events: none; }
     #mobile-nav { display: none; }
     @media (max-width: 600px) {
-      #starfield, #solar-canvas { display: none; }
+      #starfield, #gl-canvas, #hud-canvas { display: none; }
       body { overflow: auto; background: var(--bg); }
       #mobile-nav {
         display: flex; flex-direction: column; align-items: center;
@@ -31,53 +32,107 @@
       }
       .mobile-links a:hover { border-color: var(--accent); color: var(--accent); }
     }
-
     #dark-mode-toggle {
-      position: fixed;
-      top: 1.5rem;
-      right: 2rem;
-      z-index: 10;
-      color: var(--text-muted);
-      font-size: 1.6rem;
-      text-decoration: none;
-      transition: color 0.2s;
-      cursor: pointer;
+      position: fixed; top: 1.5rem; right: 2rem; z-index: 10;
+      color: var(--text-muted); font-size: 1.6rem; text-decoration: none;
+      transition: color 0.2s; cursor: pointer;
     }
-
-    #dark-mode-toggle:hover {
-      color: var(--text);
-    }
-
+    #dark-mode-toggle:hover { color: var(--text); }
     #label-toggle {
-      position: fixed;
-      top: 1.9rem;
-      right: 5rem;
-      z-index: 10;
-      color: var(--text-muted);
-      font-size: 1.6rem;
-      text-decoration: none;
-      transition: color 0.2s;
-      cursor: pointer;
-      background: none;
-      border: none;
-      padding: 0;
+      position: fixed; top: 1.9rem; right: 5rem; z-index: 10;
+      color: var(--text-muted); font-size: 1.6rem; transition: color 0.2s;
+      cursor: pointer; background: none; border: none; padding: 0;
     }
-
     #label-toggle:hover { color: var(--accent); }
     #label-toggle.active { color: var(--text); }
+
+    /* ── DEBUG PANEL ─────────────────────────────────────── */
+    #debug-panel {
+      display: none;
+      position: fixed;
+      top: 4rem;
+      right: 1rem;
+      z-index: 9999;
+      background: var(--bg-secondary, #242424);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      font-family: inherit;
+      font-size: 1.1rem;
+      color: var(--text-muted);
+      width: 280px;
+      max-height: calc(100vh - 6rem);
+      overflow-y: auto;
+      pointer-events: all;
+    }
+    #debug-panel-title {
+      font-size: 1rem;
+      color: var(--text);
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      padding: 0.7rem 1rem;
+      border-bottom: 1px solid var(--border);
+      position: sticky;
+      top: 0;
+      background: var(--bg-secondary, #242424);
+    }
+    .dbg-section { border-bottom: 1px solid var(--border); }
+    .dbg-section-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0.5rem 1rem;
+      cursor: pointer;
+      color: var(--text);
+      font-weight: 600;
+      font-size: 1rem;
+      user-select: none;
+    }
+    .dbg-section-header:hover { color: var(--accent, #42a5f5); }
+    .dbg-section-arrow { font-size: 0.8rem; transition: transform 0.2s; }
+    .dbg-section.open .dbg-section-arrow { transform: rotate(90deg); }
+    .dbg-section-body { display: none; padding: 0.4rem 0.75rem 0.6rem; }
+    .dbg-section.open .dbg-section-body { display: block; }
+    .dbg-row {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.25rem 0;
+    }
+    .dbg-row label {
+      flex: 1;
+      color: var(--text-muted);
+      font-size: 1rem;
+      cursor: default;
+    }
+    .dbg-row input[type="checkbox"] { cursor: pointer; }
+    .dbg-row input[type="range"] {
+      flex: 1.4;
+      accent-color: var(--accent, #42a5f5);
+      cursor: pointer;
+    }
+    .dbg-val {
+      width: 3.2em;
+      text-align: right;
+      color: var(--text);
+      font-size: 0.95rem;
+      font-variant-numeric: tabular-nums;
+    }
   </style>
 </head>
 <body class="colorscheme-dark">
 
+<h1 id="font-probe" style="display:none"></h1>
+
 <canvas id="starfield"></canvas>
-<canvas id="solar-canvas"></canvas>
+<canvas id="gl-canvas"></canvas>
+<canvas id="hud-canvas"></canvas>
 <a id="dark-mode-toggle" title="Toggle dark mode" aria-label="Toggle dark mode">
   <i class="fa-solid fa-adjust fa-fw" aria-hidden="true"></i>
 </a>
 <button id="label-toggle" title="Toggle page labels">
   <i class="fa-solid fa-tag fa-fw" aria-hidden="true"></i>
 </button>
-
 <div id="mobile-nav">
   <div class="mobile-title">Kittisci</div>
   <nav class="mobile-links">
@@ -90,862 +145,1143 @@
      style="color:var(--text-muted);font-size:1.4rem;margin-top:1rem;">GitHub</a>
 </div>
 
+<!-- DEBUG PANEL -->
+<div id="debug-panel">
+  <div id="debug-panel-title">⚙ Debug</div>
+
+  <!-- OVERLAYS -->
+  <div class="dbg-section open">
+    <div class="dbg-section-header" onclick="dbgToggle(this)">
+      Overlays <span class="dbg-section-arrow">▶</span>
+    </div>
+    <div class="dbg-section-body">
+      <div class="dbg-row">
+        <label>Rotation axes</label>
+        <input type="checkbox" id="debug-axes">
+      </div>
+      <div class="dbg-row">
+        <label>Orbit lines</label>
+        <input type="checkbox" id="debug-orbits">
+      </div>
+    </div>
+  </div>
+
+  <!-- CAMERA -->
+  <div class="dbg-section">
+    <div class="dbg-section-header" onclick="dbgToggle(this)">
+      Camera <span class="dbg-section-arrow">▶</span>
+    </div>
+    <div class="dbg-section-body">
+      <div class="dbg-row">
+        <label>Tilt (°)</label>
+        <input type="range" id="dbg-tilt" min="0" max="90" step="1" value="65">
+        <span class="dbg-val" id="dbg-tilt-val">65°</span>
+      </div>
+      <div class="dbg-row">
+        <label>Distance</label>
+        <input type="range" id="dbg-dist" min="8" max="50" step="0.5" value="20">
+        <span class="dbg-val" id="dbg-dist-val">20</span>
+      </div>
+      <div class="dbg-row">
+        <label>FOV (°)</label>
+        <input type="range" id="dbg-fov" min="10" max="90" step="1" value="37">
+        <span class="dbg-val" id="dbg-fov-val">37°</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- STAR -->
+  <div class="dbg-section">
+    <div class="dbg-section-header" onclick="dbgToggle(this)">
+      Star <span class="dbg-section-arrow">▶</span>
+    </div>
+    <div class="dbg-section-body">
+      <div class="dbg-row">
+        <label>Spin speed</label>
+        <input type="range" id="dbg-star-spin" min="-0.2" max="0.2" step="0.001" value="-0.04">
+        <span class="dbg-val" id="dbg-star-spin-val">-0.04</span>
+      </div>
+      <div class="dbg-row">
+        <label>Radius</label>
+        <input type="range" id="dbg-star-r" min="0.3" max="3" step="0.05" value="1">
+        <span class="dbg-val" id="dbg-star-r-val">1.0</span>
+      </div>
+      <div class="dbg-row">
+        <label>Glow mult</label>
+        <input type="range" id="dbg-glow" min="0" max="5" step="0.1" value="1">
+        <span class="dbg-val" id="dbg-glow-val">1.0</span>
+      </div>
+      <div class="dbg-row">
+        <label>Colour</label>
+        <input type="color" id="dbg-star-colour" value="#dadada" style="cursor:pointer;border:none;background:none;width:3em;height:1.8em;">
+      </div>
+      <div class="dbg-row">
+        <label>Rebuild star</label>
+        <button id="dbg-rebuild-star" style="
+          background:var(--accent,#42a5f5);color:#000;border:none;
+          border-radius:4px;padding:0.2rem 0.6rem;cursor:pointer;font-size:1rem;">
+          ↺ Rebuild
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- PLANETS -->
+  <div class="dbg-section">
+    <div class="dbg-section-header" onclick="dbgToggle(this)">
+      Planets <span class="dbg-section-arrow">▶</span>
+    </div>
+    <div class="dbg-section-body">
+      <div class="dbg-row">
+        <label>Orbit base</label>
+        <input type="range" id="dbg-orbit-base" min="1" max="8" step="0.1" value="3">
+        <span class="dbg-val" id="dbg-orbit-base-val">3.0</span>
+      </div>
+      <div class="dbg-row">
+        <label>Orbit step</label>
+        <input type="range" id="dbg-orbit-step" min="0.5" max="4" step="0.1" value="1.5">
+        <span class="dbg-val" id="dbg-orbit-step-val">1.5</span>
+      </div>
+      <div class="dbg-row">
+        <label>Min radius</label>
+        <input type="range" id="dbg-p-rmin" min="0.05" max="0.5" step="0.01" value="0.18">
+        <span class="dbg-val" id="dbg-p-rmin-val">0.18</span>
+      </div>
+      <div class="dbg-row">
+        <label>Max radius</label>
+        <input type="range" id="dbg-p-rmax" min="0.1" max="1" step="0.01" value="0.42">
+        <span class="dbg-val" id="dbg-p-rmax-val">0.42</span>
+      </div>
+      <div class="dbg-row">
+        <label>Orbit speed</label>
+        <input type="range" id="dbg-orbit-speed" min="0.1" max="5" step="0.05" value="1">
+        <span class="dbg-val" id="dbg-orbit-speed-val">1.0×</span>
+      </div>
+      <div class="dbg-row">
+        <label>Spin speed</label>
+        <input type="range" id="dbg-planet-spin" min="0" max="5" step="0.05" value="1">
+        <span class="dbg-val" id="dbg-planet-spin-val">1.0×</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- OBLIQUITY & WOBBLE -->
+  <div class="dbg-section">
+    <div class="dbg-section-header" onclick="dbgToggle(this)">
+      Obliquity &amp; Wobble <span class="dbg-section-arrow">▶</span>
+    </div>
+    <div class="dbg-section-body">
+      <div class="dbg-row">
+        <label>Wobble speed ×</label>
+        <input type="range" id="dbg-wobble-speed" min="0" max="10" step="0.1" value="1">
+        <span class="dbg-val" id="dbg-wobble-speed-val">1.0×</span>
+      </div>
+      <div class="dbg-row">
+        <label>Wobble amp ×</label>
+        <input type="range" id="dbg-wobble-amp" min="0" max="4" step="0.05" value="1">
+        <span class="dbg-val" id="dbg-wobble-amp-val">1.0×</span>
+      </div>
+      <div class="dbg-row">
+        <label>Obliq bias (°)</label>
+        <input type="range" id="dbg-obliq-bias" min="-180" max="180" step="1" value="0">
+        <span class="dbg-val" id="dbg-obliq-bias-val">0°</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- MOONS -->
+  <div class="dbg-section">
+    <div class="dbg-section-header" onclick="dbgToggle(this)">
+      Moons <span class="dbg-section-arrow">▶</span>
+    </div>
+    <div class="dbg-section-body">
+      <div class="dbg-row">
+        <label>Radius mult</label>
+        <input type="range" id="dbg-moon-r" min="0.1" max="0.8" step="0.01" value="0.28">
+        <span class="dbg-val" id="dbg-moon-r-val">0.28</span>
+      </div>
+      <div class="dbg-row">
+        <label>Orbit speed ×</label>
+        <input type="range" id="dbg-moon-speed" min="0" max="5" step="0.05" value="1">
+        <span class="dbg-val" id="dbg-moon-speed-val">1.0×</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- LIGHTING -->
+  <div class="dbg-section">
+    <div class="dbg-section-header" onclick="dbgToggle(this)">
+      Lighting <span class="dbg-section-arrow">▶</span>
+    </div>
+    <div class="dbg-section-body">
+      <div class="dbg-row">
+        <label>Ambient</label>
+        <input type="range" id="dbg-ambient" min="0" max="0.5" step="0.005" value="0.06">
+        <span class="dbg-val" id="dbg-ambient-val">0.06</span>
+      </div>
+      <div class="dbg-row">
+        <label>Diffuse</label>
+        <input type="range" id="dbg-diffuse" min="0" max="1" step="0.01" value="0.94">
+        <span class="dbg-val" id="dbg-diffuse-val">0.94</span>
+      </div>
+      <div class="dbg-row">
+        <label>Specular</label>
+        <input type="range" id="dbg-specular" min="0" max="0.5" step="0.005" value="0.12">
+        <span class="dbg-val" id="dbg-specular-val">0.12</span>
+      </div>
+      <div class="dbg-row">
+        <label>Spec power</label>
+        <input type="range" id="dbg-spec-pow" min="1" max="128" step="1" value="48">
+        <span class="dbg-val" id="dbg-spec-pow-val">48</span>
+      </div>
+      <div class="dbg-row">
+        <label>Atmo rim</label>
+        <input type="range" id="dbg-atmo" min="0" max="2" step="0.05" value="0.5">
+        <span class="dbg-val" id="dbg-atmo-val">0.5</span>
+      </div>
+      <div class="dbg-row">
+        <label>Limb dark</label>
+        <input type="range" id="dbg-limb" min="0.05" max="1" step="0.01" value="0.4">
+        <span class="dbg-val" id="dbg-limb-val">0.4</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- CME -->
+  <div class="dbg-section">
+    <div class="dbg-section-header" onclick="dbgToggle(this)">
+      CME <span class="dbg-section-arrow">▶</span>
+    </div>
+    <div class="dbg-section-body">
+      <div class="dbg-row">
+        <label>Spawn rate ×</label>
+        <input type="range" id="dbg-cme-rate" min="0.1" max="5" step="0.05" value="1">
+        <span class="dbg-val" id="dbg-cme-rate-val">1.0×</span>
+      </div>
+      <div class="dbg-row">
+        <label>Max height ×</label>
+        <input type="range" id="dbg-cme-height" min="0.1" max="5" step="0.05" value="1">
+        <span class="dbg-val" id="dbg-cme-height-val">1.0×</span>
+      </div>
+      <div class="dbg-row">
+        <label>Activity ×</label>
+        <input type="range" id="dbg-cme-activity" min="0" max="3" step="0.05" value="1">
+        <span class="dbg-val" id="dbg-cme-activity-val">1.0×</span>
+      </div>
+      <div class="dbg-row">
+        <label>Arc span ×</label>
+        <input type="range" id="dbg-cme-span" min="0.1" max="4" step="0.05" value="1">
+        <span class="dbg-val" id="dbg-cme-span-val">1.0×</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- REBUILD -->
+  <div class="dbg-section">
+    <div class="dbg-section-header" onclick="dbgToggle(this)">
+      Scene <span class="dbg-section-arrow">▶</span>
+    </div>
+    <div class="dbg-section-body">
+      <div class="dbg-row" style="padding-top:0.3rem;">
+        <label>Rebuild planets</label>
+        <button id="dbg-rebuild" style="
+          background:var(--accent,#42a5f5);color:#000;border:none;
+          border-radius:4px;padding:0.2rem 0.6rem;cursor:pointer;font-size:1rem;">
+          ↺ Rebuild
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
 <script src="/site.js"></script>
 <script src="/js/guestbook.js"></script>
 <script>
+'use strict';
+
+// ── DEBUG SECTION TOGGLE ──────────────────────────────────
+function dbgToggle(header) {
+  header.closest('.dbg-section').classList.toggle('open');
+}
+
+// ── DEBUG STATE ───────────────────────────────────────────
+// All live-tunable values, read by the render loop every frame.
+const DBG = {
+  // camera
+  tiltDeg:      65,
+  dist:         20,
+  fovDeg:       37,
+  // star
+  starSpin:     -0.04,
+  starR:        1.0,
+  glowMult:     1.0,
+  starColour:   [1, 1, 1],
+  // planets
+  orbitBase:    3.0,
+  orbitStep:    1.5,
+  pRmin:        0.18,
+  pRmax:        0.42,
+  orbitSpeed:   1.0,
+  planetSpin:   1.0,
+  // obliquity
+  wobbleSpeed:  1.0,
+  wobbleAmp:    1.0,
+  obliqBias:    0,
+  // moons
+  moonR:        0.28,
+  moonSpeed:    1.0,
+  // lighting
+  ambient:      0.2,
+  diffuse:      1.0,
+  specular:     0.04,
+  specPow:      34,
+  atmoRim:      0.2,
+  limbDark:     1.0,
+  // cme
+  cmeRate:      1.0,
+  cmeHeight:    1.0,
+  cmeActivity:  1.0,
+  cmeSpan:      1.0,
+};
+
 // ============================================================
 // STARFIELD
 // ============================================================
 (function() {
   const canvas = document.getElementById('starfield');
-  const ctx = canvas.getContext('2d');
-  let stars = [];
-
+  const ctx    = canvas.getContext('2d');
+  let stars    = [];
   function resize() {
-    canvas.width  = window.innerWidth;
-    canvas.height = window.innerHeight;
-    initStars();
-  }
-
-  function initStars() {
+    canvas.width = window.innerWidth; canvas.height = window.innerHeight;
     stars = [];
-    for (let i = 0; i < 280; i++) {
-      stars.push({
-        x: Math.random() * canvas.width,
-        y: Math.random() * canvas.height,
-        r: Math.random() * 1.2 + 0.2,
-        alpha: Math.random() * 0.6 + 0.2,
-        flicker: Math.random() * 0.003 + 0.001,
-        phase: Math.random() * Math.PI * 2
-      });
-    }
-  }
-
-  let t = 0;
-  function loop() {
-    const starCol = getComputedStyle(document.body).getPropertyValue('--text-muted').trim() || '#888888';
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
-    t += 0.016;
-    stars.forEach(s => {
-      const a = s.alpha + Math.sin(t * s.flicker * 60 + s.phase) * 0.15;
-      ctx.beginPath();
-      ctx.arc(s.x, s.y, s.r, 0, Math.PI * 2);
-      ctx.fillStyle = starCol;
-      ctx.globalAlpha = Math.max(0, Math.min(1, a));
-      ctx.fill();
-      ctx.globalAlpha = 1;
+    for (let i=0;i<280;i++) stars.push({
+      x:Math.random()*canvas.width, y:Math.random()*canvas.height,
+      r:Math.random()*1.2+0.2, alpha:Math.random()*0.6+0.2,
+      flicker:Math.random()*0.003+0.001, phase:Math.random()*Math.PI*2
     });
+  }
+  let t=0;
+  function loop() {
+    const col = getComputedStyle(document.body).getPropertyValue('--text-muted').trim()||'#888888';
+    ctx.clearRect(0,0,canvas.width,canvas.height);
+    t+=0.016;
+    for (const s of stars) {
+      const a=s.alpha+Math.sin(t*s.flicker*60+s.phase)*0.15;
+      ctx.beginPath(); ctx.arc(s.x,s.y,s.r,0,Math.PI*2);
+      ctx.fillStyle=col; ctx.globalAlpha=Math.max(0,Math.min(1,a)); ctx.fill();
+    }
+    ctx.globalAlpha=1;
     requestAnimationFrame(loop);
   }
-
-  resize();
-  window.addEventListener('resize', resize);
-  loop();
+  resize(); window.addEventListener('resize',resize); loop();
 })();
 
 // ============================================================
-// SOLAR SYSTEM
+// SOLAR SYSTEM — WebGL
 // ============================================================
 (function() {
-  const canvas = document.getElementById('solar-canvas');
-  const ctx    = canvas.getContext('2d');
+  const glCanvas  = document.getElementById('gl-canvas');
+  const hudCanvas = document.getElementById('hud-canvas');
+  const hud       = hudCanvas.getContext('2d');
+  const gl        = glCanvas.getContext('webgl', { antialias:true, alpha:true });
+  if (!gl) { console.error('WebGL not supported'); return; }
 
-  ctx.imageSmoothingEnabled = true;
-  ctx.imageSmoothingQuality = 'high';
+  glCanvas.addEventListener('webglcontextlost', e => e.preventDefault(), false);
+  glCanvas.addEventListener('webglcontextrestored', () => resize(), false);
 
-  let COL_BG, COL_TEXT, COL_MUTED, COL_BORDER, COL_ACCENT;
-  let COL_PLANET_LIGHT, COL_PLANET_MID, COL_PLANET_DARK;
-  let COL_STAR_GLOW, COL_STAR_CORE, COL_STAR_MID, COL_STAR_EDGE;
-  let showLabels = true;
-  let starSurface = null;
-  const STAR_SPIN_SPEED = -0.5;
+  // ── SCENE UNITS ───────────────────────────────────────────
+  const STAR_R      = 1.0;
 
-  function readColours() {
-    const style  = getComputedStyle(document.body);
-    COL_BG     = style.getPropertyValue('--bg').trim()        || '#212121';
-    COL_TEXT   = style.getPropertyValue('--text').trim()      || '#dadada';
-    COL_MUTED  = style.getPropertyValue('--text-muted').trim()|| '#888888';
-    COL_BORDER = style.getPropertyValue('--border').trim()    || '#424242';
-    COL_ACCENT = style.getPropertyValue('--accent').trim()    || '#42a5f5';
-
-    const isDark = document.body.classList.contains('colorscheme-dark');
-    COL_PLANET_LIGHT = isDark ? '#c8c8d8' : '#606070';
-    COL_PLANET_MID   = isDark ? '#a0a0b0' : '#848494';
-    COL_PLANET_DARK  = isDark ? '#505060' : '#b8b8c8';
-    COL_STAR_GLOW    = isDark ? COL_TEXT  : '#303040';
-    COL_STAR_CORE    = isDark ? '#ffffff' : '#1a1a2a';
-    COL_STAR_MID     = isDark ? COL_TEXT  : '#404050';
-    COL_STAR_EDGE    = isDark ? COL_MUTED : '#686878';
-  }
+  const STAR_SPIN_SPEED = -0.04;
+  const TILT = 65 * Math.PI / 180;
+  const cosTilt = Math.cos(TILT);
 
   const PAGE_DATA = [
-    { name: 'About',           url: '/about.html',           size: 2800 },
-    { name: 'News',            url: '/news.html',            size: 5200 },
-    { name: 'Projects',        url: '/projects.html',        size: 1800 },
-    { name: 'Recommendations', url: '/recommendations.html', size: 9400 },
+    { name:'About',           url:'/about.html',           size:2800 },
+    { name:'News',            url:'/news.html',            size:5200 },
+    { name:'Projects',        url:'/projects.html',        size:1800 },
+    { name:'Recommendations', url:'/recommendations.html', size:9400 },
   ];
-
   const MOONS = [
-    { name: 'ED:KIT', url: 'https://ed-kit.onrender.com', orbitOffset: 0},
-    { name: 'SoT Commendation Tracker',    url: '/projects/sot-tracker/', orbitOffset: Math.PI },
+    { name:'ED:KIT', url:'https://ed-kit.onrender.com', orbitOffset:0 },
+    { name:'SoT',    url:'/projects/sot-tracker/',       orbitOffset:Math.PI },
   ];
 
-  // Colour hex to RGBA converter
-  function hexToRgba(hex, alpha) {
-    const h = hex.replace('#', '');
-    const r = parseInt(h.substring(0,2), 16);
-    const g = parseInt(h.substring(2,4), 16);
-    const b = parseInt(h.substring(4,6), 16);
-    return 'rgba(' + r + ',' + g + ',' + b + ',' + alpha + ')';
+  // ── COLOURS ──────────────────────────────────────────────
+  let COL_BG,COL_TEXT,COL_MUTED,COL_BORDER,COL_FONT,COL_HEADER_FONT;
+  let COL_PLANET_LIGHT,COL_PLANET_MID,COL_PLANET_DARK;
+  let bgRgb=[0.13,0.13,0.13];
+
+  function hexToRgb(hex) {
+    const h=hex.replace('#','');
+    return [parseInt(h.slice(0,2),16)/255,parseInt(h.slice(2,4),16)/255,parseInt(h.slice(4,6),16)/255];
+  }
+  function hexToRgba(hex,alpha) {
+    const [r,g,b]=hexToRgb(hex);
+    return `rgba(${Math.round(r*255)},${Math.round(g*255)},${Math.round(b*255)},${alpha})`;
+  }
+  function readColours() {
+    const s=getComputedStyle(document.body);
+    COL_FONT = getComputedStyle(document.body).fontFamily;
+    const probe = document.getElementById('font-probe');
+    COL_HEADER_FONT = probe ? getComputedStyle(probe).fontFamily : COL_FONT;
+    COL_BG    =s.getPropertyValue('--bg').trim()        ||'#212121';
+    COL_TEXT  =s.getPropertyValue('--text').trim()      ||'#dadada';
+    COL_MUTED =s.getPropertyValue('--text-muted').trim()||'#888888';
+    COL_BORDER=s.getPropertyValue('--border').trim()    ||'#424242';
+    const dark=document.body.classList.contains('colorscheme-dark');
+    COL_PLANET_LIGHT=dark?'#c8c8d8':'#606070';
+    COL_PLANET_MID  =dark?'#a0a0b0':'#848494';
+    COL_PLANET_DARK =dark?'#505060':'#b8b8c8';
+    bgRgb=hexToRgb(COL_BG);
   }
 
-  // Daily seed RNG
-  let seed = Math.floor(Date.now() / 86400000);
-  function rand() {
-    seed = (seed * 1664525 + 1013904223) & 0xffffffff;
-    return (seed >>> 0) / 4294967295;
-  }
-  function rr(a, b) { return a + rand() * (b - a); }
-  function ri(a, b) { return Math.floor(rr(a, b + 1)); }
-
-  function shuffle(arr) {
-    const a = arr.slice();
-    for (let i = a.length - 1; i > 0; i--) {
-      const j = Math.floor(rand() * (i + 1));
-      [a[i], a[j]] = [a[j], a[i]];
-    }
+  // ── RNG ──────────────────────────────────────────────────
+  let seed=Math.floor(Date.now()/86400000);
+  function rand(){seed=(seed*1664525+1013904223)&0xffffffff;return(seed>>>0)/4294967295;}
+  function rr(a,b){return a+rand()*(b-a);}
+  function ri(a,b){return Math.floor(rr(a,b+1));}
+  function shuffle(arr){
+    const a=arr.slice();
+    for(let i=a.length-1;i>0;i--){const j=Math.floor(rand()*(i+1));[a[i],a[j]]=[a[j],a[i]];}
     return a;
   }
 
-  const MIN_R = 14, MAX_R = 32;
-  const sizes = PAGE_DATA.map(p => p.size);
-  const minSz = Math.min(...sizes), maxSz = Math.max(...sizes);
-
-  function planetR(sz) {
-    return MIN_R + ((sz - minSz) / (maxSz - minSz)) * (MAX_R - MIN_R);
+  function randObliquity() {
+    const u = rand();
+    if (rand() < 0.65) {
+      return (u - 0.5) * Math.PI / 2;
+    } else {
+      return (u - 0.5) * Math.PI * 2;
+    }
   }
 
-  const TILT     = 65 * Math.PI / 180;
-  const cosTilt  = Math.cos(TILT);
+  // ── SHADERS ───────────────────────────────────────────────
+  // Uniforms for lighting are driven by DBG values at draw time
+  const VERT = `
+    attribute vec3 aPos;
+    attribute vec3 aNormal;
+    attribute vec2 aUV;
+    uniform mat4 uMVP;
+    uniform mat4 uModel;
+    varying vec3 vNormal;
+    varying vec3 vWorldPos;
+    varying vec2 vUV;
+    void main(){
+      vec4 wp=uModel*vec4(aPos,1.0);
+      vWorldPos=wp.xyz;
+      vNormal=normalize(mat3(uModel)*aNormal);
+      vUV=aUV;
+      gl_Position=uMVP*vec4(aPos,1.0);
+    }`;
 
-  let W, H, cx, cy, planets = [], startTime = null;
-  let hitTargets = [];
-
-  function genSurface(r, isGas) {
-    const size = Math.ceil(r * 2) * 4; // texture is 4x planet circumference wide
-    const height = Math.ceil(r * 2);
-    const oc = document.createElement('canvas');
-    oc.width = size; oc.height = height;
-    const ox = oc.getContext('2d');
-    ox.imageSmoothingEnabled = true;
-    ox.imageSmoothingQuality = 'high';
-
-    // Base colour fill
-    ox.fillStyle = COL_PLANET_MID;
-    ox.fillRect(0, 0, size, height);
-
-    // Add gradient from top to bottom to give some spherical feel to the flat texture
-    const baseGrad = ox.createLinearGradient(0, 0, 0, height);
-    baseGrad.addColorStop(0, hexToRgba(COL_PLANET_LIGHT, 0.4));
-    baseGrad.addColorStop(0.5, hexToRgba(COL_PLANET_MID, 0));
-    baseGrad.addColorStop(1, hexToRgba(COL_PLANET_DARK, 0.4));
-    ox.fillStyle = baseGrad;
-    ox.fillRect(0, 0, size, height);
-
-    if (isGas) {
-      const n = ri(3, 7);
-      for (let i = 0; i < n; i++) {
-        const y     = rr(0, height);
-        const bh    = rr(height * 0.04, height * 0.18);
-        const alpha = rr(0.06, 0.2);
-        ox.fillStyle = hexToRgba(COL_BG, alpha);
-        ox.fillRect(0, y - bh / 2, size, bh);
+  const FRAG = `
+    precision highp float;
+    uniform sampler2D uTex;
+    uniform vec3  uLightPos;
+    uniform vec3 uLightColour;
+    uniform vec3  uCamPos;
+    uniform float uIsStar;
+    uniform vec3  uAtmo;
+    uniform vec3  uTint;
+    uniform float uAmbient;
+    uniform float uDiffuse;
+    uniform float uSpecular;
+    uniform float uSpecPow;
+    uniform float uAtmoRim;
+    uniform float uLimbDark;
+    varying vec3 vNormal;
+    varying vec3 vWorldPos;
+    varying vec2 vUV;
+    void main(){
+      vec4 tc=texture2D(uTex,vUV);
+      vec3 N=normalize(vNormal);
+      vec3 V=normalize(uCamPos-vWorldPos);
+      float NdotV=max(dot(N,V),0.0);
+      if(uIsStar>0.5){
+        float limb=pow(NdotV,uLimbDark);
+        float dark=mix(0.15,1.0,limb);
+        gl_FragColor=vec4(tc.rgb*uTint*dark,1.0);
+      } else {
+        vec3 L=normalize(uLightPos-vWorldPos);
+        float diff=max(dot(N,L),0.0);
+        vec3 R=reflect(-L,N);
+        float spec=pow(max(dot(R,V),0.0),uSpecPow)*uSpecular;
+        vec3 lit=tc.rgb*(uAmbient+diff*uDiffuse*uLightColour)+vec3(spec*uLightColour);
+        float rim=pow(1.0-NdotV,3.0);
+        lit+=uAtmo*rim*uAtmoRim;
+        gl_FragColor=vec4(lit,1.0);
       }
-      // Storm spot
-      if (rand() < 0.5) {
-        const sx    = rr(0, size);
-        const sy    = rr(height * 0.2, height * 0.8);
-        const srx   = rr(size * 0.03, size * 0.07);
-        const sry   = rr(height * 0.06, height * 0.14);
-        const alpha = rr(0.08, 0.18);
-        ox.beginPath();
-        ox.ellipse(sx, sy, srx, sry, 0, 0, Math.PI * 2);
-        ox.fillStyle = hexToRgba(COL_BG, alpha);
-        ox.fill();
+    }`;
+
+  function makeShader(type,src){
+    const s=gl.createShader(type);
+    gl.shaderSource(s,src); gl.compileShader(s);
+    if(!gl.getShaderParameter(s,gl.COMPILE_STATUS)){
+      console.error(gl.getShaderInfoLog(s)); return null;
+    }
+    return s;
+  }
+  function makeProg(vs,fs){
+    const p=gl.createProgram();
+    gl.attachShader(p,makeShader(gl.VERTEX_SHADER,vs));
+    gl.attachShader(p,makeShader(gl.FRAGMENT_SHADER,fs));
+    gl.linkProgram(p);
+    if(!gl.getProgramParameter(p,gl.LINK_STATUS)){
+      console.error(gl.getProgramInfoLog(p)); return null;
+    }
+    return p;
+  }
+  const prog=makeProg(VERT,FRAG);
+
+  // ── SPHERE GEOMETRY ──────────────────────────────────────
+  function buildSphere(lat,lon){
+    const pos=[],norm=[],uv=[],idx=[];
+    for(let i=0;i<=lat;i++){
+      const t=i*Math.PI/lat, st=Math.sin(t), ct=Math.cos(t);
+      for(let j=0;j<=lon;j++){
+        const p=j*2*Math.PI/lon, sp=Math.sin(p), cp=Math.cos(p);
+        const x=cp*st,y=ct,z=sp*st;
+        pos.push(x,y,z); norm.push(x,y,z); uv.push(j/lon,i/lat);
+      }
+    }
+    for(let i=0;i<lat;i++) for(let j=0;j<lon;j++){
+      const a=i*(lon+1)+j,b=a+lon+1;
+      idx.push(a,b,a+1,b,b+1,a+1);
+    }
+    return {pos,norm,uv,idx};
+  }
+  const geo=buildSphere(64,64);
+  const posB=gl.createBuffer(); gl.bindBuffer(gl.ARRAY_BUFFER,posB); gl.bufferData(gl.ARRAY_BUFFER,new Float32Array(geo.pos),gl.STATIC_DRAW);
+  const normB=gl.createBuffer(); gl.bindBuffer(gl.ARRAY_BUFFER,normB); gl.bufferData(gl.ARRAY_BUFFER,new Float32Array(geo.norm),gl.STATIC_DRAW);
+  const uvB=gl.createBuffer(); gl.bindBuffer(gl.ARRAY_BUFFER,uvB); gl.bufferData(gl.ARRAY_BUFFER,new Float32Array(geo.uv),gl.STATIC_DRAW);
+  const idxB=gl.createBuffer(); gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER,idxB); gl.bufferData(gl.ELEMENT_ARRAY_BUFFER,new Uint16Array(geo.idx),gl.STATIC_DRAW);
+  const idxCount=geo.idx.length;
+
+  const aPos  =gl.getAttribLocation(prog,'aPos');
+  const aNorm =gl.getAttribLocation(prog,'aNormal');
+  const aUV2  =gl.getAttribLocation(prog,'aUV');
+
+  // ── MATRICES ─────────────────────────────────────────────
+  function m4id(){return new Float32Array([1,0,0,0,0,1,0,0,0,0,1,0,0,0,0,1]);}
+  function m4mul(a,b){
+    const r=new Float32Array(16);
+    for(let i=0;i<4;i++)for(let j=0;j<4;j++)for(let k=0;k<4;k++)r[j*4+i]+=a[k*4+i]*b[j*4+k];
+    return r;
+  }
+  function m4persp(fov,asp,n,f){
+    const t=Math.tan(fov/2),nf=1/(n-f);
+    return new Float32Array([1/(t*asp),0,0,0, 0,1/t,0,0, 0,0,(f+n)*nf,-1, 0,0,2*f*n*nf,0]);
+  }
+  function m4lookat(eye,at,up){
+    let fx=at[0]-eye[0],fy=at[1]-eye[1],fz=at[2]-eye[2];
+    const fl=Math.sqrt(fx*fx+fy*fy+fz*fz); fx/=fl;fy/=fl;fz/=fl;
+    let rx=fy*up[2]-fz*up[1],ry=fz*up[0]-fx*up[2],rz=fx*up[1]-fy*up[0];
+    const rl=Math.sqrt(rx*rx+ry*ry+rz*rz); rx/=rl;ry/=rl;rz/=rl;
+    const ux=ry*fz-rz*fy,uy=rz*fx-rx*fz,uz=rx*fy-ry*fx;
+    return new Float32Array([
+      rx,ux,-fx,0, ry,uy,-fy,0, rz,uz,-fz,0,
+      -(rx*eye[0]+ry*eye[1]+rz*eye[2]),
+      -(ux*eye[0]+uy*eye[1]+uz*eye[2]),
+       (fx*eye[0]+fy*eye[1]+fz*eye[2]),1
+    ]);
+  }
+  function m4trans(x,y,z){const m=m4id();m[12]=x;m[13]=y;m[14]=z;return m;}
+  function m4scale(s){return new Float32Array([s,0,0,0,0,s,0,0,0,0,s,0,0,0,0,1]);}
+  function m4roty(a){const c=Math.cos(a),s=Math.sin(a);return new Float32Array([c,0,s,0,0,1,0,0,-s,0,c,0,0,0,0,1]);}
+  function m4rotx(a){const c=Math.cos(a),s=Math.sin(a);return new Float32Array([1,0,0,0, 0,c,-s,0, 0,s,c,0, 0,0,0,1]);}
+  function m4rotz(a){const c=Math.cos(a),s=Math.sin(a);return new Float32Array([c,-s,0,0, s,c,0,0, 0,0,1,0, 0,0,0,1]);}
+
+  // ── TEXTURE GENERATION ───────────────────────────────────
+  function genSurfaceCanvas(r,isGas){
+    const size=512, h=128;
+    const oc=document.createElement('canvas'); oc.width=size; oc.height=h;
+    const ox=oc.getContext('2d');
+    ox.fillStyle=COL_PLANET_MID; ox.fillRect(0,0,size,h);
+    const bg=ox.createLinearGradient(0,0,0,h);
+    bg.addColorStop(0,hexToRgba(COL_PLANET_LIGHT,0.4));
+    bg.addColorStop(0.5,hexToRgba(COL_PLANET_MID,0));
+    bg.addColorStop(1,hexToRgba(COL_PLANET_DARK,0.4));
+    ox.fillStyle=bg; ox.fillRect(0,0,size,h);
+    if(isGas){
+      for(let i=0,n=ri(3,7);i<n;i++){
+        const y=rr(0,h),bh=rr(h*0.04,h*0.18),a=rr(0.06,0.2);
+        ox.fillStyle=hexToRgba(COL_BG,a); ox.fillRect(0,y-bh/2,size,bh);
+      }
+      if(rand()<0.5){
+        const sx=rr(0,size),sy=rr(h*0.2,h*0.8),srx=rr(size*0.03,size*0.07),sry=rr(h*0.06,h*0.14);
+        ox.beginPath(); ox.ellipse(sx,sy,srx,sry,0,0,Math.PI*2);
+        ox.fillStyle=hexToRgba(COL_BG,rr(0.08,0.18)); ox.fill();
       }
     } else {
-      const n = ri(4, 12);
-      for (let i = 0; i < n; i++) {
-        const fx    = rr(0, size);
-        const fy    = rr(0, height);
-        const fr    = rr(r * 0.06, r * 0.22);
-        const alpha = rr(0.06, 0.18);
-        if (rand() < 0.5) {
-          // Crater
-          ox.beginPath();
-          ox.arc(fx, fy, fr, 0, Math.PI * 2);
-          ox.fillStyle = hexToRgba(COL_BG, alpha);
-          ox.fill();
-          ox.beginPath();
-          ox.arc(fx - fr * 0.2, fy - fr * 0.2, fr * 0.85, 0, Math.PI * 2);
-          ox.strokeStyle = hexToRgba(COL_PLANET_LIGHT, alpha * 0.6);
-          ox.lineWidth = 0.8; ox.stroke();
-          // Wrap crater if near edge
-          if (fx + fr > size) {
-            ox.beginPath(); ox.arc(fx - size, fy, fr, 0, Math.PI * 2);
-            ox.fillStyle = hexToRgba(COL_BG, alpha); ox.fill();
-          }
-          if (fx - fr < 0) {
-            ox.beginPath(); ox.arc(fx + size, fy, fr, 0, Math.PI * 2);
-            ox.fillStyle = hexToRgba(COL_BG, alpha); ox.fill();
-          }
+      for(let i=0,n=ri(4,12);i<n;i++){
+        const fx=rr(0,size),fy=rr(0,h),fr=rr(r*0.06,r*0.22),a=rr(0.06,0.18);
+        if(rand()<0.5){
+          ox.beginPath();ox.arc(fx,fy,fr,0,Math.PI*2);ox.fillStyle=hexToRgba(COL_BG,a);ox.fill();
+          ox.beginPath();ox.arc(fx-fr*0.2,fy-fr*0.2,fr*0.85,0,Math.PI*2);
+          ox.strokeStyle=hexToRgba(COL_PLANET_LIGHT,a*0.6);ox.lineWidth=0.8;ox.stroke();
+          if(fx+fr>size){ox.beginPath();ox.arc(fx-size,fy,fr,0,Math.PI*2);ox.fillStyle=hexToRgba(COL_BG,a);ox.fill();}
+          if(fx-fr<0)   {ox.beginPath();ox.arc(fx+size,fy,fr,0,Math.PI*2);ox.fillStyle=hexToRgba(COL_BG,a);ox.fill();}
         } else {
-          // Landmass
-          ox.beginPath();
-          ox.ellipse(fx, fy, fr, fr * 0.6, rand() * Math.PI, 0, Math.PI * 2);
-          ox.fillStyle = hexToRgba(COL_BG, alpha);
-          ox.fill();
-          // Wrap landmass if near edge
-          if (fx + fr > size) {
-            ox.beginPath(); ox.ellipse(fx - size, fy, fr, fr * 0.6, 0, 0, Math.PI * 2);
-            ox.fillStyle = hexToRgba(COL_BG, alpha); ox.fill();
-          }
-          if (fx - fr < 0) {
-            ox.beginPath(); ox.ellipse(fx + size, fy, fr, fr * 0.6, 0, 0, Math.PI * 2);
-            ox.fillStyle = hexToRgba(COL_BG, alpha); ox.fill();
-          }
+          ox.beginPath();ox.ellipse(fx,fy,fr,fr*0.6,rand()*Math.PI,0,Math.PI*2);
+          ox.fillStyle=hexToRgba(COL_BG,a);ox.fill();
+          if(fx+fr>size){ox.beginPath();ox.ellipse(fx-size,fy,fr,fr*0.6,0,0,Math.PI*2);ox.fillStyle=hexToRgba(COL_BG,a);ox.fill();}
+          if(fx-fr<0)   {ox.beginPath();ox.ellipse(fx+size,fy,fr,fr*0.6,0,0,Math.PI*2);ox.fillStyle=hexToRgba(COL_BG,a);ox.fill();}
         }
       }
     }
-
-    return { canvas: oc, width: size, height };
+    return oc;
   }
 
-  function buildPlanets() {
-    W = canvas.width; H = canvas.height;
-    cx = W / 2; cy = H / 2;
-    const base = Math.min(W, H) * 0.2;
-    const step = Math.min(W, H) * 0.1;
-    const shuffled = shuffle(PAGE_DATA);
+  function genStarCanvas(){
+    const size=2048, h=512;
+    const oc=document.createElement('canvas'); oc.width=size; oc.height=h;
+    const ox=oc.getContext('2d');
+    ox.fillStyle='#dddddd';
+    ox.fillRect(0,0,size,h);
 
-    planets = shuffled.map((page, i) => {
-      const r       = planetR(page.size);
-      const orbitR  = base + i * step;
-      const period  = 18 + Math.pow(orbitR / base, 3) * 15;
-      const start   = rand() * Math.PI * 2;
-      const spin    = rr(0.3, 1.8) * -1;
-      const sizeT   = (r - MIN_R) / (MAX_R - MIN_R);
-      const isGas   = rand() < (0.2 + sizeT * 0.7);
-      const hasRings = page.name !== 'Projects' && sizeT > 0.6 && rand() < 0.4;
-      return { page, r, orbitR, period, startAngle: start, spinSpeed: spin,
-               isGas, surface: genSurface(r, isGas), hasRings,
-               hasMoons: page.name === 'Projects', spin: rand() * Math.PI * 2 };
+    // Granulation
+    ox.fillStyle = '#cccccc';
+    ox.fillRect(0,0,size,h);
+    for(let i=0,n=Math.floor(size*h/200);i<n;i++){
+      const gx=rr(0,size),gy=rr(0,h),gr=rr(2,8),a=rr(0.04,0.14);
+      ox.beginPath();ox.arc(gx,gy,gr,0,Math.PI*2);
+      ox.fillStyle=`rgba(90,90,90,${a})`;ox.fill();
+      if(gx+gr>size){ox.beginPath();ox.arc(gx-size,gy,gr,0,Math.PI*2);ox.fillStyle=`rgba(90,90,90,${a})`;ox.fill();}
+      if(gx-gr<0)   {ox.beginPath();ox.arc(gx+size,gy,gr,0,Math.PI*2);ox.fillStyle=`rgba(90,90,90,${a})`;ox.fill();}
+    }
+    // Sunspots
+    for(let i=0,n=ri(3,7);i<n;i++){
+      const sx=rr(0,size),sy=rr(h*0.2,h*0.8),srx=rr(size*0.012,size*0.04),sry=srx*rr(0.5,1),a=rr(0.15,0.4);
+      ox.beginPath();ox.ellipse(sx,sy,srx,sry,0,0,Math.PI*2);ox.fillStyle=`rgba(50,50,50,${a})`;ox.fill();
+      ox.beginPath();ox.ellipse(sx,sy,srx*1.8,sry*1.8,0,0,Math.PI*2);ox.fillStyle=`rgba(70,70,70,${a*0.35})`;ox.fill();
+      if(sx+srx*2>size){ox.beginPath();ox.ellipse(sx-size,sy,srx,sry,0,0,Math.PI*2);ox.fillStyle=`rgba(50,50,50,${a})`;ox.fill();}
+      if(sx-srx*2<0)   {ox.beginPath();ox.ellipse(sx+size,sy,srx,sry,0,0,Math.PI*2);ox.fillStyle=`rgba(50,50,50,${a})`;ox.fill();}
+    }
+    return oc;
+  }
+
+  function toTex(oc){
+    const tex=gl.createTexture();
+    gl.bindTexture(gl.TEXTURE_2D,tex);
+    gl.texImage2D(gl.TEXTURE_2D,0,gl.RGBA,gl.RGBA,gl.UNSIGNED_BYTE,oc);
+    gl.texParameteri(gl.TEXTURE_2D,gl.TEXTURE_WRAP_S,gl.REPEAT);
+    gl.texParameteri(gl.TEXTURE_2D,gl.TEXTURE_WRAP_T,gl.CLAMP_TO_EDGE);
+    gl.texParameteri(gl.TEXTURE_2D,gl.TEXTURE_MIN_FILTER,gl.LINEAR);
+    gl.texParameteri(gl.TEXTURE_2D,gl.TEXTURE_MAG_FILTER,gl.LINEAR);
+    return tex;
+  }
+
+  // ── CAMERA ───────────────────────────────────────────────
+  let W,H,proj,view,camPos;
+
+  function setupCamera(){
+    W=glCanvas.width; H=glCanvas.height;
+    const dist = DBG.dist;
+    const tiltRad = DBG.tiltDeg * Math.PI / 180;
+    const elev = Math.PI/2 - tiltRad;
+    camPos = [0, dist*Math.sin(elev), dist*Math.cos(elev)];
+    const fovRad = DBG.fovDeg * Math.PI / 180;
+    proj = m4persp(fovRad, W/H, 0.1, 200);
+    view = m4lookat(camPos,[0,0,0],[0,1,0]);
+  }
+
+  // ── DRAW SPHERE ──────────────────────────────────────────
+  function loc(name){return gl.getUniformLocation(prog,name);}
+
+  function drawSphere(x,y,z,r,tex,spinY,oblX,oblZ,isStar,tint){
+    const model = m4mul(
+      m4trans(x,y,z),
+      m4mul(m4rotx(oblX),
+      m4mul(m4rotz(oblZ),
+      m4mul(m4roty(spinY),
+      m4scale(r))))
+    );
+    const mvp = m4mul(proj, m4mul(view, model));
+    gl.uniformMatrix4fv(loc('uMVP'),   false, mvp);
+    gl.uniformMatrix4fv(loc('uModel'), false, model);
+    gl.uniform3fv(loc('uLightPos'), [0,0,0]);
+    const [sr,sg,sb] = DBG.starColour;
+    gl.uniform3f(loc('uLightColour'), sr, sg, sb);
+    gl.uniform3fv(loc('uCamPos'),   camPos);
+    gl.uniform1f(loc('uIsStar'),    isStar?1:0);
+    const [tr,tg,tb]=tint||[1,1,1];
+    gl.uniform3f(loc('uTint'),tr,tg,tb);
+    const [ar,ag,ab] = DBG.starColour;
+    gl.uniform3f(loc('uAtmo'), ar*0.3, ag*0.35, ab*0.5);
+    gl.uniform1f(loc('uAmbient'),  DBG.ambient);
+    gl.uniform1f(loc('uDiffuse'),  DBG.diffuse);
+    gl.uniform1f(loc('uSpecular'), DBG.specular);
+    gl.uniform1f(loc('uSpecPow'),  DBG.specPow);
+    gl.uniform1f(loc('uAtmoRim'),  DBG.atmoRim);
+    gl.uniform1f(loc('uLimbDark'), DBG.limbDark);
+    gl.activeTexture(gl.TEXTURE0);
+    gl.bindTexture(gl.TEXTURE_2D,tex);
+    gl.uniform1i(loc('uTex'),0);
+    gl.bindBuffer(gl.ARRAY_BUFFER,posB);
+    gl.enableVertexAttribArray(aPos); gl.vertexAttribPointer(aPos,3,gl.FLOAT,false,0,0);
+    gl.bindBuffer(gl.ARRAY_BUFFER,normB);
+    gl.enableVertexAttribArray(aNorm); gl.vertexAttribPointer(aNorm,3,gl.FLOAT,false,0,0);
+    gl.bindBuffer(gl.ARRAY_BUFFER,uvB);
+    gl.enableVertexAttribArray(aUV2); gl.vertexAttribPointer(aUV2,2,gl.FLOAT,false,0,0);
+    gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER,idxB);
+    gl.drawElements(gl.TRIANGLES,idxCount,gl.UNSIGNED_SHORT,0);
+  }
+
+  // ── LINE SHADER (debug axes) ──────────────────────────────
+  const lineVert = `attribute vec3 aPos;uniform mat4 uMVP;void main(){gl_Position=uMVP*vec4(aPos,1.0);}`;
+  const lineFrag = `precision mediump float;uniform vec3 uCol;void main(){gl_FragColor=vec4(uCol,1.0);}`;
+  const lineProg = makeProg(lineVert, lineFrag);
+  const lineBuffer = gl.createBuffer();
+
+  function drawAxis(x, y, z, r, oblX, oblZ) {
+    const len = r * 1.5;
+    const cosX=Math.cos(oblX), sinX=Math.sin(oblX);
+    const cosZ=Math.cos(oblZ), sinZ=Math.sin(oblZ);
+    function transformPole(py) {
+      let tx=-py*sinZ, ty=py*cosZ, tz=0;
+      return [x+tx*len, y+(ty*cosX-tz*sinX)*len, z+(ty*sinX+tz*cosX)*len];
+    }
+    const north=transformPole(1), south=transformPole(-1);
+    const verts=new Float32Array([south[0],south[1],south[2],north[0],north[1],north[2]]);
+    gl.useProgram(lineProg);
+    gl.bindBuffer(gl.ARRAY_BUFFER,lineBuffer);
+    gl.bufferData(gl.ARRAY_BUFFER,verts,gl.DYNAMIC_DRAW);
+    const aP=gl.getAttribLocation(lineProg,'aPos');
+    gl.enableVertexAttribArray(aP); gl.vertexAttribPointer(aP,3,gl.FLOAT,false,0,0);
+    const vp=m4mul(proj,view);
+    gl.uniformMatrix4fv(gl.getUniformLocation(lineProg,'uMVP'),false,vp);
+    gl.uniform3f(gl.getUniformLocation(lineProg,'uCol'),1,0,0);
+    gl.drawArrays(gl.LINES,0,2);
+    gl.useProgram(prog);
+  }
+
+  // ── PROJECT TO SCREEN ─────────────────────────────────────
+  function worldToScreen(x,y,z){
+    const vx=view[0]*x+view[4]*y+view[8]*z+view[12];
+    const vy=view[1]*x+view[5]*y+view[9]*z+view[13];
+    const vz=view[2]*x+view[6]*y+view[10]*z+view[14];
+    const vw=view[3]*x+view[7]*y+view[11]*z+view[15];
+    const cx2=proj[0]*vx+proj[4]*vy+proj[8]*vz+proj[12]*vw;
+    const cy2=proj[1]*vx+proj[5]*vy+proj[9]*vz+proj[13]*vw;
+    const cw =proj[3]*vx+proj[7]*vy+proj[11]*vz+proj[15]*vw;
+    if(Math.abs(cw)<0.0001) return null;
+    return [(cx2/cw*0.5+0.5)*W,(0.5-cy2/cw*0.5)*H];
+  }
+
+  // ── PLANET DATA ──────────────────────────────────────────
+  function planetR(sz){
+    const sizes=PAGE_DATA.map(p=>p.size);
+    const t=(sz-Math.min(...sizes))/(Math.max(...sizes)-Math.min(...sizes));
+    return DBG.pRmin+t*(DBG.pRmax-DBG.pRmin);
+  }
+
+  let planets=[],starTex=null;
+
+  function buildPlanets(){
+    for(const p of planets){
+      if(p.tex)gl.deleteTexture(p.tex);
+      for(const m of p.moons||[])if(m.tex)gl.deleteTexture(m.tex);
+    }
+    if(starTex)gl.deleteTexture(starTex);
+    starTex=toTex(genStarCanvas());
+
+    const shuffled=shuffle(PAGE_DATA);
+    planets=shuffled.map((page,i)=>{
+      const r=planetR(page.size);
+      const orbitR=DBG.orbitBase+i*DBG.orbitStep;
+      const sizeT=(r-DBG.pRmin)/(DBG.pRmax-DBG.pRmin);
+      const isGas=rand()<(0.2+sizeT*0.7);
+      const moons=page.name==='Projects'?MOONS.map((moon,mi)=>({
+        name:moon.name,url:moon.url,orbitOffset:moon.orbitOffset,
+        orbitR:r*(2.4+mi*1.2),r:r*DBG.moonR,
+        spinSpeed:rr(0.5,2)*-1,spin:rand()*Math.PI*2,
+        tex:toTex(genSurfaceCanvas(r*DBG.moonR*100,false)),
+        obliquityX:randObliquity(), obliquityZ:randObliquity(),
+        wobbleX:rr(0.002,0.012)*(rand()<0.5?1:-1),
+        wobbleZ:rr(0.002,0.012)*(rand()<0.5?1:-1),
+        wobbleAmpX:rr(0,Math.PI/4), wobbleAmpZ:rr(0,Math.PI/4)
+      })):[];
+      return {
+        page,r,orbitR,
+        period:18+Math.pow(orbitR/DBG.orbitBase,3)*15,
+        startAngle:rand()*Math.PI*2,
+        spinSpeed:rr(0.3,1.8)*-1,
+        spin:rand()*Math.PI*2,
+        hasRings:page.name!=='Projects'&&sizeT>0.6&&rand()<0.4,
+        moons,
+        tex:toTex(genSurfaceCanvas(r*100,isGas)),
+        obliquityX:randObliquity(), obliquityZ:randObliquity(),
+        wobbleX:rr(0.002,0.012)*(rand()<0.5?1:-1),
+        wobbleZ:rr(0.002,0.012)*(rand()<0.5?1:-1),
+        wobbleAmpX:rr(0,Math.PI/4), wobbleAmpZ:rr(0,Math.PI/4)
+      };
     });
   }
 
-  function drawOrbit(orbitR) {
-    ctx.beginPath();
-    ctx.ellipse(cx, cy, orbitR, orbitR * cosTilt, 0, 0, Math.PI * 2);
-    ctx.strokeStyle = hexToRgba(COL_TEXT, 0.07);
-    ctx.lineWidth = 1;
-    ctx.setLineDash([4, 8]);
-    ctx.stroke();
-    ctx.setLineDash([]);
+  // ── CME SYSTEM ───────────────────────────────────────────
+  const CME_LIST=[];
+  let cmePhaseOff=Math.random()*Math.PI*2, cmeLastSpawn=0;
+
+  function cmeActivity(t){
+    return Math.max(0,Math.sin(t*(Math.PI*2/90)+cmePhaseOff)*0.5+0.5)
+      *(0.7+Math.sin(t*(Math.PI*2/40)+cmePhaseOff*1.7)*0.3) * DBG.cmeActivity;
   }
-
-  function orbitPos(orbitR, angle) {
-    const x3 = Math.cos(angle) * orbitR;
-    const z3 = Math.sin(angle) * orbitR;
-    return { x: cx + x3, y: cy + z3 * cosTilt, z: z3 };
+  function cmeMaybeSpawn(t,starSR){
+    const act=cmeActivity(t);
+    const interval=(1.5-Math.min(act,1.4)) / DBG.cmeRate;
+    if(t-cmeLastSpawn<interval) return;
+    const n=act>0.7&&Math.random()<0.5?ri(2,4):1;
+    for(let c=0;c<n;c++)CME_LIST.push(cmeCreate(t+c*rr(0.2,1.5),starSR,act));
+    cmeLastSpawn=t;
   }
-
-  function drawSphericalSurface(r, surface, spin) {
-    const tex    = surface.canvas;
-    const texW   = surface.width;
-    const texH   = surface.height;
-    const diam   = Math.ceil(r * 2);
-
-    // Draw scanline by scanline
-    for (let dy = -r; dy <= r; dy += 1) {
-      // Half-width of the sphere at this latitude
-      const cosLat = Math.sqrt(Math.max(0, r * r - dy * dy));
-      if (cosLat === 0) continue;
-
-      // Latitude as fraction 0-1 (top to bottom)
-      const latFrac = (dy + r) / (r * 2);
-      // Texture y coordinate
-      const ty = latFrac * texH;
-
-      // The visible longitude range spans from -90° to +90° across the sphere face
-      // spin angle offsets which part of the texture is centred
-      const spinFrac = ((spin % (Math.PI * 2)) + Math.PI * 2) % (Math.PI * 2);
-      const centreU  = (spinFrac / (Math.PI * 2)) * texW;
-
-      // For each pixel column across the scanline, calculate texture x
-      const scanW = cosLat * 2;
-      const slices = Math.ceil(scanW * 2);
-
-      for (let i = 0; i <= slices; i++) {
-        const dx = -cosLat + (i / slices) * scanW;
-        // Longitude of this point on the sphere: arcsin(dx / cosLat)
-        const lon  = Math.asin(Math.max(-1, Math.min(1, dx / cosLat)));
-        // Map longitude (-PI/2 to PI/2) to texture x offset
-        const uOff = (lon / (Math.PI * 2)) * texW;
-        const tx   = ((centreU + uOff) % texW + texW) % texW;
-
-        ctx.drawImage(tex,
-          Math.floor(tx), Math.floor(ty), 1, 1,
-          Math.floor(dx) - 1, Math.floor(dy) - 0.5, 1, 1
-        );
-      }
-    }
-
-    // Atmosphere rim
-    const ag = ctx.createRadialGradient(0, 0, r * 0.75, 0, 0, r);
-    ag.addColorStop(0, hexToRgba(COL_TEXT, 0));
-    ag.addColorStop(1, hexToRgba(COL_TEXT, 0.12));
-    ctx.beginPath(); ctx.arc(0, 0, r, 0, Math.PI * 2);
-    ctx.fillStyle = ag; ctx.fill();
-  }
-
-  function drawRings(px, py, r, behind) {
-    ctx.beginPath();
-    ctx.ellipse(px, py, r * 1.8, r * 0.35, 0, behind ? Math.PI : 0, behind ? Math.PI * 2 : Math.PI);
-    ctx.strokeStyle = hexToRgba(COL_TEXT, 0.3);
-    ctx.lineWidth = r * 0.28; ctx.stroke();
-  }
-
-  function drawLabel(px, py, name) {
-    const starR  = Math.min(W, H) * 0.075;
-    const diagLen = 18, horzLen = 36;
-
-    // Always go left
-    const x1 = px + Math.cos(-Math.PI * 3 / 4) * diagLen;
-    const y1 = py + Math.sin(-Math.PI * 3 / 4) * diagLen;
-    const x2 = x1 - horzLen;
-
-    // Check if label endpoint overlaps the star
-    const dx = x2 - cx, dy = y1 - cy;
-    if (dx * dx + dy * dy < (starR * 2.2) * (starR * 2.2)) return;
-
-    ctx.strokeStyle = COL_MUTED; ctx.lineWidth = 0.8;
-    ctx.beginPath(); ctx.moveTo(px, py); ctx.lineTo(x1, y1); ctx.lineTo(x2, y1); ctx.stroke();
-
-    ctx.font = '12px "Segoe UI", system-ui, sans-serif';
-    ctx.fillStyle = COL_TEXT;
-    ctx.textAlign = 'right';
-    ctx.textBaseline = 'bottom';
-    ctx.fillText(name, x2 - 3, y1 + 1);
-  }
-
-  function genStarSurface() {
-    const r    = Math.min(W, H) * 0.075;
-    const size = Math.ceil(r * 2) * 4;
-    const h    = Math.ceil(r * 2);
-    const oc   = document.createElement('canvas');
-    oc.width = size; oc.height = h;
-    const ox = oc.getContext('2d');
-    ox.imageSmoothingEnabled = true;
-    ox.imageSmoothingQuality = 'high';
-
-    ox.fillStyle = COL_TEXT;
-    ox.fillRect(0, 0, size, h);
-
-    const grainCount = Math.floor(size * h / 100);
-    for (let i = 0; i < grainCount; i++) {
-      const gx    = rr(0, size);
-      const gy    = rr(0, h);
-      const gr    = rr(1.5, 4);
-      const alpha = rr(0.04, 0.12);
-      ox.beginPath();
-      ox.arc(gx, gy, gr, 0, Math.PI * 2);
-      ox.fillStyle = hexToRgba(COL_MUTED, alpha);
-      ox.fill();
-      if (gx + gr > size) { ox.beginPath(); ox.arc(gx - size, gy, gr, 0, Math.PI * 2); ox.fillStyle = hexToRgba(COL_MUTED, alpha); ox.fill(); }
-      if (gx - gr < 0)    { ox.beginPath(); ox.arc(gx + size, gy, gr, 0, Math.PI * 2); ox.fillStyle = hexToRgba(COL_MUTED, alpha); ox.fill(); }
-    }
-
-    const spotCount = ri(2, 5);
-    for (let i = 0; i < spotCount; i++) {
-      const sx    = rr(0, size);
-      const sy    = rr(h * 0.2, h * 0.8);
-      const srx   = rr(size * 0.01, size * 0.03);
-      const sry   = srx * rr(0.5, 1.0);
-      const alpha = rr(0.15, 0.35);
-      ox.beginPath();
-      ox.ellipse(sx, sy, srx, sry, 0, 0, Math.PI * 2);
-      ox.fillStyle = hexToRgba(COL_BORDER, alpha);
-      ox.fill();
-      ox.beginPath();
-      ox.ellipse(sx, sy, srx * 1.6, sry * 1.6, 0, 0, Math.PI * 2);
-      ox.fillStyle = hexToRgba(COL_MUTED, alpha * 0.4);
-      ox.fill();
-      if (sx + srx * 2 > size) {
-        ox.beginPath(); ox.ellipse(sx - size, sy, srx, sry, 0, 0, Math.PI * 2);
-        ox.fillStyle = hexToRgba(COL_BORDER, alpha); ox.fill();
-      }
-      if (sx - srx * 2 < 0) {
-        ox.beginPath(); ox.ellipse(sx + size, sy, srx, sry, 0, 0, Math.PI * 2);
-        ox.fillStyle = hexToRgba(COL_BORDER, alpha); ox.fill();
-      }
-    }
-
-    return { canvas: oc, width: size, height: h };
-  }
-
-  // ============================================================
-  // CME SYSTEM
-  // Coronal Mass Ejections — wispy arcs that build, peak, and eject
-  // Integrates with the existing solar system depth sorting
-  // ============================================================
-
-  // ── CME STATE ───────────────────────────────────────────────
-  const CME_LIST = [];
-  let cmeActivityPhase = Math.random() * Math.PI * 2; // random start in cycle
-  let cmeLastSpawn = 0;
-
-  // ── ACTIVITY CYCLE ──────────────────────────────────────────
-  // Returns 0 (quiet) to 1 (active) based on slow sine wave
-  function cmeActivity(t) {
-    // Primary cycle ~90 seconds, secondary ~40 seconds for variation
-    return Math.max(0,
-      Math.sin(t * (Math.PI * 2 / 90) + cmeActivityPhase) * 0.5 + 0.5
-    ) * (
-      0.7 + Math.sin(t * (Math.PI * 2 / 40) + cmeActivityPhase * 1.7) * 0.3
-    );
-  }
-
-  // ── SPAWN LOGIC ─────────────────────────────────────────────
-  function cmeMaybeSpawn(t, starR) {
-    const activity = cmeActivity(t);
-
-    // Base spawn interval: 15s quiet, 4s active
-    const interval = 1.5 - activity * 1.0;
-    if (t - cmeLastSpawn < interval) return;
-
-    // Chance to spawn multiple in quick succession during active periods
-    const count = activity > 0.7 && Math.random() < 0.5 ? ri(2, 4) : 1;
-    for (let c = 0; c < count; c++) {
-      CME_LIST.push(cmeCreate(t + c * rr(0.2, 1.5), starR, activity));
-    }
-    cmeLastSpawn = t;
-  }
-
-  // ── CREATE A CME ─────────────────────────────────────────────
-  function cmeCreate(t, starR, activity) {
-    // Longitude on the star's surface — rotates with the star
-    const longitude  = rand() * Math.PI * 2;
-    // Latitude — bias toward equator like real CMEs
-    const latitude   = rr(-Math.PI * 0.35, Math.PI * 0.35);
-    // Max height above surface
-    const sizeBias = Math.pow(rand(), 5);
-    const maxHeight = starR * (0.12 + sizeBias * (0.4 + activity * 0.4));
-    // Arc span angle
-    const arcSpan = rr(0.1, 0.2 + sizeBias * (0.6 + activity * 0.3));
-    // Timing
-    const buildTime = rr(0.5, 0.5 + sizeBias * 3);
-    const peakTime  = 0.0;
-    const ejectTime = rr(0.5, 0.5 + sizeBias * 4);
-    // Snap or slow fade?
-    const isSnap = sizeBias > 0.7 && Math.random() < 0.15 + activity * 0.1;
-    // Wisps — multiple overlapping strokes
-    const wispCount = Math.max(1, Math.round(3 + sizeBias * 4));
-    const wisps      = [];
-    for (let i = 0; i < wispCount; i++) {
-      wisps.push({
-        spanOffset:  rr(-0.08, 0.08),
-        heightScale: rr(0.7, 1.1),
-        opacity:     rr(0.3, 0.7),
-        width:       rr(0.8, 2.2),
-        noise:       Array.from({ length: 6 }, () => rr(-0.12, 0.12))
-      });
-    }
-
+  function cmeCreate(t,starSR,act){
+    const sb=Math.pow(rand(),5),wn=Math.max(1,Math.round(3+sb*4)),wisps=[];
+    for(let i=0;i<wn;i++)wisps.push({
+      spanOffset:rr(-0.08,0.08),heightScale:rr(0.7,1.1),
+      opacity:rr(0.3,0.7),width:rr(0.8,2.2),
+      noise:Array.from({length:6},()=>rr(-0.12,0.12))
+    });
     return {
-      longitude, latitude, arcSpan, maxHeight,
-      buildTime, peakTime, ejectTime, isSnap,
-      wispCount, wisps,
-      spawnT: t,
-      dead: false,
-      ejectProgress: 0,  // for planet collision tracking
-      ejectPos: null     // world position of eject tip
+      longitude:rand()*Math.PI*2,latitude:rr(-Math.PI*0.35,Math.PI*0.35),
+      maxHeight:starSR*(0.12+sb*(0.4+act*0.4))*DBG.cmeHeight,
+      arcSpan:rr(0.1,0.2+sb*(0.6+act*0.3))*DBG.cmeSpan,
+      buildTime:rr(0.5,0.5+sb*3),peakTime:0,ejectTime:rr(0.5,0.5+sb*4),
+      isSnap:sb>0.7&&Math.random()<0.15+act*0.1,
+      wisps,spawnT:t,dead:false,ejectPos:null
     };
   }
-
-  // ── LIFECYCLE ────────────────────────────────────────────────
-  function cmePhase(cme, t) {
-    const age = t - cme.spawnT;
-    if (age < 0) return { phase: 'waiting', progress: 0 };
-    if (age < cme.buildTime) return { phase: 'build', progress: age / cme.buildTime };
-    const postBuild = age - cme.buildTime;
-    if (postBuild < cme.peakTime) return { phase: 'peak', progress: postBuild / cme.peakTime };
-    const postPeak = postBuild - cme.peakTime;
-    if (postPeak < cme.ejectTime) return { phase: 'eject', progress: postPeak / cme.ejectTime };
-    return { phase: 'dead', progress: 1 };
+  function cmeGetPhase(cme,t){
+    const age=t-cme.spawnT;
+    if(age<0)return{phase:'waiting',progress:0};
+    if(age<cme.buildTime)return{phase:'build',progress:age/cme.buildTime};
+    const p2=age-cme.buildTime;
+    if(p2<cme.peakTime)return{phase:'peak',progress:p2/cme.peakTime};
+    const p3=p2-cme.peakTime;
+    if(p3<cme.ejectTime)return{phase:'eject',progress:p3/cme.ejectTime};
+    return{phase:'dead',progress:1};
   }
-
-  // ── DRAW A SINGLE CME ────────────────────────────────────────
-  // starSpin: current star rotation angle (t * -0.04)
-  // planets: current planet state array for collision detection
-  function drawCME(cme, t, starR, starSpin, planetStates) {
-    const { phase, progress } = cmePhase(cme, t);
-    if (phase === 'waiting' || phase === 'dead') {
-      if (phase === 'dead') cme.dead = true;
-      return;
-    }
-
-    // Current longitude accounts for star rotation
-    const lon = cme.longitude + starSpin;
-    const lat = cme.latitude;
-
-    // Star surface point in screen space (3D projected)
-    // Using the same tilt system as the planets
-    const surfX = cx + Math.cos(lon) * Math.cos(lat) * starR;
-    const surfZ = Math.sin(lon) * Math.cos(lat) * starR;
-    const surfY = cy + surfZ * cosTilt - Math.sin(lat) * starR;
-
-    // Only draw if on the front hemisphere
-    const frontFacing = surfZ >= -starR * 0.3;
-
-    // Height multiplier based on phase
-    let heightMult = 0;
-    let globalAlpha = 1;
-
-    if (phase === 'build') {
-      heightMult = progress;
-      globalAlpha = 0.4 + progress * 0.6;
-    } else if (phase === 'peak') {
-      heightMult = 1;
-      globalAlpha = 1;
-    } else if (phase === 'eject') {
-      if (cme.isSnap) {
-        // Snap: arc collapses inward then shoots out
-        if (progress < 0.3) {
-          heightMult = 1 - progress * 1.5;
-          globalAlpha = 1 - progress * 1.5;
-        } else {
-          // Shoot outward
-          heightMult = (progress - 0.3) * 3.5;
-          globalAlpha = Math.max(0, 1 - (progress - 0.3) * 2);
+  function drawAllCMEs(t,starSR,starSpin,planetSPs){
+    cmeMaybeSpawn(t,starSR);
+    const tiltRad = DBG.tiltDeg * Math.PI / 180;
+    const ct = Math.cos(tiltRad);
+    const cx2=W/2,cy2=H/2;
+    for(const cme of CME_LIST){
+      const{phase,progress}=cmeGetPhase(cme,t);
+      if(phase==='waiting')continue;
+      if(phase==='dead'){cme.dead=true;continue;}
+      const lon=cme.longitude+starSpin,lat=cme.latitude;
+      const surfZ=Math.sin(lon)*Math.cos(lat)*starSR;
+      const front=surfZ>=-starSR*0.3;
+      let hm=0,ga=1;
+      if(phase==='build'){hm=progress;ga=0.4+progress*0.6;}
+      else if(phase==='peak'){hm=1;}
+      else if(phase==='eject'){
+        if(cme.isSnap){
+          if(progress<0.3){hm=1-progress*1.5;ga=1-progress*1.5;}
+          else{hm=(progress-0.3)*3.5;ga=Math.max(0,1-(progress-0.3)*2);}
+        }else{hm=1+progress*1.2;ga=Math.max(0,1-progress*1.1);}
+      }
+      const ch=cme.maxHeight*hm;
+      if(ch<=0||ga<=0)continue;
+      hud.save(); hud.globalAlpha=ga*(front?1:0.15);
+      let tipX,tipY;
+      for(const[wi,w]of cme.wisps.entries()){
+        const nt=t*2.3+wi*1.7;
+        hud.beginPath();hud.lineWidth=w.width;hud.strokeStyle=hexToRgba(COL_TEXT,w.opacity*ga);
+        let first=true;
+        for(let s=0;s<=20;s++){
+          const f=s/20,aa=lon+(f-0.5)*(cme.arcSpan+w.spanOffset);
+          const hf=1-Math.pow((f-0.5)*2,2);
+          const noise=w.noise[Math.floor(f*5)]*Math.sin(nt+f*3);
+          const h2=ch*w.heightScale*(hf+noise*0.3);
+          const px3=Math.cos(aa)*Math.cos(lat)*(starSR+h2);
+          const pz3=Math.sin(aa)*Math.cos(lat)*(starSR+h2);
+          const py3=-Math.sin(lat)*(starSR+h2);
+          const sx=cx2+px3,sy=cy2+pz3*ct+py3;
+          if(first){hud.moveTo(sx,sy);first=false;}else hud.lineTo(sx,sy);
+          if(s===20){tipX=sx;tipY=sy;}
         }
-      } else {
-        // Slow fade: arc expands and dissipates
-        heightMult = 1 + progress * 1.2;
-        globalAlpha = Math.max(0, 1 - progress * 1.1);
+        hud.stroke();
+        if(wi===cme.wisps.length-1)cme.ejectPos={x:tipX,y:tipY};
       }
-      cme.ejectProgress = progress;
-    }
-
-    const currentHeight = cme.maxHeight * heightMult;
-    if (currentHeight <= 0 || globalAlpha <= 0) return;
-
-    ctx.save();
-    ctx.globalAlpha = globalAlpha * (frontFacing ? 1 : 0.15);
-
-    // Draw each wisp
-    cme.wisps.forEach((wisp, wi) => {
-      const noiseT = t * 2.3 + wi * 1.7;
-
-      ctx.beginPath();
-      ctx.lineWidth = wisp.width;
-      ctx.strokeStyle = hexToRgba(COL_TEXT, wisp.opacity * globalAlpha);
-
-      // Build the arc as a series of points along a parabolic path
-      // that follows the star's limb
-      const steps = 20;
-      let first = true;
-      const tipX_arr = [], tipY_arr = [];
-
-      for (let s = 0; s <= steps; s++) {
-        const frac = s / steps;
-        // Angle along the arc (centred on CME longitude)
-        const arcAngle = lon + (frac - 0.5) * (cme.arcSpan + wisp.spanOffset);
-        // Height profile: parabola peaking at frac=0.5
-        const heightFrac = 1 - Math.pow((frac - 0.5) * 2, 2);
-        // Add noise for wispy effect
-        const noiseIdx = Math.floor(frac * 5);
-        const noise = wisp.noise[noiseIdx] * Math.sin(noiseT + frac * 3);
-        const h = currentHeight * wisp.heightScale * (heightFrac + noise * 0.3);
-
-        // 3D position: point on sphere surface + outward normal * h
-        const px3  = Math.cos(arcAngle) * Math.cos(lat) * (starR + h);
-        const pz3  = Math.sin(arcAngle) * Math.cos(lat) * (starR + h);
-        const py3  = -Math.sin(lat) * (starR + h);
-        const sx   = cx + px3;
-        const sy   = cy + pz3 * cosTilt + py3;
-
-        if (first) { ctx.moveTo(sx, sy); first = false; }
-        else ctx.lineTo(sx, sy);
-
-        if (s === steps) { tipX_arr.push(sx); tipY_arr.push(sy); }
-      }
-
-      ctx.stroke();
-
-      // Store tip position for collision detection (use last wisp)
-      if (wi === cme.wisps.length - 1 && tipX_arr.length > 0) {
-        cme.ejectPos = { x: tipX_arr[0], y: tipY_arr[0] };
-      }
-    });
-
-    ctx.restore();
-
-    // ── PLANET COLLISION ───────────────────────────────────────
-    if (phase === 'eject' && cme.ejectPos && planetStates) {
-      planetStates.forEach(ps => {
-        const px = ps.pos.x, py = ps.pos.y;
-        const pr = ps.p.r * (0.85 + (ps.pos.z / ps.p.orbitR) * 0.15);
-        const dx = cme.ejectPos.x - px;
-        const dy = cme.ejectPos.y - py;
-        const dist = Math.sqrt(dx * dx + dy * dy);
-
-        if (dist < pr * 2.5) {
-          // CME tip is near a planet — draw dissipation effect
-          const dissipAlpha = Math.max(0, 1 - dist / (pr * 2.5)) * globalAlpha;
-          ctx.save();
-          ctx.globalAlpha = dissipAlpha * 0.6;
-
-          // Expanding wispy ring over planet
-          const ringR = pr * (0.5 + progress * 1.5);
-          const ringGrad = ctx.createRadialGradient(px, py, ringR * 0.3, px, py, ringR);
-          ringGrad.addColorStop(0, hexToRgba(COL_TEXT, 0.4));
-          ringGrad.addColorStop(0.6, hexToRgba(COL_TEXT, 0.15));
-          ringGrad.addColorStop(1, hexToRgba(COL_TEXT, 0));
-          ctx.beginPath();
-          ctx.arc(px, py, ringR, 0, Math.PI * 2);
-          ctx.fillStyle = ringGrad;
-          ctx.fill();
-
-          // A few particle streaks
-          for (let p = 0; p < 4; p++) {
-            const pAngle = (p / 4) * Math.PI * 2 + progress * 3;
-            const pLen   = pr * rr(0.3, 0.8);
-            ctx.beginPath();
-            ctx.moveTo(px + Math.cos(pAngle) * pr * 0.3, py + Math.sin(pAngle) * pr * 0.3);
-            ctx.lineTo(px + Math.cos(pAngle) * (pr * 0.3 + pLen), py + Math.sin(pAngle) * (pr * 0.3 + pLen));
-            ctx.strokeStyle = hexToRgba(COL_TEXT, 0.3);
-            ctx.lineWidth = rr(0.5, 1.5);
-            ctx.stroke();
+      hud.restore();
+      if(phase==='eject'&&cme.ejectPos){
+        for(const ps of planetSPs){
+          const dx=cme.ejectPos.x-ps.sx,dy=cme.ejectPos.y-ps.sy;
+          const dist=Math.sqrt(dx*dx+dy*dy);
+          if(dist>=ps.sr*2.5)continue;
+          const da=Math.max(0,1-dist/(ps.sr*2.5))*ga;
+          hud.save();hud.globalAlpha=da*0.6;
+          const rr2=ps.sr*(0.5+progress*1.5);
+          const rg=hud.createRadialGradient(ps.sx,ps.sy,rr2*0.3,ps.sx,ps.sy,rr2);
+          rg.addColorStop(0,hexToRgba(COL_TEXT,0.4));rg.addColorStop(0.6,hexToRgba(COL_TEXT,0.15));rg.addColorStop(1,hexToRgba(COL_TEXT,0));
+          hud.beginPath();hud.arc(ps.sx,ps.sy,rr2,0,Math.PI*2);hud.fillStyle=rg;hud.fill();
+          for(let p=0;p<4;p++){
+            const pa=(p/4)*Math.PI*2+progress*3,pl=ps.sr*rr(0.3,0.8);
+            hud.beginPath();
+            hud.moveTo(ps.sx+Math.cos(pa)*ps.sr*0.3,ps.sy+Math.sin(pa)*ps.sr*0.3);
+            hud.lineTo(ps.sx+Math.cos(pa)*(ps.sr*0.3+pl),ps.sy+Math.sin(pa)*(ps.sr*0.3+pl));
+            hud.strokeStyle=hexToRgba(COL_TEXT,0.3);hud.lineWidth=rr(0.5,1.5);hud.stroke();
           }
-
-          ctx.restore();
+          hud.restore();
         }
-      });
+      }
     }
+    for(let i=CME_LIST.length-1;i>=0;i--)if(CME_LIST[i].dead)CME_LIST.splice(i,1);
   }
 
-  // ── MAIN CME DRAW CALL ───────────────────────────────────────
-  // Call this once per frame, passing current time, star radius,
-  // star spin angle, and the planet states array
-  function drawAllCMEs(t, starR, starSpin, planetStates) {
-    // Spawn new CMEs
-    cmeMaybeSpawn(t, starR);
+  // ── HUD ──────────────────────────────────────────────────
+  let showLabels  = true;
+  let debugAxes   = false;
+  let debugOrbits = false;
 
-    // Draw all active CMEs
-    CME_LIST.forEach(cme => drawCME(cme, t, starR, starSpin, planetStates));
-
-    // Clean up dead CMEs
-    for (let i = CME_LIST.length - 1; i >= 0; i--) {
-      if (CME_LIST[i].dead) CME_LIST.splice(i, 1);
-    }
+  function drawLabel(sx, sy, name, starScreenR) {
+    const cx2=W/2, cy2=H/2;
+    const x1=sx+Math.cos(-Math.PI*3/4)*18, y1=sy+Math.sin(-Math.PI*3/4)*18, x2=x1-36;
+    const dx=x2-cx2, dy=y1-cy2;
+    if(dx*dx+dy*dy < (starScreenR*2.2)*(starScreenR*2.2)) return;
+    hud.strokeStyle=COL_MUTED;hud.lineWidth=0.8;
+    hud.beginPath();hud.moveTo(sx,sy);hud.lineTo(x1,y1);hud.lineTo(x2,y1);hud.stroke();
+    hud.font='12px '+COL_FONT;
+    hud.fillStyle=COL_TEXT;hud.textAlign='right';hud.textBaseline='bottom';
+    hud.fillText(name,x2-3,y1+1);
   }
 
-  function drawStarSphere(t) {
-    const r     = Math.min(W, H) * 0.075;
-    const dr    = r;
-    const spin = t * STAR_SPIN_SPEED;
-    const tex   = starSurface.canvas;
-    const texW  = starSurface.width;
-    const texH  = starSurface.height;
-    const flicker = 1
-      + Math.sin(t * 1.5)  * 0.01
-      + Math.sin(t * 3)  * 0.007
-      + Math.sin(t * 7.5) * 0.004
-      + Math.sin(t * 9.3) * 0.002;
-    const glowR = dr * flicker;
+  function drawOrbitLine(orbitR, cx, cz) {
+    cx=cx||0; cz=cz||0;
+    hud.beginPath();
+    hud.setLineDash([4,8]);
+    hud.strokeStyle=hexToRgba(COL_TEXT,0.2);
+    hud.lineWidth=0.8;
+    const steps=128;
+    for(let i=0;i<=steps;i++){
+      const a=(i/steps)*Math.PI*2;
+      const wx=cx+Math.cos(a)*orbitR;
+      const wz=cz+Math.sin(a)*orbitR;
+      const ss=worldToScreen(wx,0,wz);
+      if(!ss)continue;
+      if(i===0)hud.moveTo(ss[0],ss[1]);
+      else hud.lineTo(ss[0],ss[1]);
+    }
+    hud.stroke();
+    hud.setLineDash([]);
+  }
 
-    // Outer glow
-    [0.03, 0.04, 0.08].forEach((a, i) => {
-      const gr = glowR * (3 - i * 0.5);
-      const g  = ctx.createRadialGradient(cx, cy, dr * 0.8, cx, cy, gr);
-      g.addColorStop(0, hexToRgba(COL_TEXT, a));
-      g.addColorStop(1, hexToRgba(COL_TEXT, 0));
-      ctx.beginPath(); ctx.arc(cx, cy, gr, 0, Math.PI * 2);
-      ctx.fillStyle = g; ctx.fill();
+  function drawStarGlowAndLabel(t,sx,sy,sr){
+    const sc = DBG.starColour;
+    const starHex = '#' + sc.map(v=>Math.round(v*255).toString(16).padStart(2,'0')).join('');
+    const f=1+Math.sin(t*1.5)*0.01+Math.sin(t*3)*0.007+Math.sin(t*7.5)*0.004+Math.sin(t*9.3)*0.002;
+    const gr=sr*f*DBG.glowMult;
+    [0.03,0.04,0.08].forEach((a,i)=>{
+      const r2=gr*(3-i*0.5);
+      const g=hud.createRadialGradient(sx,sy,sr*0.8,sx,sy,r2);
+      g.addColorStop(0,hexToRgba(starHex,a));
+      g.addColorStop(1,hexToRgba(starHex,0));
+      hud.beginPath();hud.arc(sx,sy,r2,0,Math.PI*2);hud.fillStyle=g;hud.fill();
     });
+    hud.font='bold '+Math.round(sr*0.38)+'px '+COL_HEADER_FONT;
+    hud.fillStyle=COL_BG;hud.textAlign='center';hud.textBaseline='middle';
+    hud.fillText('Kittisci',sx,sy);
+  }
 
-    ctx.save();
-    ctx.translate(cx, cy);
+  // ── HIT DETECTION ────────────────────────────────────────
+  let hitTargets=[];
+  glCanvas.addEventListener('mousemove',e=>{
+    const hit=hitTargets.find(h=>{const dx=e.clientX-h.x,dy=e.clientY-h.y;return dx*dx+dy*dy<h.r*h.r;});
+    glCanvas.style.cursor=hit?'pointer':'default';
+  });
+  glCanvas.addEventListener('click',e=>{
+    const hit=hitTargets.find(h=>{const dx=e.clientX-h.x,dy=e.clientY-h.y;return dx*dx+dy*dy<h.r*h.r;});
+    if(hit){if(hit.url.startsWith('http'))window.open(hit.url,'_blank');else window.location.href=hit.url;}
+  });
 
-    // Scanline sphere render
-    for (let dy = -dr; dy <= dr; dy += 1) {
-      const cosLat  = Math.sqrt(Math.max(0, dr * dr - dy * dy));
-      if (cosLat === 0) continue;
-      const latFrac  = (dy + dr) / (dr * 2);
-      const ty       = latFrac * texH;
-      const spinFrac = ((spin % (Math.PI * 2)) + Math.PI * 2) % (Math.PI * 2);
-      const centreU  = (spinFrac / (Math.PI * 2)) * texW;
-      const scanW    = cosLat * 2;
-      const slices   = Math.ceil(scanW * 2);
+  // ── RENDER LOOP ──────────────────────────────────────────
+  let starSpinAccum=0;
+  let t0=null;
+  function render(ts){
+    if(!t0)t0=ts;
+    const t=(ts-t0)/1000;
+    readColours();
 
-      for (let i = 0; i <= slices; i++) {
-        const dx   = -cosLat + (i / slices) * scanW;
-        const lon  = Math.asin(Math.max(-1, Math.min(1, dx / cosLat)));
-        const uOff = (lon / (Math.PI * 2)) * texW;
-        const tx   = ((centreU + uOff) % texW + texW) % texW;
-        ctx.drawImage(tex,
-          Math.floor(tx), Math.floor(ty), 1, 1,
-          Math.floor(dx) - 0.5, Math.floor(dy) - 0.5, 1, 1
-        );
+    // Camera may change via debug sliders each frame
+    setupCamera();
+
+    gl.viewport(0,0,W,H);
+    gl.clearColor(0,0,0,0);
+    gl.clear(gl.COLOR_BUFFER_BIT|gl.DEPTH_BUFFER_BIT);
+    gl.enable(gl.DEPTH_TEST);
+    gl.enable(gl.BLEND);
+    gl.blendFunc(gl.SRC_ALPHA,gl.ONE_MINUS_SRC_ALPHA);
+    gl.useProgram(prog);
+
+    const starScreenR=Math.min(W,H)*0.075;
+    starSpinAccum += DBG.starSpin * 0.016;
+    const starSpin = starSpinAccum;
+
+    hitTargets=[];
+    const planetSPs=[];
+    const starSS=worldToScreen(0,0,0);
+    const starEdgeSS=worldToScreen(DBG.starR,0,0);
+    const starActualScreenR=starEdgeSS&&starSS?Math.abs(starEdgeSS[0]-starSS[0]):0;
+
+    // Draw star
+    drawSphere(0,0,0,DBG.starR,starTex,starSpin,0,0,true,[1,1,1]);
+
+    const labels=[];
+    for(const p of planets){
+      const angle=p.startAngle-(t/p.period)*Math.PI*2*DBG.orbitSpeed;
+      const px=Math.cos(angle)*p.orbitR;
+      const pz=Math.sin(angle)*p.orbitR;
+      p.spin+=p.spinSpeed*0.004*DBG.planetSpin;
+      const obliqBiasRad = DBG.obliqBias * Math.PI / 180;
+      const oblX=(p.obliquityX+obliqBiasRad)+Math.sin(t*p.wobbleX*DBG.wobbleSpeed)*p.wobbleAmpX*DBG.wobbleAmp;
+      const oblZ=(p.obliquityZ+obliqBiasRad)+Math.sin(t*p.wobbleZ*DBG.wobbleSpeed)*p.wobbleAmpZ*DBG.wobbleAmp;
+      drawSphere(px,0,pz,p.r,p.tex,p.spin,oblX,oblZ,false,null);
+      if(debugAxes) drawAxis(px,0,pz,p.r,oblX,oblZ);
+      const ss=worldToScreen(px,0,pz);
+      if(ss){
+        const sr=starActualScreenR*(p.r/DBG.starR);
+        hitTargets.push({x:ss[0],y:ss[1],r:sr*1.4,url:p.page.url});
+        planetSPs.push({sx:ss[0],sy:ss[1],sr});
+        if(showLabels) labels.push({sx:ss[0],sy:ss[1],name:p.page.name});
+      }
+      for(const moon of p.moons||[]){
+        const ma=moon.orbitOffset-t*0.9*DBG.moonSpeed;
+        const mx=px+Math.cos(ma)*moon.orbitR;
+        const mz=pz+Math.sin(ma)*moon.orbitR;
+        moon.spin+=moon.spinSpeed*0.004*DBG.planetSpin;
+        const moblX=(moon.obliquityX+obliqBiasRad)+Math.sin(t*moon.wobbleX*DBG.wobbleSpeed)*moon.wobbleAmpX*DBG.wobbleAmp;
+        const moblZ=(moon.obliquityZ+obliqBiasRad)+Math.sin(t*moon.wobbleZ*DBG.wobbleSpeed)*moon.wobbleAmpZ*DBG.wobbleAmp;
+        drawSphere(mx,0,mz,moon.r,moon.tex,moon.spin,moblX,moblZ,false,null);
+        if(debugAxes) drawAxis(mx,0,mz,moon.r,moblX,moblZ);
+        const ms=worldToScreen(mx,0,mz);
+        if(ms){
+          const mr=starActualScreenR*(moon.r/DBG.starR);
+          hitTargets.push({x:ms[0],y:ms[1],r:mr*2,url:moon.url});
+          planetSPs.push({sx:ms[0],sy:ms[1],sr:mr});
+        }
       }
     }
 
-    // Limb darkening
-    const limbGrad = ctx.createRadialGradient(0, 0, 0, 0, 0, dr);
-    limbGrad.addColorStop(0,    hexToRgba(COL_TEXT,   0));
-    limbGrad.addColorStop(0.5,  hexToRgba(COL_TEXT,   0));
-    limbGrad.addColorStop(0.78, hexToRgba(COL_MUTED,  0.08));
-    limbGrad.addColorStop(0.90, hexToRgba(COL_BORDER, 0.25));
-    limbGrad.addColorStop(1.0,  hexToRgba(COL_BG,     0.55));
-    ctx.beginPath(); ctx.arc(0, 0, dr, 0, Math.PI * 2);
-    ctx.fillStyle = limbGrad; ctx.fill();
-
-    // Label
-    ctx.font      = 'bold ' + Math.round(dr * 0.38) + 'px "Segoe UI", system-ui, sans-serif';
-    ctx.fillStyle = COL_BG;
-    ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
-    ctx.fillText('Kittisci', 0, 0);
-
-    ctx.restore();
-  }
-
-  function drawMoon(m) {
-    const mg = ctx.createRadialGradient(m.x - m.r * 0.3, m.y - m.r * 0.3, m.r * 0.1, m.x, m.y, m.r);
-    mg.addColorStop(0, COL_PLANET_LIGHT);
-    mg.addColorStop(1, COL_PLANET_DARK);
-    ctx.beginPath();
-    ctx.arc(m.x, m.y, m.r, 0, Math.PI * 2);
-    ctx.fillStyle = mg;
-    ctx.fill();
-  }
-
-  function renderPlanet(p, t, showLabel) {
-    const angle  = p.startAngle - (t / p.period) * Math.PI * 2;
-    const pos    = orbitPos(p.orbitR, angle);
-    const px = pos.x, py = pos.y;
-    const depthScale = 0.85 + (pos.z / p.orbitR) * 0.15;
-    const dr = p.r * depthScale;
-
-    if (p.hasRings) drawRings(px, py, dr, true);
-
-    // Build moon positions first
-    const moonPositions = [];
-    if (p.hasMoons) {
-      MOONS.forEach((moon, mi) => {
-        const morbitR = dr * 2.2 + mi * dr * 0.9;
-        const mangle  = moon.orbitOffset - t * (0.9 + mi * 0.3);
-        const mx = px + Math.cos(mangle) * morbitR;
-        const my = py + Math.sin(mangle) * morbitR * cosTilt;
-        const mz = Math.sin(mangle) * morbitR;
-        const mr = dr * 0.28;
-        moonPositions.push({ x: mx, y: my, z: mz, r: mr, name: moon.name, url: moon.url });
-      });
+    hud.clearRect(0,0,W,H);
+    if(starSS) drawStarGlowAndLabel(t,starSS[0],starSS[1],starActualScreenR);
+    drawAllCMEs(t,starScreenR,starSpin,planetSPs);
+    if(showLabels) for(const l of labels) drawLabel(l.sx,l.sy,l.name,starActualScreenR);
+    if(debugOrbits){
+      for(const p of planets){
+        drawOrbitLine(p.orbitR,0,0);
+        const angle=p.startAngle-(t/p.period)*Math.PI*2*DBG.orbitSpeed;
+        const ppx=Math.cos(angle)*p.orbitR;
+        const ppz=Math.sin(angle)*p.orbitR;
+        for(const moon of p.moons||[]) drawOrbitLine(moon.orbitR,ppx,ppz);
+      }
     }
-
-    // Draw moons behind planet
-    moonPositions.filter(m => m.z < 0).forEach(m => drawMoon(m));
-
-    // Planet body
-    ctx.save();
-    ctx.translate(px, py);
-    drawSphericalSurface(dr, p.surface, p.spin);
-    const sg = ctx.createRadialGradient(dr * 0.4, 0, 0, 0, 0, dr);
-    ctx.beginPath(); ctx.arc(0, 0, dr, 0, Math.PI * 2);
-    ctx.fillStyle = sg; ctx.fill();
-    ctx.restore();
-
-    // Draw moons in front of planet
-    moonPositions.filter(m => m.z >= 0).forEach(m => drawMoon(m));
-
-    if (p.hasRings) drawRings(px, py, dr, false);
-
-    // Hit targets
-    hitTargets.push({ x: px, y: py, r: dr * 1.4, url: p.page.url });
-    moonPositions.forEach(mp => {
-      hitTargets.push({ x: mp.x, y: mp.y, r: mp.r * 2.5, url: mp.url });
-    });
-
-    if (showLabel && showLabels) drawLabel(px, py, p.page.name);
-    p.spin += p.spinSpeed * 0.004;
-  }
-
-  function render(ts) {
-    readColours();
-    if (!startTime) startTime = ts;
-    const t = (ts - startTime) / 1000;
-    ctx.clearRect(0, 0, W, H);
-    hitTargets = [];
-
-    // Pre-compute z for sorting
-    const states = planets.map(p => {
-      const angle = p.startAngle - (t / p.period) * Math.PI * 2;
-      const pos   = orbitPos(p.orbitR, angle);
-      return { p, pos };
-    });
-
-    // planets.forEach(p => drawOrbit(p.orbitR));
-
-    // Behind star
-    states.filter(s => s.pos.z < 0)
-          .sort((a, b) => a.pos.z - b.pos.z)
-          .forEach(s => renderPlanet(s.p, t, true));
-
-    drawStarSphere(t);
-    const starSpin = t * STAR_SPIN_SPEED;
-    drawAllCMEs(t, Math.min(W, H) * 0.075, starSpin, states);
-
-    // In front of star
-    states.filter(s => s.pos.z >= 0)
-          .sort((a, b) => a.pos.z - b.pos.z)
-          .forEach(s => renderPlanet(s.p, t, true));
 
     requestAnimationFrame(render);
   }
 
-  canvas.addEventListener('mousemove', e => {
-    const url = hitTargets.find(h => {
-      const dx = e.clientX - h.x, dy = e.clientY - h.y;
-      return dx * dx + dy * dy < h.r * h.r;
-    });
-    canvas.style.cursor = url ? 'pointer' : 'default';
-  });
-
-  canvas.addEventListener('click', e => {
-    const hit = hitTargets.find(h => {
-      const dx = e.clientX - h.x, dy = e.clientY - h.y;
-      return dx * dx + dy * dy < h.r * h.r;
-    });
-    if (hit) {
-      if (hit.url.startsWith('http')) window.open(hit.url, '_blank');
-      else window.location.href = hit.url;
-    }
-  });
-
-  function resize() {
-    canvas.width  = window.innerWidth;
-    canvas.height = window.innerHeight;
-    W = canvas.width; H = canvas.height;
-    cx = W / 2; cy = H / 2;
-    starSurface = genStarSurface();
+  // ── RESIZE ───────────────────────────────────────────────
+  function resize(){
+    glCanvas.width=hudCanvas.width=window.innerWidth;
+    glCanvas.height=hudCanvas.height=window.innerHeight;
+    readColours();
+    setupCamera();
     buildPlanets();
   }
 
-  readColours();
-  resize();
-    document.getElementById('label-toggle').addEventListener('click', function() {
-    showLabels = !showLabels;
-    this.classList.toggle('active', showLabels);
+  // ── DEBUG PANEL INIT ─────────────────────────────────────
+  function initDebug() {
+    if (!sessionStorage.getItem('gbAdminAuth')) return;
+    const panel = document.getElementById('debug-panel');
+    if (!panel) return;
+    if (panel.dataset.init) return;
+    panel.dataset.init = 'true';
+    panel.style.display = 'block';
+    
+    // Helper: wire a slider to a DBG key, with optional rebuild
+    function slider(id, key, fmt, rebuild) {
+      const el  = document.getElementById(id);
+      const val = document.getElementById(id+'-val');
+      if (!el) return;
+      el.addEventListener('input', function() {
+        DBG[key] = parseFloat(this.value);
+        val.textContent = fmt(DBG[key]);
+        if (rebuild) buildPlanets();
+      });
+    }
+
+    // Overlays
+    document.getElementById('debug-axes').addEventListener('change', function(){ debugAxes=this.checked; });
+    document.getElementById('debug-orbits').addEventListener('change', function(){ debugOrbits=this.checked; });
+
+    // Camera — no rebuild needed, setupCamera runs every frame
+    slider('dbg-tilt',  'tiltDeg', v=>Math.round(v)+'°');
+    slider('dbg-dist',  'dist',    v=>v.toFixed(1));
+    slider('dbg-fov',   'fovDeg',  v=>Math.round(v)+'°');
+
+    // Star
+    slider('dbg-star-spin', 'starSpin', v=>v.toFixed(3));
+    slider('dbg-star-r',    'starR',    v=>v.toFixed(2), true);
+    slider('dbg-glow',      'glowMult', v=>v.toFixed(1));
+    document.getElementById('dbg-star-colour').addEventListener('input', function() {
+      const [r,g,b] = hexToRgb(this.value);
+      DBG.starColour = [r, g, b];
+    });
+    document.getElementById('dbg-rebuild-star').addEventListener('click', function() {
+      if(starTex) gl.deleteTexture(starTex);
+      starTex = toTex(genStarCanvas());
+    });
+
+    // Planets — orbit/radius require rebuild
+    slider('dbg-orbit-base',  'orbitBase',  v=>v.toFixed(1), true);
+    slider('dbg-orbit-step',  'orbitStep',  v=>v.toFixed(1), true);
+    slider('dbg-p-rmin',      'pRmin',      v=>v.toFixed(2), true);
+    slider('dbg-p-rmax',      'pRmax',      v=>v.toFixed(2), true);
+    slider('dbg-orbit-speed', 'orbitSpeed', v=>v.toFixed(2)+'×');
+    slider('dbg-planet-spin', 'planetSpin', v=>v.toFixed(2)+'×');
+
+    // Obliquity & wobble
+    slider('dbg-wobble-speed', 'wobbleSpeed', v=>v.toFixed(1)+'×');
+    slider('dbg-wobble-amp',   'wobbleAmp',   v=>v.toFixed(2)+'×');
+    slider('dbg-obliq-bias',   'obliqBias',   v=>Math.round(v)+'°');
+
+    // Moons
+    slider('dbg-moon-r',     'moonR',     v=>v.toFixed(2), true);
+    slider('dbg-moon-speed', 'moonSpeed', v=>v.toFixed(2)+'×');
+
+    // Lighting
+    slider('dbg-ambient',  'ambient',  v=>v.toFixed(3));
+    slider('dbg-diffuse',  'diffuse',  v=>v.toFixed(2));
+    slider('dbg-specular', 'specular', v=>v.toFixed(3));
+    slider('dbg-spec-pow', 'specPow',  v=>Math.round(v));
+    slider('dbg-atmo',     'atmoRim',  v=>v.toFixed(2));
+    slider('dbg-limb',     'limbDark', v=>v.toFixed(2));
+
+    // CME
+    slider('dbg-cme-rate',     'cmeRate',     v=>v.toFixed(2)+'×');
+    slider('dbg-cme-height',   'cmeHeight',   v=>v.toFixed(2)+'×');
+    slider('dbg-cme-activity', 'cmeActivity', v=>v.toFixed(2)+'×');
+    slider('dbg-cme-span',     'cmeSpan',     v=>v.toFixed(2)+'×');
+
+    // Rebuild button
+    document.getElementById('dbg-rebuild').addEventListener('click', buildPlanets);
+  }
+
+  const debugPollInterval = setInterval(function() {
+    if (sessionStorage.getItem('gbAdminAuth')) {
+      initDebug();
+      clearInterval(debugPollInterval);
+    }
+  }, 200);
+
+  document.getElementById('label-toggle').addEventListener('click',function(){
+    showLabels=!showLabels;
+    this.classList.toggle('active',showLabels);
   });
+
+  resize();
+  document.addEventListener('DOMContentLoaded', initDebug);
   window.addEventListener('resize', resize);
   requestAnimationFrame(render);
 })();
