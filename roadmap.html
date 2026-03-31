@@ -1,0 +1,918 @@
+<!DOCTYPE html>
+<html lang="en-GB">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Roadmap — Kittisci</title>
+  <meta name="description" content="Space, science, and games">
+  <link rel="icon" type="image/x-icon" href="/resources/favicon.ico">
+  <link rel="icon" type="image/png" sizes="32x32" href="/resources/favicon-32x32.png">
+  <link rel="apple-touch-icon" sizes="180x180" href="/resources/apple-touch-icon.png">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <link rel="stylesheet" href="/layouts/styles.css">
+
+  <style>
+    /* ── TOOLBAR ── */
+    .roadmap-toolbar {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      flex-wrap: wrap;
+      margin-bottom: 1.5rem;
+    }
+    .roadmap-toolbar-left {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      flex: 1;
+      flex-wrap: wrap;
+    }
+    .filter-label {
+      font-size: 1.1rem;
+      color: var(--text-muted);
+      white-space: nowrap;
+    }
+    .tag-filter-btn {
+      background: none;
+      border: 1px solid var(--border);
+      border-radius: 999px;
+      padding: 0.25rem 0.75rem;
+      font-size: 1.1rem;
+      color: var(--text-muted);
+      cursor: pointer;
+      transition: all 0.15s;
+      font-family: inherit;
+    }
+    .tag-filter-btn:hover { border-color: var(--accent); color: var(--accent); }
+    .tag-filter-btn.active { background: var(--accent); border-color: var(--accent); color: #000; }
+    .admin-toolbar-btn {
+      background: var(--accent);
+      color: #000;
+      border: none;
+      border-radius: 6px;
+      padding: 0.35rem 0.9rem;
+      font-size: 1.1rem;
+      font-family: inherit;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+      white-space: nowrap;
+      transition: opacity 0.15s;
+    }
+    .admin-toolbar-btn:hover { opacity: 0.85; }
+    .admin-toolbar-btn.secondary {
+      background: none;
+      border: 1px solid var(--border);
+      color: var(--text-muted);
+    }
+    .admin-toolbar-btn.secondary:hover { border-color: var(--accent); color: var(--accent); }
+
+    /* ── ITEMS ── */
+    .roadmap-list {
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+      margin-bottom: 2rem;
+    }
+    .roadmap-item {
+      display: flex;
+      align-items: flex-start;
+      gap: 0.75rem;
+      padding: 0.9rem 1rem;
+      background: var(--bg-secondary, #1e1e1e);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      transition: border-color 0.15s;
+    }
+    .roadmap-item:hover { border-color: var(--accent, #42a5f5); }
+    .roadmap-item.dragging { opacity: 0.4; }
+    .roadmap-item.drag-over { border-color: var(--accent); border-style: dashed; }
+
+    .drag-handle {
+      color: var(--border);
+      cursor: grab;
+      font-size: 1.2rem;
+      padding-top: 0.1rem;
+      flex-shrink: 0;
+      display: none;
+    }
+    .admin-mode .drag-handle { display: block; }
+    .drag-handle:active { cursor: grabbing; }
+
+    .item-check {
+      width: 1.4rem;
+      height: 1.4rem;
+      border-radius: 50%;
+      border: 2px solid var(--border);
+      flex-shrink: 0;
+      cursor: default;
+      margin-top: 0.1rem;
+      transition: all 0.15s;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .admin-mode .item-check { cursor: pointer; }
+    .admin-mode .item-check:hover { border-color: var(--accent); }
+    .item-check.checked { background: var(--accent); border-color: var(--accent); }
+    .item-check.checked::after { content: '✓'; color: #000; font-size: 0.85rem; font-weight: 700; }
+
+    .item-body { flex: 1; min-width: 0; }
+    .item-title { font-size: 1.3rem; color: var(--text); line-height: 1.4; word-break: break-word; }
+    .item-title.completed { text-decoration: line-through; color: var(--text-muted); }
+    .item-desc { font-size: 1.1rem; color: var(--text-muted); margin-top: 0.2rem; line-height: 1.5; }
+    .item-tags { display: flex; flex-wrap: wrap; gap: 0.4rem; margin-top: 0.5rem; }
+    .item-tag { font-size: 1rem; padding: 0.15rem 0.6rem; border-radius: 999px; border: 1px solid; opacity: 0.85; }
+
+    .item-actions { display: none; gap: 0.4rem; flex-shrink: 0; }
+    .admin-mode .item-actions { display: flex; }
+    .item-action-btn {
+      background: none;
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      color: var(--text-muted);
+      cursor: pointer;
+      font-size: 1rem;
+      padding: 0.2rem 0.4rem;
+      transition: all 0.15s;
+      font-family: inherit;
+    }
+    .item-action-btn:hover { border-color: var(--accent); color: var(--accent); }
+    .item-action-btn.danger:hover { border-color: #e57373; color: #e57373; }
+
+    /* ── COMPLETED SECTION ── */
+    .completed-toggle {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      cursor: pointer;
+      color: var(--text-muted);
+      font-size: 1.2rem;
+      border: none;
+      background: none;
+      font-family: inherit;
+      padding: 0.5rem 0;
+      margin-bottom: 0.75rem;
+      user-select: none;
+    }
+    .completed-toggle:hover { color: var(--text); }
+    .completed-toggle .toggle-arrow { transition: transform 0.2s; }
+    .completed-toggle.open .toggle-arrow { transform: rotate(90deg); }
+    .completed-list { display: none; flex-direction: column; gap: 0.5rem; }
+    .completed-list.open { display: flex; }
+    .completed-item { opacity: 0.55; }
+    .completed-item:hover { opacity: 0.8; }
+
+    /* ── EMPTY / STATUS ── */
+    .roadmap-empty {
+      text-align: center;
+      color: var(--text-muted);
+      padding: 3rem 1rem;
+      font-size: 1.3rem;
+    }
+    .rm-status {
+      text-align: center;
+      padding: 3rem;
+      color: var(--text-muted);
+      font-size: 1.3rem;
+    }
+
+    /* ── MODALS ── */
+    .rm-modal-backdrop {
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.6);
+      z-index: 1000;
+      display: none;
+      align-items: center;
+      justify-content: center;
+    }
+    .rm-modal-backdrop.open { display: flex; }
+    .rm-modal {
+      background: var(--bg-secondary, #1e1e1e);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 1.75rem;
+      width: min(480px, calc(100vw - 2rem));
+      max-height: calc(100vh - 4rem);
+      overflow-y: auto;
+    }
+    .rm-modal h2 { margin: 0 0 1.25rem; font-size: 1.6rem; }
+    .rm-field { margin-bottom: 1rem; }
+    .rm-field label { display: block; font-size: 1.1rem; color: var(--text-muted); margin-bottom: 0.35rem; }
+    .rm-field input[type="text"],
+    .rm-field input[type="password"],
+    .rm-field textarea {
+      width: 100%;
+      background: var(--bg, #212121);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      color: var(--text);
+      font-family: inherit;
+      font-size: 1.2rem;
+      padding: 0.5rem 0.75rem;
+      box-sizing: border-box;
+      resize: vertical;
+    }
+    .rm-field input:focus, .rm-field textarea:focus { outline: none; border-color: var(--accent); }
+    .rm-tag-picker { display: flex; flex-wrap: wrap; gap: 0.4rem; }
+    .rm-tag-pick-btn {
+      background: none;
+      border: 1px solid var(--border);
+      border-radius: 999px;
+      padding: 0.2rem 0.65rem;
+      font-size: 1.1rem;
+      color: var(--text-muted);
+      cursor: pointer;
+      font-family: inherit;
+      transition: all 0.15s;
+    }
+    .rm-tag-pick-btn.selected { color: #000; }
+    .rm-modal-actions { display: flex; gap: 0.6rem; justify-content: flex-end; margin-top: 1.25rem; }
+    .rm-btn {
+      background: var(--accent);
+      color: #000;
+      border: none;
+      border-radius: 6px;
+      padding: 0.45rem 1.1rem;
+      font-size: 1.2rem;
+      font-family: inherit;
+      cursor: pointer;
+      transition: opacity 0.15s;
+    }
+    .rm-btn:hover { opacity: 0.85; }
+    .rm-btn.cancel { background: none; border: 1px solid var(--border); color: var(--text-muted); }
+    .rm-btn.cancel:hover { border-color: var(--accent); color: var(--accent); }
+    .rm-btn.danger { background: #c62828; color: #fff; }
+
+    /* ── TAG MANAGER ── */
+    .tag-list-row {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.5rem 0;
+      border-bottom: 1px solid var(--border);
+    }
+    .tag-list-row:last-child { border-bottom: none; }
+    .tag-swatch { width: 12px; height: 12px; border-radius: 50%; flex-shrink: 0; }
+    .tag-name-input {
+      flex: 1;
+      background: none;
+      border: 1px solid transparent;
+      border-radius: 4px;
+      color: var(--text);
+      font-family: inherit;
+      font-size: 1.2rem;
+      padding: 0.2rem 0.4rem;
+    }
+    .tag-name-input:focus { outline: none; border-color: var(--border); }
+    .tag-colour-input { border: none; background: none; width: 2rem; height: 1.8rem; cursor: pointer; padding: 0; }
+    .tag-del-btn {
+      background: none;
+      border: none;
+      color: var(--text-muted);
+      cursor: pointer;
+      font-size: 1.1rem;
+      padding: 0.2rem 0.4rem;
+      border-radius: 4px;
+      transition: color 0.15s;
+    }
+    .tag-del-btn:hover { color: #e57373; }
+    .new-tag-row { display: flex; align-items: center; gap: 0.5rem; margin-top: 0.75rem; }
+    .new-tag-row input[type="text"] {
+      flex: 1;
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      color: var(--text);
+      font-family: inherit;
+      font-size: 1.2rem;
+      padding: 0.4rem 0.6rem;
+    }
+    .new-tag-row input[type="color"] { border: none; background: none; width: 2.2rem; height: 2rem; cursor: pointer; padding: 0; }
+
+    /* ── ADMIN BADGE ── */
+    .rm-admin-indicator {
+      display: none;
+      align-items: center;
+      gap: 0.4rem;
+      font-size: 1.1rem;
+      color: var(--accent);
+    }
+    .rm-admin-indicator.visible { display: flex; }
+  </style>
+</head>
+
+<body class="colorscheme-dark">
+  <main class="wrapper">
+
+    <nav class="navigation">
+      <section class="container">
+        <a class="navigation-title" href="/">Kittisci</a>
+        <input type="checkbox" id="menu-toggle">
+        <label class="menu-button float-right" for="menu-toggle">
+          <i class="fa-solid fa-bars fa-fw" aria-hidden="true"></i>
+        </label>
+        <ul class="navigation-list">
+          <li class="navigation-item"><a class="navigation-link" href="/about.html">About</a></li>
+          <li class="navigation-item"><a class="navigation-link" href="/news.html">News</a></li>
+          <li class="navigation-item"><a class="navigation-link" href="/projects.html">Projects</a></li>
+          <li class="navigation-item"><a class="navigation-link" href="/recommendations.html">Recommendations</a></li>
+          <li class="navigation-item"><a class="navigation-link active" href="/roadmap.html">Roadmap</a></li>
+          <li class="navigation-item">
+            <a id="dark-mode-toggle" class="colorscheme-toggle" title="Toggle dark mode" aria-label="Toggle dark mode">
+              <i class="fa-solid fa-adjust fa-fw" aria-hidden="true"></i>
+            </a>
+          </li>
+        </ul>
+      </section>
+    </nav>
+
+    <div class="content">
+      <section class="container page">
+        <article>
+
+          <header>
+            <h1 class="title"><a class="title-link" href="/roadmap.html">Roadmap</a></h1>
+            <p style="color:var(--text-muted);margin:0 0 2rem;font-size:1.4rem;">The site's to-do list.</p>
+          </header>
+
+          <!-- TOOLBAR -->
+          <div class="roadmap-toolbar">
+            <div class="roadmap-toolbar-left" id="rm-filter-bar">
+              <span class="filter-label">Filter:</span>
+              <button class="tag-filter-btn active" data-filter="all" onclick="rmSetFilter('all')">All</button>
+            </div>
+            <span class="rm-admin-indicator" id="rm-admin-badge">
+              <i class="fa-solid fa-lock-open fa-fw"></i> Admin
+            </span>
+            <div id="rm-admin-toolbar" style="display:none;gap:0.5rem;flex-wrap:wrap;">
+              <button class="admin-toolbar-btn secondary" onclick="openTagManager()">
+                <i class="fa-solid fa-tags fa-fw"></i> Tags
+              </button>
+              <button class="admin-toolbar-btn" onclick="openItemModal(null)">
+                <i class="fa-solid fa-plus fa-fw"></i> Add item
+              </button>
+            </div>
+          </div>
+
+          <!-- MAIN LIST -->
+          <div id="rm-status" class="rm-status">Loading…</div>
+          <div class="roadmap-list" id="rm-list" style="display:none;"></div>
+
+          <!-- COMPLETED -->
+          <div id="rm-completed-wrap" style="display:none;">
+            <button class="completed-toggle" id="rm-completed-toggle" onclick="rmToggleCompleted()">
+              <span class="toggle-arrow">▶</span>
+              <span id="rm-completed-label">Completed (0)</span>
+            </button>
+            <div class="completed-list" id="rm-completed-list"></div>
+          </div>
+
+        </article>
+      </section>
+    </div>
+
+    <footer class="footer">
+      <section class="container">
+        &copy; 2026 Kittisci
+      </section>
+    </footer>
+
+  </main>
+
+  <button id="return-to-top" onclick="window.scrollTo({top: 0, behavior: 'smooth'})" aria-label="Return to top">
+    <i class="fa-solid fa-arrow-up"></i>
+  </button>
+</div>
+
+<!-- ── ADMIN LOGIN MODAL ── -->
+<div class="rm-modal-backdrop" id="rm-admin-overlay">
+  <div class="rm-modal">
+    <h2>Admin Access</h2>
+    <p style="color:var(--text-muted);font-size:1.3rem;margin:0 0 1rem;">Enter your password to manage the roadmap.</p>
+    <div class="rm-field">
+      <input type="password" id="rm-admin-pw-input" placeholder="Password…" />
+    </div>
+    <div id="rm-admin-error" style="display:none;color:#e57373;font-size:1.1rem;margin-bottom:0.75rem;"></div>
+    <div class="rm-modal-actions">
+      <button class="rm-btn cancel" onclick="closeAdminOverlay()">Cancel</button>
+      <button class="rm-btn" onclick="submitAdminPassword()">Unlock</button>
+    </div>
+  </div>
+</div>
+
+<!-- ── ITEM MODAL ── -->
+<div class="rm-modal-backdrop" id="rm-item-modal">
+  <div class="rm-modal">
+    <h2 id="rm-item-modal-title">Add item</h2>
+    <div class="rm-field">
+      <label>Title</label>
+      <input type="text" id="rm-item-title" placeholder="What needs doing?" />
+    </div>
+    <div class="rm-field">
+      <label>Description <span style="color:var(--text-muted);font-size:1rem;">(optional)</span></label>
+      <textarea id="rm-item-desc" rows="3" placeholder="More detail…"></textarea>
+    </div>
+    <div class="rm-field">
+      <label>Tags</label>
+      <div class="rm-tag-picker" id="rm-item-tag-picker"></div>
+    </div>
+    <div class="rm-modal-actions">
+      <button class="rm-btn cancel" onclick="closeItemModal()">Cancel</button>
+      <button class="rm-btn" onclick="saveItem()">Save</button>
+    </div>
+  </div>
+</div>
+
+<!-- ── TAG MANAGER MODAL ── -->
+<div class="rm-modal-backdrop" id="rm-tag-modal">
+  <div class="rm-modal">
+    <h2>Manage Tags</h2>
+    <div id="rm-tag-list-rows"></div>
+    <div class="new-tag-row">
+      <input type="text" id="rm-new-tag-name" placeholder="New tag name…" />
+      <input type="color" id="rm-new-tag-colour" value="#42a5f5" />
+      <button class="rm-btn" onclick="addTag()">Add</button>
+    </div>
+    <div class="rm-modal-actions">
+      <button class="rm-btn cancel" onclick="closeTagModal()">Done</button>
+    </div>
+  </div>
+</div>
+
+<!-- ── CONFIRM MODAL ── -->
+<div class="rm-modal-backdrop" id="rm-confirm-modal">
+  <div class="rm-modal">
+    <h2 id="rm-confirm-title">Are you sure?</h2>
+    <p id="rm-confirm-msg" style="color:var(--text-muted);font-size:1.3rem;margin:0;"></p>
+    <div class="rm-modal-actions">
+      <button class="rm-btn cancel" onclick="closeConfirm()">Cancel</button>
+      <button class="rm-btn danger" id="rm-confirm-ok">Confirm</button>
+    </div>
+  </div>
+</div>
+
+<script src="/site.js"></script>
+<script src="/js/guestbook.js"></script>
+<script>
+'use strict';
+
+// ── STATE ─────────────────────────────────────────────────
+const RM_WORKER    = 'https://kittisci-proxy.kittisci.workers.dev';
+const RM_KEY_ITEMS = 'roadmap_items';
+const RM_KEY_TAGS  = 'roadmap_tags';
+
+let rmItems   = [];
+let rmTags    = [];
+let rmFilter  = 'all';
+let rmEditId  = null;
+let rmDragId  = null;
+let rmIsAdmin = false;
+let rmAdminPw = '';
+
+// ── ADMIN OVERLAY ─────────────────────────────────────────
+function showAdminOverlay() {
+  document.getElementById('rm-admin-overlay').classList.add('open');
+  setTimeout(() => document.getElementById('rm-admin-pw-input').focus(), 50);
+}
+
+function closeAdminOverlay() {
+  document.getElementById('rm-admin-overlay').classList.remove('open');
+  document.getElementById('rm-admin-pw-input').value = '';
+  document.getElementById('rm-admin-error').style.display = 'none';
+  history.replaceState(null, '', window.location.pathname);
+}
+
+async function submitAdminPassword() {
+  const pw  = document.getElementById('rm-admin-pw-input').value;
+  const err = document.getElementById('rm-admin-error');
+  err.style.display = 'none';
+  try {
+    const res = await fetch(RM_WORKER + '/guestbook', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ action: 'test', password: pw }),
+    });
+    if (res.status === 401) {
+      err.textContent = 'Incorrect password.';
+      err.style.display = 'block';
+      return;
+    }
+    rmIsAdmin = true;
+    rmAdminPw = pw;
+    sessionStorage.setItem('rmAdminAuth', 'true');
+    sessionStorage.setItem('rmAdminPw', pw);
+    closeAdminOverlay();
+    renderAll();
+  } catch(e) {
+    err.textContent = 'Could not connect to server.';
+    err.style.display = 'block';
+  }
+}
+
+// ── LOCAL STORAGE ─────────────────────────────────────────
+function rmLoad() {
+  try {
+    const items = localStorage.getItem(RM_KEY_ITEMS);
+    const tags  = localStorage.getItem(RM_KEY_TAGS);
+    rmItems = items ? JSON.parse(items) : [];
+    rmTags  = tags  ? JSON.parse(tags)  : defaultTags();
+  } catch(e) {
+    rmItems = [];
+    rmTags  = defaultTags();
+  }
+}
+
+function rmSave() {
+  try {
+    localStorage.setItem(RM_KEY_ITEMS, JSON.stringify(rmItems));
+    localStorage.setItem(RM_KEY_TAGS,  JSON.stringify(rmTags));
+    try { new BroadcastChannel('kittisci-roadmap').postMessage('update'); } catch(e) {}
+  } catch(e) {}
+}
+
+function defaultTags() {
+  return [
+    { id: 'bug',     name: 'Bug',     colour: '#e57373' },
+    { id: 'feature', name: 'Feature', colour: '#42a5f5' },
+    { id: 'content', name: 'Content', colour: '#66bb6a' },
+    { id: 'design',  name: 'Design',  colour: '#ce93d8' },
+  ];
+}
+
+function rmId() {
+  return Date.now().toString(36) + Math.random().toString(36).slice(2, 7);
+}
+
+// ── INIT ──────────────────────────────────────────────────
+document.addEventListener('DOMContentLoaded', function() {
+  rmLoad();
+
+  rmIsAdmin = !!sessionStorage.getItem('rmAdminAuth');
+  rmAdminPw = sessionStorage.getItem('rmAdminPw') || '';
+
+  if (window.location.hash === '#admin') showAdminOverlay();
+  window.addEventListener('hashchange', function() {
+    if (window.location.hash === '#admin') showAdminOverlay();
+  });
+
+  try {
+    const bc = new BroadcastChannel('kittisci-roadmap');
+    bc.onmessage = function() { rmLoad(); renderAll(); };
+  } catch(e) {}
+
+  renderAll();
+
+  document.getElementById('rm-item-modal').addEventListener('click', function(e) { if (e.target === this) closeItemModal(); });
+  document.getElementById('rm-tag-modal').addEventListener('click', function(e) { if (e.target === this) closeTagModal(); });
+  document.getElementById('rm-confirm-modal').addEventListener('click', function(e) { if (e.target === this) closeConfirm(); });
+  document.getElementById('rm-admin-overlay').addEventListener('click', function(e) { if (e.target === this) closeAdminOverlay(); });
+
+  document.getElementById('rm-new-tag-name').addEventListener('keydown', function(e) { if (e.key === 'Enter') addTag(); });
+  document.getElementById('rm-item-title').addEventListener('keydown', function(e) { if (e.key === 'Enter') saveItem(); });
+  document.getElementById('rm-admin-pw-input').addEventListener('keydown', function(e) { if (e.key === 'Enter') submitAdminPassword(); });
+});
+
+// ── RENDER ────────────────────────────────────────────────
+function renderAll() {
+  renderAdminUI();
+  renderFilterBar();
+  renderList();
+}
+
+function renderAdminUI() {
+  const badge   = document.getElementById('rm-admin-badge');
+  const toolbar = document.getElementById('rm-admin-toolbar');
+  const wrap    = document.querySelector('article');
+  if (rmIsAdmin) {
+    badge.classList.add('visible');
+    toolbar.style.display = 'flex';
+    wrap.classList.add('admin-mode');
+  } else {
+    badge.classList.remove('visible');
+    toolbar.style.display = 'none';
+    wrap.classList.remove('admin-mode');
+  }
+}
+
+function renderFilterBar() {
+  const bar = document.getElementById('rm-filter-bar');
+  Array.from(bar.querySelectorAll('[data-filter]:not([data-filter="all"])')).forEach(b => b.remove());
+
+  rmTags.forEach(function(tag) {
+    const btn = document.createElement('button');
+    const isActive = rmFilter === tag.id;
+    btn.className = 'tag-filter-btn' + (isActive ? ' active' : '');
+    btn.dataset.filter = tag.id;
+    btn.textContent = tag.name;
+    btn.style.borderColor = tag.colour;
+    if (isActive) { btn.style.background = tag.colour; btn.style.color = '#000'; }
+    btn.onclick = function() { rmSetFilter(tag.id); };
+    bar.appendChild(btn);
+  });
+
+  const allBtn = bar.querySelector('[data-filter="all"]');
+  allBtn.className = 'tag-filter-btn' + (rmFilter === 'all' ? ' active' : '');
+}
+
+function rmSetFilter(f) {
+  rmFilter = f;
+  renderFilterBar();
+  renderList();
+}
+
+function tagById(id) { return rmTags.find(t => t.id === id); }
+
+function renderItem(item, completed) {
+  const el = document.createElement('div');
+  el.className = 'roadmap-item' + (completed ? ' completed-item' : '');
+  el.dataset.id = item.id;
+
+  if (rmIsAdmin && !completed) {
+    el.draggable = true;
+    el.addEventListener('dragstart', function(e) {
+      rmDragId = item.id;
+      setTimeout(() => el.classList.add('dragging'), 0);
+      e.dataTransfer.effectAllowed = 'move';
+    });
+    el.addEventListener('dragend', function() {
+      el.classList.remove('dragging');
+      document.querySelectorAll('.roadmap-item').forEach(i => i.classList.remove('drag-over'));
+    });
+    el.addEventListener('dragover', function(e) {
+      e.preventDefault();
+      e.dataTransfer.dropEffect = 'move';
+      document.querySelectorAll('.roadmap-item').forEach(i => i.classList.remove('drag-over'));
+      el.classList.add('drag-over');
+    });
+    el.addEventListener('drop', function(e) {
+      e.preventDefault();
+      el.classList.remove('drag-over');
+      if (rmDragId && rmDragId !== item.id) reorderItem(rmDragId, item.id);
+    });
+  }
+
+  const handleHTML = rmIsAdmin && !completed
+    ? `<span class="drag-handle" title="Drag to reorder"><i class="fa-solid fa-grip-vertical"></i></span>`
+    : '';
+
+  const checkClass = 'item-check' + (completed ? ' checked' : '');
+  const checkClick = rmIsAdmin ? `onclick="rmToggleComplete('${item.id}')"` : '';
+
+  const tagsHTML = (item.tags || []).map(function(tid) {
+    const t = tagById(tid);
+    if (!t) return '';
+    return `<span class="item-tag" style="color:${t.colour};border-color:${t.colour};">${escRm(t.name)}</span>`;
+  }).join('');
+
+  const actionsHTML = rmIsAdmin
+    ? `<div class="item-actions">
+        <button class="item-action-btn" onclick="openItemModal('${item.id}')" title="Edit"><i class="fa-solid fa-pencil"></i></button>
+        <button class="item-action-btn danger" onclick="confirmDeleteItem('${item.id}')" title="Delete"><i class="fa-solid fa-trash"></i></button>
+       </div>`
+    : '';
+
+  el.innerHTML = `
+    ${handleHTML}
+    <div class="${checkClass}" ${checkClick} title="${rmIsAdmin ? (completed ? 'Mark incomplete' : 'Mark complete') : ''}"></div>
+    <div class="item-body">
+      <div class="item-title${completed ? ' completed' : ''}">${escRm(item.title)}</div>
+      ${item.desc ? `<div class="item-desc">${escRm(item.desc)}</div>` : ''}
+      ${tagsHTML ? `<div class="item-tags">${tagsHTML}</div>` : ''}
+    </div>
+    ${actionsHTML}
+  `;
+  return el;
+}
+
+function renderList() {
+  const status    = document.getElementById('rm-status');
+  const list      = document.getElementById('rm-list');
+  const compWrap  = document.getElementById('rm-completed-wrap');
+  const compList  = document.getElementById('rm-completed-list');
+  const compLabel = document.getElementById('rm-completed-label');
+
+  let active = rmItems.filter(i => !i.completed);
+  let done   = rmItems.filter(i =>  i.completed);
+
+  if (rmFilter !== 'all') {
+    active = active.filter(i => (i.tags || []).includes(rmFilter));
+    done   = done.filter(i => (i.tags || []).includes(rmFilter));
+  }
+
+  active.sort((a, b) => (a.order ?? 0) - (b.order ?? 0));
+  done.sort((a, b)   => (b.completedAt ?? 0) - (a.completedAt ?? 0));
+
+  status.style.display = 'none';
+  list.style.display = 'flex';
+  list.innerHTML = '';
+
+  if (active.length === 0) {
+    list.innerHTML = `<div class="roadmap-empty">${rmFilter === 'all' ? 'Nothing here yet.' : 'No items with this tag.'}</div>`;
+  } else {
+    active.forEach(item => list.appendChild(renderItem(item, false)));
+  }
+
+  if (done.length > 0) {
+    compWrap.style.display = 'block';
+    compLabel.textContent = `Completed (${done.length})`;
+    compList.innerHTML = '';
+    done.forEach(item => compList.appendChild(renderItem(item, true)));
+  } else {
+    compWrap.style.display = 'none';
+  }
+}
+
+function rmToggleCompleted() {
+  document.getElementById('rm-completed-toggle').classList.toggle('open');
+  document.getElementById('rm-completed-list').classList.toggle('open');
+}
+
+// ── DRAG REORDER ──────────────────────────────────────────
+function reorderItem(dragId, dropId) {
+  const active = rmItems.filter(i => !i.completed).sort((a, b) => (a.order ?? 0) - (b.order ?? 0));
+  const dragIdx = active.findIndex(i => i.id === dragId);
+  const dropIdx = active.findIndex(i => i.id === dropId);
+  if (dragIdx === -1 || dropIdx === -1) return;
+  const [dragged] = active.splice(dragIdx, 1);
+  active.splice(dropIdx, 0, dragged);
+  active.forEach((item, idx) => {
+    const found = rmItems.find(i => i.id === item.id);
+    if (found) found.order = idx;
+  });
+  rmSave();
+  renderList();
+}
+
+// ── COMPLETE TOGGLE ───────────────────────────────────────
+function rmToggleComplete(id) {
+  if (!rmIsAdmin) return;
+  const item = rmItems.find(i => i.id === id);
+  if (!item) return;
+  item.completed   = !item.completed;
+  item.completedAt = item.completed ? Date.now() : null;
+  rmSave();
+  renderList();
+}
+
+// ── ITEM MODAL ────────────────────────────────────────────
+function openItemModal(id) {
+  rmEditId = id;
+  const item = id ? rmItems.find(i => i.id === id) : null;
+
+  document.getElementById('rm-item-modal-title').textContent = item ? 'Edit item' : 'Add item';
+  document.getElementById('rm-item-title').value = item ? item.title : '';
+  document.getElementById('rm-item-desc').value  = item ? (item.desc || '') : '';
+
+  const picker = document.getElementById('rm-item-tag-picker');
+  picker.innerHTML = '';
+  const selectedTags = item ? (item.tags || []) : [];
+  rmTags.forEach(function(tag) {
+    const btn = document.createElement('button');
+    const sel = selectedTags.includes(tag.id);
+    btn.className = 'rm-tag-pick-btn' + (sel ? ' selected' : '');
+    btn.textContent = tag.name;
+    btn.style.borderColor = tag.colour;
+    if (sel) { btn.style.background = tag.colour; btn.style.color = '#000'; }
+    btn.onclick = function() {
+      btn.classList.toggle('selected');
+      if (btn.classList.contains('selected')) {
+        btn.style.background = tag.colour; btn.style.color = '#000';
+      } else {
+        btn.style.background = ''; btn.style.color = '';
+      }
+    };
+    picker.appendChild(btn);
+  });
+
+  document.getElementById('rm-item-modal').classList.add('open');
+  setTimeout(() => document.getElementById('rm-item-title').focus(), 50);
+}
+
+function closeItemModal() {
+  document.getElementById('rm-item-modal').classList.remove('open');
+  rmEditId = null;
+}
+
+function saveItem() {
+  const title = document.getElementById('rm-item-title').value.trim();
+  if (!title) { document.getElementById('rm-item-title').focus(); return; }
+  const desc = document.getElementById('rm-item-desc').value.trim();
+
+  const selected = [];
+  document.querySelectorAll('#rm-item-tag-picker .rm-tag-pick-btn.selected').forEach(function(btn) {
+    const tag = rmTags.find(t => t.name === btn.textContent);
+    if (tag) selected.push(tag.id);
+  });
+
+  if (rmEditId) {
+    const item = rmItems.find(i => i.id === rmEditId);
+    if (item) { item.title = title; item.desc = desc; item.tags = selected; }
+  } else {
+    const maxOrder = rmItems.filter(i => !i.completed).reduce((m, i) => Math.max(m, i.order ?? 0), -1);
+    rmItems.push({ id: rmId(), title, desc, tags: selected, completed: false, order: maxOrder + 1, completedAt: null });
+  }
+
+  rmSave();
+  closeItemModal();
+  renderList();
+}
+
+// ── DELETE ITEM ───────────────────────────────────────────
+function confirmDeleteItem(id) {
+  const item = rmItems.find(i => i.id === id);
+  if (!item) return;
+  showConfirm(
+    'Delete item?',
+    `"${item.title}" will be permanently removed.`,
+    function() { rmItems = rmItems.filter(i => i.id !== id); rmSave(); renderList(); }
+  );
+}
+
+// ── TAG MANAGER ───────────────────────────────────────────
+function openTagManager() {
+  renderTagRows();
+  document.getElementById('rm-tag-modal').classList.add('open');
+}
+function closeTagModal() {
+  document.getElementById('rm-tag-modal').classList.remove('open');
+  renderAll();
+}
+
+function renderTagRows() {
+  const container = document.getElementById('rm-tag-list-rows');
+  container.innerHTML = '';
+  rmTags.forEach(function(tag) {
+    const row = document.createElement('div');
+    row.className = 'tag-list-row';
+    row.innerHTML = `
+      <div class="tag-swatch" style="background:${tag.colour};"></div>
+      <input class="tag-name-input" type="text" value="${escRm(tag.name)}" data-id="${tag.id}" />
+      <input class="tag-colour-input" type="color" value="${tag.colour}" data-id="${tag.id}" />
+      <button class="tag-del-btn" data-id="${tag.id}" title="Delete tag"><i class="fa-solid fa-trash"></i></button>
+    `;
+    row.querySelector('.tag-name-input').addEventListener('change', function() {
+      const t = rmTags.find(t => t.id === this.dataset.id);
+      if (t) { t.name = this.value.trim() || t.name; rmSave(); }
+    });
+    row.querySelector('.tag-colour-input').addEventListener('input', function() {
+      const t = rmTags.find(t => t.id === this.dataset.id);
+      if (t) { t.colour = this.value; row.querySelector('.tag-swatch').style.background = this.value; rmSave(); }
+    });
+    row.querySelector('.tag-del-btn').addEventListener('click', function() {
+      const tid = this.dataset.id;
+      showConfirm(
+        'Delete tag?',
+        "Items with this tag will lose it but won't be deleted.",
+        function() {
+          rmTags = rmTags.filter(t => t.id !== tid);
+          rmItems.forEach(item => { item.tags = (item.tags || []).filter(t => t !== tid); });
+          rmSave();
+          renderTagRows();
+        }
+      );
+    });
+    container.appendChild(row);
+  });
+}
+
+function addTag() {
+  const nameEl   = document.getElementById('rm-new-tag-name');
+  const colourEl = document.getElementById('rm-new-tag-colour');
+  const name = nameEl.value.trim();
+  if (!name) { nameEl.focus(); return; }
+  rmTags.push({ id: rmId(), name, colour: colourEl.value });
+  rmSave();
+  nameEl.value = '';
+  colourEl.value = '#42a5f5';
+  renderTagRows();
+}
+
+// ── CONFIRM ───────────────────────────────────────────────
+let rmConfirmCallback = null;
+function showConfirm(title, msg, cb) {
+  document.getElementById('rm-confirm-title').textContent = title;
+  document.getElementById('rm-confirm-msg').textContent   = msg;
+  rmConfirmCallback = cb;
+  document.getElementById('rm-confirm-modal').classList.add('open');
+}
+function closeConfirm() {
+  document.getElementById('rm-confirm-modal').classList.remove('open');
+  rmConfirmCallback = null;
+}
+document.getElementById('rm-confirm-ok').onclick = function() {
+  if (rmConfirmCallback) rmConfirmCallback();
+  closeConfirm();
+};
+
+// ── UTIL ──────────────────────────────────────────────────
+function escRm(str) {
+  return String(str)
+    .replace(/&/g,'&amp;').replace(/</g,'&lt;')
+    .replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#039;');
+}
+</script>
+</body>
+</html>
