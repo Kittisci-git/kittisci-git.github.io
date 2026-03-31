@@ -45,85 +45,40 @@
     }
     #label-toggle:hover { color: var(--accent); }
     #label-toggle.active { color: var(--text); }
-
-    /* ── DEBUG PANEL ─────────────────────────────────────── */
     #debug-panel {
-      display: none;
-      position: fixed;
-      top: 4rem;
-      right: 1rem;
-      z-index: 9999;
-      background: var(--bg-secondary, #242424);
-      border: 1px solid var(--border);
-      border-radius: 8px;
-      font-family: inherit;
-      font-size: 1.1rem;
-      color: var(--text-muted);
-      width: 280px;
-      max-height: calc(100vh - 6rem);
-      overflow-y: auto;
-      pointer-events: all;
+      display: none; position: fixed; top: 4rem; right: 1rem; z-index: 9999;
+      background: var(--bg-secondary, #242424); border: 1px solid var(--border);
+      border-radius: 8px; font-family: inherit; font-size: 1.1rem;
+      color: var(--text-muted); width: 280px;
+      max-height: calc(100vh - 6rem); overflow-y: auto; pointer-events: all;
     }
     #debug-panel-title {
-      font-size: 1rem;
-      color: var(--text);
-      font-weight: 700;
-      text-transform: uppercase;
-      letter-spacing: 0.08em;
-      padding: 0.7rem 1rem;
-      border-bottom: 1px solid var(--border);
-      position: sticky;
-      top: 0;
-      background: var(--bg-secondary, #242424);
+      font-size: 1rem; color: var(--text); font-weight: 700;
+      text-transform: uppercase; letter-spacing: 0.08em;
+      padding: 0.7rem 1rem; border-bottom: 1px solid var(--border);
+      position: sticky; top: 0; background: var(--bg-secondary, #242424);
     }
     .dbg-section { border-bottom: 1px solid var(--border); }
     .dbg-section-header {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      padding: 0.5rem 1rem;
-      cursor: pointer;
-      color: var(--text);
-      font-weight: 600;
-      font-size: 1rem;
-      user-select: none;
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 0.5rem 1rem; cursor: pointer; color: var(--text);
+      font-weight: 600; font-size: 1rem; user-select: none;
     }
     .dbg-section-header:hover { color: var(--accent, #42a5f5); }
     .dbg-section-arrow { font-size: 0.8rem; transition: transform 0.2s; }
     .dbg-section.open .dbg-section-arrow { transform: rotate(90deg); }
     .dbg-section-body { display: none; padding: 0.4rem 0.75rem 0.6rem; }
     .dbg-section.open .dbg-section-body { display: block; }
-    .dbg-row {
-      display: flex;
-      align-items: center;
-      gap: 0.5rem;
-      padding: 0.25rem 0;
-    }
-    .dbg-row label {
-      flex: 1;
-      color: var(--text-muted);
-      font-size: 1rem;
-      cursor: default;
-    }
+    .dbg-row { display: flex; align-items: center; gap: 0.5rem; padding: 0.25rem 0; }
+    .dbg-row label { flex: 1; color: var(--text-muted); font-size: 1rem; cursor: default; }
     .dbg-row input[type="checkbox"] { cursor: pointer; }
-    .dbg-row input[type="range"] {
-      flex: 1.4;
-      accent-color: var(--accent, #42a5f5);
-      cursor: pointer;
-    }
-    .dbg-val {
-      width: 3.2em;
-      text-align: right;
-      color: var(--text);
-      font-size: 0.95rem;
-      font-variant-numeric: tabular-nums;
-    }
+    .dbg-row input[type="range"] { flex: 1.4; accent-color: var(--accent, #42a5f5); cursor: pointer; }
+    .dbg-val { width: 3.2em; text-align: right; color: var(--text); font-size: 0.95rem; font-variant-numeric: tabular-nums; }
   </style>
 </head>
 <body class="colorscheme-dark">
 
 <h1 id="font-probe" style="display:none"></h1>
-
 <canvas id="starfield"></canvas>
 <canvas id="gl-canvas"></canvas>
 <canvas id="hud-canvas"></canvas>
@@ -145,250 +100,113 @@
      style="color:var(--text-muted);font-size:1.4rem;margin-top:1rem;">GitHub</a>
 </div>
 
-<!-- DEBUG PANEL -->
 <div id="debug-panel">
   <div id="debug-panel-title">⚙ Debug</div>
 
-  <!-- OVERLAYS -->
   <div class="dbg-section open">
-    <div class="dbg-section-header" onclick="dbgToggle(this)">
-      Overlays <span class="dbg-section-arrow">▶</span>
-    </div>
+    <div class="dbg-section-header" onclick="dbgToggle(this)">Overlays <span class="dbg-section-arrow">▶</span></div>
     <div class="dbg-section-body">
-      <div class="dbg-row">
-        <label>Rotation axes</label>
-        <input type="checkbox" id="debug-axes">
-      </div>
-      <div class="dbg-row">
-        <label>Orbit lines</label>
-        <input type="checkbox" id="debug-orbits">
-      </div>
+      <div class="dbg-row"><label>Rotation axes</label><input type="checkbox" id="debug-axes"></div>
+      <div class="dbg-row"><label>Orbit lines</label><input type="checkbox" id="debug-orbits"></div>
     </div>
   </div>
 
-  <!-- CAMERA -->
   <div class="dbg-section">
-    <div class="dbg-section-header" onclick="dbgToggle(this)">
-      Camera <span class="dbg-section-arrow">▶</span>
-    </div>
+    <div class="dbg-section-header" onclick="dbgToggle(this)">Camera <span class="dbg-section-arrow">▶</span></div>
     <div class="dbg-section-body">
-      <div class="dbg-row">
-        <label>Tilt (°)</label>
-        <input type="range" id="dbg-tilt" min="0" max="90" step="1" value="65">
-        <span class="dbg-val" id="dbg-tilt-val">65°</span>
-      </div>
-      <div class="dbg-row">
-        <label>Distance</label>
-        <input type="range" id="dbg-dist" min="8" max="50" step="0.5" value="20">
-        <span class="dbg-val" id="dbg-dist-val">20</span>
-      </div>
-      <div class="dbg-row">
-        <label>FOV (°)</label>
-        <input type="range" id="dbg-fov" min="10" max="90" step="1" value="37">
-        <span class="dbg-val" id="dbg-fov-val">37°</span>
-      </div>
+      <div class="dbg-row"><label>Tilt (°)</label><input type="range" id="dbg-tilt" min="0" max="90" step="1" value="65"><span class="dbg-val" id="dbg-tilt-val">65°</span></div>
+      <div class="dbg-row"><label>Distance</label><input type="range" id="dbg-dist" min="8" max="50" step="0.5" value="20"><span class="dbg-val" id="dbg-dist-val">20</span></div>
+      <div class="dbg-row"><label>FOV (°)</label><input type="range" id="dbg-fov" min="10" max="90" step="1" value="37"><span class="dbg-val" id="dbg-fov-val">37°</span></div>
     </div>
   </div>
 
-  <!-- STAR -->
-  <div class="dbg-section">
-    <div class="dbg-section-header" onclick="dbgToggle(this)">
-      Star <span class="dbg-section-arrow">▶</span>
-    </div>
+  <div class="dbg-section open">
+    <div class="dbg-section-header" onclick="dbgToggle(this)">Star Type <span class="dbg-section-arrow">▶</span></div>
     <div class="dbg-section-body">
       <div class="dbg-row">
-        <label>Spin speed</label>
-        <input type="range" id="dbg-star-spin" min="-0.2" max="0.2" step="0.001" value="-0.04">
-        <span class="dbg-val" id="dbg-star-spin-val">-0.04</span>
+        <label>Preset</label>
+        <select id="dbg-preset-select" style="flex:1.4;background:var(--bg,#212121);color:var(--text,#dadada);border:1px solid var(--border,#424242);border-radius:4px;padding:0.2rem 0.4rem;font-size:0.95rem;cursor:pointer;">
+          <option>G-type</option>
+          <option>Red Dwarf</option>
+          <option>Blue Giant</option>
+          <option>Black Hole</option>
+          <option>Neutron Star</option>
+          <option>White Dwarf</option>
+        </select>
       </div>
-      <div class="dbg-row">
-        <label>Radius</label>
-        <input type="range" id="dbg-star-r" min="0.3" max="3" step="0.05" value="1">
-        <span class="dbg-val" id="dbg-star-r-val">1.0</span>
-      </div>
-      <div class="dbg-row">
-        <label>Glow mult</label>
-        <input type="range" id="dbg-glow" min="0" max="5" step="0.1" value="1">
-        <span class="dbg-val" id="dbg-glow-val">1.0</span>
-      </div>
-      <div class="dbg-row">
-        <label>Colour</label>
-        <input type="color" id="dbg-star-colour" value="#dadada" style="cursor:pointer;border:none;background:none;width:3em;height:1.8em;">
-      </div>
-      <div class="dbg-row">
-        <label>Rebuild star</label>
-        <button id="dbg-rebuild-star" style="
-          background:var(--accent,#42a5f5);color:#000;border:none;
-          border-radius:4px;padding:0.2rem 0.6rem;cursor:pointer;font-size:1rem;">
-          ↺ Rebuild
-        </button>
-      </div>
+      <div class="dbg-row"><label>Random daily</label><input type="checkbox" id="dbg-preset-random" checked></div>
     </div>
   </div>
 
-  <!-- PLANETS -->
   <div class="dbg-section">
-    <div class="dbg-section-header" onclick="dbgToggle(this)">
-      Planets <span class="dbg-section-arrow">▶</span>
-    </div>
+    <div class="dbg-section-header" onclick="dbgToggle(this)">Star <span class="dbg-section-arrow">▶</span></div>
     <div class="dbg-section-body">
-      <div class="dbg-row">
-        <label>Orbit base</label>
-        <input type="range" id="dbg-orbit-base" min="1" max="8" step="0.1" value="3">
-        <span class="dbg-val" id="dbg-orbit-base-val">3.0</span>
-      </div>
-      <div class="dbg-row">
-        <label>Orbit step</label>
-        <input type="range" id="dbg-orbit-step" min="0.5" max="4" step="0.1" value="1.5">
-        <span class="dbg-val" id="dbg-orbit-step-val">1.5</span>
-      </div>
-      <div class="dbg-row">
-        <label>Min radius</label>
-        <input type="range" id="dbg-p-rmin" min="0.05" max="0.5" step="0.01" value="0.18">
-        <span class="dbg-val" id="dbg-p-rmin-val">0.18</span>
-      </div>
-      <div class="dbg-row">
-        <label>Max radius</label>
-        <input type="range" id="dbg-p-rmax" min="0.1" max="1" step="0.01" value="0.42">
-        <span class="dbg-val" id="dbg-p-rmax-val">0.42</span>
-      </div>
-      <div class="dbg-row">
-        <label>Orbit speed</label>
-        <input type="range" id="dbg-orbit-speed" min="0.1" max="5" step="0.05" value="1">
-        <span class="dbg-val" id="dbg-orbit-speed-val">1.0×</span>
-      </div>
-      <div class="dbg-row">
-        <label>Spin speed</label>
-        <input type="range" id="dbg-planet-spin" min="0" max="5" step="0.05" value="1">
-        <span class="dbg-val" id="dbg-planet-spin-val">1.0×</span>
-      </div>
+      <div class="dbg-row"><label>Spin speed</label><input type="range" id="dbg-star-spin" min="-20" max="0" step="0.001" value="-0.04"><span class="dbg-val" id="dbg-star-spin-val">-0.04</span></div>
+      <div class="dbg-row"><label>Radius</label><input type="range" id="dbg-star-r" min="0.3" max="3" step="0.05" value="1"><span class="dbg-val" id="dbg-star-r-val">1.0</span></div>
+      <div class="dbg-row"><label>Glow mult</label><input type="range" id="dbg-glow" min="0" max="5" step="0.1" value="1"><span class="dbg-val" id="dbg-glow-val">1.0</span></div>
+      <div class="dbg-row"><label>Jet rate ×</label><input type="range" id="dbg-jet-rate" min="0.1" max="150" step="0.1" value="1"><span class="dbg-val" id="dbg-jet-rate-val">1.0×</span></div>
+      <div class="dbg-row"><label>Jet length</label><input type="range" id="dbg-jet-length" min="0" max="50" step="0.5" value="0"><span class="dbg-val" id="dbg-jet-length-val">0.0</span></div>
+      <div class="dbg-row"><label>Colour</label><input type="color" id="dbg-star-colour" value="#dadada" style="cursor:pointer;border:none;background:none;width:3em;height:1.8em;"></div>
+      <div class="dbg-row"><label>Rebuild star</label><button id="dbg-rebuild-star" style="background:var(--accent,#42a5f5);color:#000;border:none;border-radius:4px;padding:0.2rem 0.6rem;cursor:pointer;font-size:1rem;">↺ Rebuild</button></div>
     </div>
   </div>
 
-  <!-- OBLIQUITY & WOBBLE -->
   <div class="dbg-section">
-    <div class="dbg-section-header" onclick="dbgToggle(this)">
-      Obliquity &amp; Wobble <span class="dbg-section-arrow">▶</span>
-    </div>
+    <div class="dbg-section-header" onclick="dbgToggle(this)">Planets <span class="dbg-section-arrow">▶</span></div>
     <div class="dbg-section-body">
-      <div class="dbg-row">
-        <label>Wobble speed ×</label>
-        <input type="range" id="dbg-wobble-speed" min="0" max="10" step="0.1" value="1">
-        <span class="dbg-val" id="dbg-wobble-speed-val">1.0×</span>
-      </div>
-      <div class="dbg-row">
-        <label>Wobble amp ×</label>
-        <input type="range" id="dbg-wobble-amp" min="0" max="4" step="0.05" value="1">
-        <span class="dbg-val" id="dbg-wobble-amp-val">1.0×</span>
-      </div>
-      <div class="dbg-row">
-        <label>Obliq bias (°)</label>
-        <input type="range" id="dbg-obliq-bias" min="-180" max="180" step="1" value="0">
-        <span class="dbg-val" id="dbg-obliq-bias-val">0°</span>
-      </div>
+      <div class="dbg-row"><label>Orbit base</label><input type="range" id="dbg-orbit-base" min="1" max="8" step="0.1" value="3"><span class="dbg-val" id="dbg-orbit-base-val">3.0</span></div>
+      <div class="dbg-row"><label>Orbit step</label><input type="range" id="dbg-orbit-step" min="0.5" max="4" step="0.1" value="1.5"><span class="dbg-val" id="dbg-orbit-step-val">1.5</span></div>
+      <div class="dbg-row"><label>Min radius</label><input type="range" id="dbg-p-rmin" min="0.05" max="0.5" step="0.01" value="0.18"><span class="dbg-val" id="dbg-p-rmin-val">0.18</span></div>
+      <div class="dbg-row"><label>Max radius</label><input type="range" id="dbg-p-rmax" min="0.1" max="1" step="0.01" value="0.42"><span class="dbg-val" id="dbg-p-rmax-val">0.42</span></div>
+      <div class="dbg-row"><label>Orbit speed</label><input type="range" id="dbg-orbit-speed" min="0.1" max="5" step="0.05" value="1"><span class="dbg-val" id="dbg-orbit-speed-val">1.0×</span></div>
+      <div class="dbg-row"><label>Spin speed</label><input type="range" id="dbg-planet-spin" min="0" max="5" step="0.05" value="1"><span class="dbg-val" id="dbg-planet-spin-val">1.0×</span></div>
     </div>
   </div>
 
-  <!-- MOONS -->
   <div class="dbg-section">
-    <div class="dbg-section-header" onclick="dbgToggle(this)">
-      Moons <span class="dbg-section-arrow">▶</span>
-    </div>
+    <div class="dbg-section-header" onclick="dbgToggle(this)">Obliquity &amp; Wobble <span class="dbg-section-arrow">▶</span></div>
     <div class="dbg-section-body">
-      <div class="dbg-row">
-        <label>Radius mult</label>
-        <input type="range" id="dbg-moon-r" min="0.1" max="0.8" step="0.01" value="0.28">
-        <span class="dbg-val" id="dbg-moon-r-val">0.28</span>
-      </div>
-      <div class="dbg-row">
-        <label>Orbit speed ×</label>
-        <input type="range" id="dbg-moon-speed" min="0" max="5" step="0.05" value="1">
-        <span class="dbg-val" id="dbg-moon-speed-val">1.0×</span>
-      </div>
+      <div class="dbg-row"><label>Wobble speed ×</label><input type="range" id="dbg-wobble-speed" min="0" max="10" step="0.1" value="1"><span class="dbg-val" id="dbg-wobble-speed-val">1.0×</span></div>
+      <div class="dbg-row"><label>Wobble amp ×</label><input type="range" id="dbg-wobble-amp" min="0" max="4" step="0.05" value="1"><span class="dbg-val" id="dbg-wobble-amp-val">1.0×</span></div>
+      <div class="dbg-row"><label>Obliq bias (°)</label><input type="range" id="dbg-obliq-bias" min="-180" max="180" step="1" value="0"><span class="dbg-val" id="dbg-obliq-bias-val">0°</span></div>
     </div>
   </div>
 
-  <!-- LIGHTING -->
   <div class="dbg-section">
-    <div class="dbg-section-header" onclick="dbgToggle(this)">
-      Lighting <span class="dbg-section-arrow">▶</span>
-    </div>
+    <div class="dbg-section-header" onclick="dbgToggle(this)">Moons <span class="dbg-section-arrow">▶</span></div>
     <div class="dbg-section-body">
-      <div class="dbg-row">
-        <label>Ambient</label>
-        <input type="range" id="dbg-ambient" min="0" max="0.5" step="0.005" value="0.06">
-        <span class="dbg-val" id="dbg-ambient-val">0.06</span>
-      </div>
-      <div class="dbg-row">
-        <label>Diffuse</label>
-        <input type="range" id="dbg-diffuse" min="0" max="1" step="0.01" value="0.94">
-        <span class="dbg-val" id="dbg-diffuse-val">0.94</span>
-      </div>
-      <div class="dbg-row">
-        <label>Specular</label>
-        <input type="range" id="dbg-specular" min="0" max="0.5" step="0.005" value="0.12">
-        <span class="dbg-val" id="dbg-specular-val">0.12</span>
-      </div>
-      <div class="dbg-row">
-        <label>Spec power</label>
-        <input type="range" id="dbg-spec-pow" min="1" max="128" step="1" value="48">
-        <span class="dbg-val" id="dbg-spec-pow-val">48</span>
-      </div>
-      <div class="dbg-row">
-        <label>Atmo rim</label>
-        <input type="range" id="dbg-atmo" min="0" max="2" step="0.05" value="0.5">
-        <span class="dbg-val" id="dbg-atmo-val">0.5</span>
-      </div>
-      <div class="dbg-row">
-        <label>Limb dark</label>
-        <input type="range" id="dbg-limb" min="0.05" max="1" step="0.01" value="0.4">
-        <span class="dbg-val" id="dbg-limb-val">0.4</span>
-      </div>
+      <div class="dbg-row"><label>Radius mult</label><input type="range" id="dbg-moon-r" min="0.1" max="0.8" step="0.01" value="0.28"><span class="dbg-val" id="dbg-moon-r-val">0.28</span></div>
+      <div class="dbg-row"><label>Orbit speed ×</label><input type="range" id="dbg-moon-speed" min="0" max="5" step="0.05" value="1"><span class="dbg-val" id="dbg-moon-speed-val">1.0×</span></div>
     </div>
   </div>
 
-  <!-- CME -->
   <div class="dbg-section">
-    <div class="dbg-section-header" onclick="dbgToggle(this)">
-      CME <span class="dbg-section-arrow">▶</span>
-    </div>
+    <div class="dbg-section-header" onclick="dbgToggle(this)">Lighting <span class="dbg-section-arrow">▶</span></div>
     <div class="dbg-section-body">
-      <div class="dbg-row">
-        <label>Spawn rate ×</label>
-        <input type="range" id="dbg-cme-rate" min="0.1" max="5" step="0.05" value="1">
-        <span class="dbg-val" id="dbg-cme-rate-val">1.0×</span>
-      </div>
-      <div class="dbg-row">
-        <label>Max height ×</label>
-        <input type="range" id="dbg-cme-height" min="0.1" max="5" step="0.05" value="1">
-        <span class="dbg-val" id="dbg-cme-height-val">1.0×</span>
-      </div>
-      <div class="dbg-row">
-        <label>Activity ×</label>
-        <input type="range" id="dbg-cme-activity" min="0" max="3" step="0.05" value="1">
-        <span class="dbg-val" id="dbg-cme-activity-val">1.0×</span>
-      </div>
-      <div class="dbg-row">
-        <label>Arc span ×</label>
-        <input type="range" id="dbg-cme-span" min="0.1" max="4" step="0.05" value="1">
-        <span class="dbg-val" id="dbg-cme-span-val">1.0×</span>
-      </div>
+      <div class="dbg-row"><label>Ambient</label><input type="range" id="dbg-ambient" min="0" max="0.5" step="0.005" value="0.06"><span class="dbg-val" id="dbg-ambient-val">0.06</span></div>
+      <div class="dbg-row"><label>Diffuse</label><input type="range" id="dbg-diffuse" min="0" max="1" step="0.01" value="0.94"><span class="dbg-val" id="dbg-diffuse-val">0.94</span></div>
+      <div class="dbg-row"><label>Specular</label><input type="range" id="dbg-specular" min="0" max="0.5" step="0.005" value="0.12"><span class="dbg-val" id="dbg-specular-val">0.12</span></div>
+      <div class="dbg-row"><label>Spec power</label><input type="range" id="dbg-spec-pow" min="1" max="128" step="1" value="48"><span class="dbg-val" id="dbg-spec-pow-val">48</span></div>
+      <div class="dbg-row"><label>Atmo rim</label><input type="range" id="dbg-atmo" min="0" max="2" step="0.05" value="0.5"><span class="dbg-val" id="dbg-atmo-val">0.5</span></div>
+      <div class="dbg-row"><label>Limb dark</label><input type="range" id="dbg-limb" min="0.05" max="1" step="0.01" value="0.4"><span class="dbg-val" id="dbg-limb-val">0.4</span></div>
     </div>
   </div>
 
-  <!-- REBUILD -->
   <div class="dbg-section">
-    <div class="dbg-section-header" onclick="dbgToggle(this)">
-      Scene <span class="dbg-section-arrow">▶</span>
-    </div>
+    <div class="dbg-section-header" onclick="dbgToggle(this)">CME <span class="dbg-section-arrow">▶</span></div>
     <div class="dbg-section-body">
-      <div class="dbg-row" style="padding-top:0.3rem;">
-        <label>Rebuild planets</label>
-        <button id="dbg-rebuild" style="
-          background:var(--accent,#42a5f5);color:#000;border:none;
-          border-radius:4px;padding:0.2rem 0.6rem;cursor:pointer;font-size:1rem;">
-          ↺ Rebuild
-        </button>
+      <div class="dbg-row"><label>Spawn rate ×</label><input type="range" id="dbg-cme-rate" min="0.1" max="5" step="0.05" value="1"><span class="dbg-val" id="dbg-cme-rate-val">1.0×</span></div>
+      <div class="dbg-row"><label>Max height ×</label><input type="range" id="dbg-cme-height" min="0.1" max="5" step="0.05" value="1"><span class="dbg-val" id="dbg-cme-height-val">1.0×</span></div>
+      <div class="dbg-row"><label>Activity ×</label><input type="range" id="dbg-cme-activity" min="0" max="3" step="0.05" value="1"><span class="dbg-val" id="dbg-cme-activity-val">1.0×</span></div>
+      <div class="dbg-row"><label>Arc span ×</label><input type="range" id="dbg-cme-span" min="0.1" max="4" step="0.05" value="1"><span class="dbg-val" id="dbg-cme-span-val">1.0×</span></div>
+    </div>
+  </div>
+
+  <div class="dbg-section">
+    <div class="dbg-section-header" onclick="dbgToggle(this)">Scene <span class="dbg-section-arrow">▶</span></div>
+    <div class="dbg-section-body">
+      <div class="dbg-row" style="padding-top:0.3rem;"><label>Rebuild planets</label>
+        <button id="dbg-rebuild" style="background:var(--accent,#42a5f5);color:#000;border:none;border-radius:4px;padding:0.2rem 0.6rem;cursor:pointer;font-size:1rem;">↺ Rebuild</button>
       </div>
     </div>
   </div>
@@ -399,50 +217,115 @@
 <script>
 'use strict';
 
-// ── DEBUG SECTION TOGGLE ──────────────────────────────────
 function dbgToggle(header) {
   header.closest('.dbg-section').classList.toggle('open');
 }
 
-// ── DEBUG STATE ───────────────────────────────────────────
-// All live-tunable values, read by the render loop every frame.
 const DBG = {
-  // camera
-  tiltDeg:      65,
-  dist:         20,
-  fovDeg:       37,
-  // star
-  starSpin:     -0.04,
-  starR:        1.0,
-  glowMult:     1.0,
-  starColour:   [1, 1, 1],
-  // planets
-  orbitBase:    3.0,
-  orbitStep:    1.5,
-  pRmin:        0.18,
-  pRmax:        0.42,
-  orbitSpeed:   1.0,
-  planetSpin:   1.0,
-  // obliquity
-  wobbleSpeed:  1.0,
-  wobbleAmp:    1.0,
-  obliqBias:    0,
-  // moons
-  moonR:        0.28,
-  moonSpeed:    1.0,
-  // lighting
-  ambient:      0.2,
-  diffuse:      1.0,
-  specular:     0.04,
-  specPow:      34,
-  atmoRim:      0.2,
-  limbDark:     1.0,
-  // cme
-  cmeRate:      1.0,
-  cmeHeight:    1.0,
-  cmeActivity:  1.0,
-  cmeSpan:      1.0,
+  tiltDeg:65, dist:20, fovDeg:37,
+  starSpin:-0.04, starR:1.0, glowMult:1.0, starColour:[1,1,1], starTilt: 0.3, starPrecess: 0.08,
+  orbitBase:3.0, orbitStep:1.5, pRmin:0.18, pRmax:0.42, orbitSpeed:1.0, planetSpin:1.0,
+  wobbleSpeed:1.0, wobbleAmp:1.0, obliqBias:0,
+  moonR:0.28, moonSpeed:1.0,
+  ambient:0.06, diffuse:0.94, specular:0.12, specPow:48, atmoRim:0.5, limbDark:0.4,
+  cmeRate:1.0, cmeHeight:1.0, cmeActivity:1.0, cmeSpan:1.0,
+  jetRate: 1.0, jetLength:0.0,
+  randomPreset:true,
 };
+
+const STAR_PRESETS = {
+  'G-type': {
+    starSpin:-0.04, starR:1.0, glowMult:1.0, starColour:[1.0,0.95,0.85],
+    starTilt:0.3,  starPrecess:0.0,
+    ambient:0.06, diffuse:0.94, specular:0.12, specPow:48, atmoRim:0.5, limbDark:0.4,
+    cmeRate:1.0, cmeHeight:1.0, cmeActivity:1.0, cmeSpan:1.0, jetRate: 1.0, jetLength:0.0,
+  },
+  'Red Dwarf': {
+    starSpin:-0.02, starR:0.6, glowMult:0.7, starColour:[1.0,0.18,0.05],
+    starTilt:0.5,  starPrecess:0.06, 
+    ambient:0.04, diffuse:0.85, specular:0.06, specPow:32, atmoRim:0.3, limbDark:0.5,
+    cmeRate:1.8, cmeHeight:0.6, cmeActivity:1.5, cmeSpan:0.7, jetRate: 1.0, jetLength:0.0,
+  },
+  'Blue Giant': {
+    starSpin:-0.08, starR:1.8, glowMult:2.0, starColour:[0.6,0.8,1.0],
+    starTilt:0.2,  starPrecess:0.04,
+    ambient:0.12, diffuse:1.0, specular:0.25, specPow:80, atmoRim:0.9, limbDark:0.25,
+    cmeRate:0.5, cmeHeight:2.0, cmeActivity:0.6, cmeSpan:1.8, jetRate: 1.0, jetLength:0.0,
+  },
+  'Black Hole': {
+    starSpin:-0.10, starR:0.25, glowMult:4.0, starColour:[0.05,0.02,0.1],
+    starTilt:0.4,  starPrecess:0.25,
+    ambient:0.0, diffuse:0.6, specular:0.8, specPow:128, atmoRim:2.0, limbDark:0.05,
+    cmeRate:0.0, cmeHeight:0.0, cmeActivity:0.0, cmeSpan:0.0, jetRate: 150.0, jetLength:15.0,
+  },
+  'Neutron Star': {
+    starSpin:-0.4, starR:0.3, glowMult:3.0, starColour:[0.8,0.9,1.0],
+    starTilt:0.35, starPrecess:0.35,
+    ambient:0.02, diffuse:1.0, specular:0.4, specPow:128, atmoRim:1.5, limbDark:0.15,
+    cmeRate:3.0, cmeHeight:3.0, cmeActivity:2.5, cmeSpan:0.4, jetRate: 150.0, jetLength:10.0,
+  },
+  'White Dwarf': {
+    starSpin:-0.12, starR:0.4, glowMult:1.5, starColour:[0.95,0.97,1.0],
+    starTilt:0.25, starPrecess:0.10,
+    ambient:0.08, diffuse:0.98, specular:0.3, specPow:96, atmoRim:0.7, limbDark:0.2,
+    cmeRate:0.3, cmeHeight:0.5, cmeActivity:0.2, cmeSpan:0.5, jetRate: 1.0, jetLength:0.0,
+  },
+};
+
+const PRESET_NAMES = Object.keys(STAR_PRESETS);
+let activePreset = 'G-type';
+
+function pickDailyPreset() {
+  const weights = [60, 15, 10, 2, 5, 10];
+  const total = weights.reduce((a,b)=>a+b, 0);
+  let roll = ((Math.floor(Date.now()/86400000) * 1664525 + 1013904223) >>> 0) % total;
+  let acc = 0;
+  for (let i = 0; i < weights.length; i++) {
+    acc += weights[i];
+    if (roll < acc) return PRESET_NAMES[i];
+  }
+  return PRESET_NAMES[0];
+}
+
+function syncDebugSliders() {
+  function sync(id, val, fmt) {
+    const el = document.getElementById(id);
+    const vl = document.getElementById(id+'-val');
+    if (el) el.value = val;
+    if (vl) vl.textContent = fmt(val);
+  }
+  sync('dbg-star-spin',    DBG.starSpin,    v=>v.toFixed(3));
+  sync('dbg-star-r',       DBG.starR,       v=>v.toFixed(2));
+  sync('dbg-glow',         DBG.glowMult,    v=>v.toFixed(1));
+  sync('dbg-jet-rate', DBG.jetRate, v=>v.toFixed(1)+'×');
+  sync('dbg-jet-length',   DBG.jetLength,   v=>v.toFixed(1));
+  sync('dbg-ambient',      DBG.ambient,     v=>v.toFixed(3));
+  sync('dbg-diffuse',      DBG.diffuse,     v=>v.toFixed(2));
+  sync('dbg-specular',     DBG.specular,    v=>v.toFixed(3));
+  sync('dbg-spec-pow',     DBG.specPow,     v=>Math.round(v));
+  sync('dbg-atmo',         DBG.atmoRim,     v=>v.toFixed(2));
+  sync('dbg-limb',         DBG.limbDark,    v=>v.toFixed(2));
+  sync('dbg-cme-rate',     DBG.cmeRate,     v=>v.toFixed(2)+'×');
+  sync('dbg-cme-height',   DBG.cmeHeight,   v=>v.toFixed(2)+'×');
+  sync('dbg-cme-activity', DBG.cmeActivity, v=>v.toFixed(2)+'×');
+  sync('dbg-cme-span',     DBG.cmeSpan,     v=>v.toFixed(2)+'×');
+  const sc = DBG.starColour;
+  const hex = '#' + sc.map(v=>Math.round(v*255).toString(16).padStart(2,'0')).join('');
+  const cp = document.getElementById('dbg-star-colour');
+  if (cp) cp.value = hex;
+  const sel = document.getElementById('dbg-preset-select');
+  if (sel) sel.value = activePreset;
+}
+
+function applyPreset(name, rebuildScene) {
+  activePreset = name;
+  Object.assign(DBG, STAR_PRESETS[name]);
+  syncDebugSliders();
+  if (rebuildScene) {
+    DBG._rebuildStar = true;
+    buildPlanets();
+  }
+}
 
 // ============================================================
 // STARFIELD
@@ -489,13 +372,6 @@ const DBG = {
   glCanvas.addEventListener('webglcontextlost', e => e.preventDefault(), false);
   glCanvas.addEventListener('webglcontextrestored', () => resize(), false);
 
-  // ── SCENE UNITS ───────────────────────────────────────────
-  const STAR_R      = 1.0;
-
-  const STAR_SPIN_SPEED = -0.04;
-  const TILT = 65 * Math.PI / 180;
-  const cosTilt = Math.cos(TILT);
-
   const PAGE_DATA = [
     { name:'About',           url:'/about.html',           size:2800 },
     { name:'News',            url:'/news.html',            size:5200 },
@@ -507,7 +383,6 @@ const DBG = {
     { name:'SoT',    url:'/projects/sot-tracker/',       orbitOffset:Math.PI },
   ];
 
-  // ── COLOURS ──────────────────────────────────────────────
   let COL_BG,COL_TEXT,COL_MUTED,COL_BORDER,COL_FONT,COL_HEADER_FONT;
   let COL_PLANET_LIGHT,COL_PLANET_MID,COL_PLANET_DARK;
   let bgRgb=[0.13,0.13,0.13];
@@ -522,7 +397,7 @@ const DBG = {
   }
   function readColours() {
     const s=getComputedStyle(document.body);
-    COL_FONT = getComputedStyle(document.body).fontFamily;
+    COL_FONT = s.fontFamily;
     const probe = document.getElementById('font-probe');
     COL_HEADER_FONT = probe ? getComputedStyle(probe).fontFamily : COL_FONT;
     COL_BG    =s.getPropertyValue('--bg').trim()        ||'#212121';
@@ -536,7 +411,8 @@ const DBG = {
     bgRgb=hexToRgb(COL_BG);
   }
 
-  // ── RNG ──────────────────────────────────────────────────
+  function cameraZ(x,y,z) { return view[2]*x+view[6]*y+view[10]*z+view[14]; }
+
   let seed=Math.floor(Date.now()/86400000);
   function rand(){seed=(seed*1664525+1013904223)&0xffffffff;return(seed>>>0)/4294967295;}
   function rr(a,b){return a+rand()*(b-a);}
@@ -546,80 +422,48 @@ const DBG = {
     for(let i=a.length-1;i>0;i--){const j=Math.floor(rand()*(i+1));[a[i],a[j]]=[a[j],a[i]];}
     return a;
   }
-
   function randObliquity() {
-    const u = rand();
-    if (rand() < 0.65) {
-      return (u - 0.5) * Math.PI / 2;
-    } else {
-      return (u - 0.5) * Math.PI * 2;
-    }
+    const u=rand();
+    return rand()<0.65 ? (u-0.5)*Math.PI/2 : (u-0.5)*Math.PI*2;
   }
 
-  // ── SHADERS ───────────────────────────────────────────────
-  // Uniforms for lighting are driven by DBG values at draw time
   const VERT = `
-    attribute vec3 aPos;
-    attribute vec3 aNormal;
-    attribute vec2 aUV;
-    uniform mat4 uMVP;
-    uniform mat4 uModel;
-    varying vec3 vNormal;
-    varying vec3 vWorldPos;
-    varying vec2 vUV;
+    attribute vec3 aPos; attribute vec3 aNormal; attribute vec2 aUV;
+    uniform mat4 uMVP; uniform mat4 uModel;
+    varying vec3 vNormal; varying vec3 vWorldPos; varying vec2 vUV;
     void main(){
-      vec4 wp=uModel*vec4(aPos,1.0);
-      vWorldPos=wp.xyz;
-      vNormal=normalize(mat3(uModel)*aNormal);
-      vUV=aUV;
+      vec4 wp=uModel*vec4(aPos,1.0); vWorldPos=wp.xyz;
+      vNormal=normalize(mat3(uModel)*aNormal); vUV=aUV;
       gl_Position=uMVP*vec4(aPos,1.0);
     }`;
 
   const FRAG = `
     precision highp float;
     uniform sampler2D uTex;
-    uniform vec3  uLightPos;
-    uniform vec3 uLightColour;
-    uniform vec3  uCamPos;
-    uniform float uIsStar;
-    uniform vec3  uAtmo;
-    uniform vec3  uTint;
-    uniform float uAmbient;
-    uniform float uDiffuse;
-    uniform float uSpecular;
-    uniform float uSpecPow;
-    uniform float uAtmoRim;
-    uniform float uLimbDark;
-    varying vec3 vNormal;
-    varying vec3 vWorldPos;
-    varying vec2 vUV;
+    uniform vec3 uLightPos; uniform vec3 uLightColour; uniform vec3 uCamPos;
+    uniform float uIsStar; uniform vec3 uAtmo; uniform vec3 uTint;
+    uniform float uAmbient; uniform float uDiffuse; uniform float uSpecular;
+    uniform float uSpecPow; uniform float uAtmoRim; uniform float uLimbDark;
+    varying vec3 vNormal; varying vec3 vWorldPos; varying vec2 vUV;
     void main(){
       vec4 tc=texture2D(uTex,vUV);
-      vec3 N=normalize(vNormal);
-      vec3 V=normalize(uCamPos-vWorldPos);
+      vec3 N=normalize(vNormal); vec3 V=normalize(uCamPos-vWorldPos);
       float NdotV=max(dot(N,V),0.0);
       if(uIsStar>0.5){
-        float limb=pow(NdotV,uLimbDark);
-        float dark=mix(0.15,1.0,limb);
+        float limb=pow(NdotV,uLimbDark); float dark=mix(0.15,1.0,limb);
         gl_FragColor=vec4(tc.rgb*uTint*dark,1.0);
       } else {
-        vec3 L=normalize(uLightPos-vWorldPos);
-        float diff=max(dot(N,L),0.0);
-        vec3 R=reflect(-L,N);
-        float spec=pow(max(dot(R,V),0.0),uSpecPow)*uSpecular;
+        vec3 L=normalize(uLightPos-vWorldPos); float diff=max(dot(N,L),0.0);
+        vec3 R=reflect(-L,N); float spec=pow(max(dot(R,V),0.0),uSpecPow)*uSpecular;
         vec3 lit=tc.rgb*(uAmbient+diff*uDiffuse*uLightColour)+vec3(spec*uLightColour);
-        float rim=pow(1.0-NdotV,3.0);
-        lit+=uAtmo*rim*uAtmoRim;
+        float rim=pow(1.0-NdotV,3.0); lit+=uAtmo*rim*uAtmoRim;
         gl_FragColor=vec4(lit,1.0);
       }
     }`;
 
   function makeShader(type,src){
-    const s=gl.createShader(type);
-    gl.shaderSource(s,src); gl.compileShader(s);
-    if(!gl.getShaderParameter(s,gl.COMPILE_STATUS)){
-      console.error(gl.getShaderInfoLog(s)); return null;
-    }
+    const s=gl.createShader(type); gl.shaderSource(s,src); gl.compileShader(s);
+    if(!gl.getShaderParameter(s,gl.COMPILE_STATUS)){console.error(gl.getShaderInfoLog(s));return null;}
     return s;
   }
   function makeProg(vs,fs){
@@ -627,20 +471,17 @@ const DBG = {
     gl.attachShader(p,makeShader(gl.VERTEX_SHADER,vs));
     gl.attachShader(p,makeShader(gl.FRAGMENT_SHADER,fs));
     gl.linkProgram(p);
-    if(!gl.getProgramParameter(p,gl.LINK_STATUS)){
-      console.error(gl.getProgramInfoLog(p)); return null;
-    }
+    if(!gl.getProgramParameter(p,gl.LINK_STATUS)){console.error(gl.getProgramInfoLog(p));return null;}
     return p;
   }
   const prog=makeProg(VERT,FRAG);
 
-  // ── SPHERE GEOMETRY ──────────────────────────────────────
   function buildSphere(lat,lon){
     const pos=[],norm=[],uv=[],idx=[];
     for(let i=0;i<=lat;i++){
-      const t=i*Math.PI/lat, st=Math.sin(t), ct=Math.cos(t);
+      const t=i*Math.PI/lat,st=Math.sin(t),ct=Math.cos(t);
       for(let j=0;j<=lon;j++){
-        const p=j*2*Math.PI/lon, sp=Math.sin(p), cp=Math.cos(p);
+        const p=j*2*Math.PI/lon,sp=Math.sin(p),cp=Math.cos(p);
         const x=cp*st,y=ct,z=sp*st;
         pos.push(x,y,z); norm.push(x,y,z); uv.push(j/lon,i/lat);
       }
@@ -657,12 +498,10 @@ const DBG = {
   const uvB=gl.createBuffer(); gl.bindBuffer(gl.ARRAY_BUFFER,uvB); gl.bufferData(gl.ARRAY_BUFFER,new Float32Array(geo.uv),gl.STATIC_DRAW);
   const idxB=gl.createBuffer(); gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER,idxB); gl.bufferData(gl.ELEMENT_ARRAY_BUFFER,new Uint16Array(geo.idx),gl.STATIC_DRAW);
   const idxCount=geo.idx.length;
+  const aPos=gl.getAttribLocation(prog,'aPos');
+  const aNorm=gl.getAttribLocation(prog,'aNormal');
+  const aUV2=gl.getAttribLocation(prog,'aUV');
 
-  const aPos  =gl.getAttribLocation(prog,'aPos');
-  const aNorm =gl.getAttribLocation(prog,'aNormal');
-  const aUV2  =gl.getAttribLocation(prog,'aUV');
-
-  // ── MATRICES ─────────────────────────────────────────────
   function m4id(){return new Float32Array([1,0,0,0,0,1,0,0,0,0,1,0,0,0,0,1]);}
   function m4mul(a,b){
     const r=new Float32Array(16);
@@ -671,7 +510,7 @@ const DBG = {
   }
   function m4persp(fov,asp,n,f){
     const t=Math.tan(fov/2),nf=1/(n-f);
-    return new Float32Array([1/(t*asp),0,0,0, 0,1/t,0,0, 0,0,(f+n)*nf,-1, 0,0,2*f*n*nf,0]);
+    return new Float32Array([1/(t*asp),0,0,0,0,1/t,0,0,0,0,(f+n)*nf,-1,0,0,2*f*n*nf,0]);
   }
   function m4lookat(eye,at,up){
     let fx=at[0]-eye[0],fy=at[1]-eye[1],fz=at[2]-eye[2];
@@ -680,7 +519,7 @@ const DBG = {
     const rl=Math.sqrt(rx*rx+ry*ry+rz*rz); rx/=rl;ry/=rl;rz/=rl;
     const ux=ry*fz-rz*fy,uy=rz*fx-rx*fz,uz=rx*fy-ry*fx;
     return new Float32Array([
-      rx,ux,-fx,0, ry,uy,-fy,0, rz,uz,-fz,0,
+      rx,ux,-fx,0,ry,uy,-fy,0,rz,uz,-fz,0,
       -(rx*eye[0]+ry*eye[1]+rz*eye[2]),
       -(ux*eye[0]+uy*eye[1]+uz*eye[2]),
        (fx*eye[0]+fy*eye[1]+fz*eye[2]),1
@@ -689,12 +528,11 @@ const DBG = {
   function m4trans(x,y,z){const m=m4id();m[12]=x;m[13]=y;m[14]=z;return m;}
   function m4scale(s){return new Float32Array([s,0,0,0,0,s,0,0,0,0,s,0,0,0,0,1]);}
   function m4roty(a){const c=Math.cos(a),s=Math.sin(a);return new Float32Array([c,0,s,0,0,1,0,0,-s,0,c,0,0,0,0,1]);}
-  function m4rotx(a){const c=Math.cos(a),s=Math.sin(a);return new Float32Array([1,0,0,0, 0,c,-s,0, 0,s,c,0, 0,0,0,1]);}
-  function m4rotz(a){const c=Math.cos(a),s=Math.sin(a);return new Float32Array([c,-s,0,0, s,c,0,0, 0,0,1,0, 0,0,0,1]);}
+  function m4rotx(a){const c=Math.cos(a),s=Math.sin(a);return new Float32Array([1,0,0,0,0,c,-s,0,0,s,c,0,0,0,0,1]);}
+  function m4rotz(a){const c=Math.cos(a),s=Math.sin(a);return new Float32Array([c,-s,0,0,s,c,0,0,0,0,1,0,0,0,0,1]);}
 
-  // ── TEXTURE GENERATION ───────────────────────────────────
   function genSurfaceCanvas(r,isGas){
-    const size=512, h=128;
+    const size=512,h=128;
     const oc=document.createElement('canvas'); oc.width=size; oc.height=h;
     const ox=oc.getContext('2d');
     ox.fillStyle=COL_PLANET_MID; ox.fillRect(0,0,size,h);
@@ -734,23 +572,16 @@ const DBG = {
   }
 
   function genStarCanvas(){
-    const size=2048, h=512;
+    const size=2048,h=512;
     const oc=document.createElement('canvas'); oc.width=size; oc.height=h;
     const ox=oc.getContext('2d');
-    ox.fillStyle='#dddddd';
-    ox.fillRect(0,0,size,h);
-
-    // Granulation
-    ox.fillStyle = '#cccccc';
-    ox.fillRect(0,0,size,h);
+    ox.fillStyle='#cccccc'; ox.fillRect(0,0,size,h);
     for(let i=0,n=Math.floor(size*h/200);i<n;i++){
       const gx=rr(0,size),gy=rr(0,h),gr=rr(2,8),a=rr(0.04,0.14);
-      ox.beginPath();ox.arc(gx,gy,gr,0,Math.PI*2);
-      ox.fillStyle=`rgba(90,90,90,${a})`;ox.fill();
+      ox.beginPath();ox.arc(gx,gy,gr,0,Math.PI*2);ox.fillStyle=`rgba(90,90,90,${a})`;ox.fill();
       if(gx+gr>size){ox.beginPath();ox.arc(gx-size,gy,gr,0,Math.PI*2);ox.fillStyle=`rgba(90,90,90,${a})`;ox.fill();}
       if(gx-gr<0)   {ox.beginPath();ox.arc(gx+size,gy,gr,0,Math.PI*2);ox.fillStyle=`rgba(90,90,90,${a})`;ox.fill();}
     }
-    // Sunspots
     for(let i=0,n=ri(3,7);i<n;i++){
       const sx=rr(0,size),sy=rr(h*0.2,h*0.8),srx=rr(size*0.012,size*0.04),sry=srx*rr(0.5,1),a=rr(0.15,0.4);
       ox.beginPath();ox.ellipse(sx,sy,srx,sry,0,0,Math.PI*2);ox.fillStyle=`rgba(50,50,50,${a})`;ox.fill();
@@ -772,49 +603,39 @@ const DBG = {
     return tex;
   }
 
-  // ── CAMERA ───────────────────────────────────────────────
   let W,H,proj,view,camPos;
-
   function setupCamera(){
     W=glCanvas.width; H=glCanvas.height;
-    const dist = DBG.dist;
-    const tiltRad = DBG.tiltDeg * Math.PI / 180;
-    const elev = Math.PI/2 - tiltRad;
-    camPos = [0, dist*Math.sin(elev), dist*Math.cos(elev)];
-    const fovRad = DBG.fovDeg * Math.PI / 180;
-    proj = m4persp(fovRad, W/H, 0.1, 200);
-    view = m4lookat(camPos,[0,0,0],[0,1,0]);
+    const dist=DBG.dist;
+    const tiltRad=DBG.tiltDeg*Math.PI/180;
+    const elev=Math.PI/2-tiltRad;
+    camPos=[0,dist*Math.sin(elev),dist*Math.cos(elev)];
+    proj=m4persp(DBG.fovDeg*Math.PI/180,W/H,0.1,200);
+    view=m4lookat(camPos,[0,0,0],[0,1,0]);
   }
 
-  // ── DRAW SPHERE ──────────────────────────────────────────
   function loc(name){return gl.getUniformLocation(prog,name);}
 
   function drawSphere(x,y,z,r,tex,spinY,oblX,oblZ,isStar,tint){
-    const model = m4mul(
-      m4trans(x,y,z),
-      m4mul(m4rotx(oblX),
-      m4mul(m4rotz(oblZ),
-      m4mul(m4roty(spinY),
-      m4scale(r))))
-    );
-    const mvp = m4mul(proj, m4mul(view, model));
-    gl.uniformMatrix4fv(loc('uMVP'),   false, mvp);
-    gl.uniformMatrix4fv(loc('uModel'), false, model);
-    gl.uniform3fv(loc('uLightPos'), [0,0,0]);
-    const [sr,sg,sb] = DBG.starColour;
-    gl.uniform3f(loc('uLightColour'), sr, sg, sb);
-    gl.uniform3fv(loc('uCamPos'),   camPos);
-    gl.uniform1f(loc('uIsStar'),    isStar?1:0);
+    const model=m4mul(m4trans(x,y,z),m4mul(m4rotx(oblX),m4mul(m4rotz(oblZ),m4mul(m4roty(spinY),m4scale(r)))));
+    const mvp=m4mul(proj,m4mul(view,model));
+    gl.uniformMatrix4fv(loc('uMVP'),false,mvp);
+    gl.uniformMatrix4fv(loc('uModel'),false,model);
+    gl.uniform3fv(loc('uLightPos'),[0,0,0]);
+    const [sr,sg,sb]=DBG.starColour;
+    gl.uniform3f(loc('uLightColour'),sr,sg,sb);
+    gl.uniform3fv(loc('uCamPos'),camPos);
+    gl.uniform1f(loc('uIsStar'),isStar?1:0);
     const [tr,tg,tb]=tint||[1,1,1];
     gl.uniform3f(loc('uTint'),tr,tg,tb);
-    const [ar,ag,ab] = DBG.starColour;
-    gl.uniform3f(loc('uAtmo'), ar*0.3, ag*0.35, ab*0.5);
-    gl.uniform1f(loc('uAmbient'),  DBG.ambient);
-    gl.uniform1f(loc('uDiffuse'),  DBG.diffuse);
-    gl.uniform1f(loc('uSpecular'), DBG.specular);
-    gl.uniform1f(loc('uSpecPow'),  DBG.specPow);
-    gl.uniform1f(loc('uAtmoRim'),  DBG.atmoRim);
-    gl.uniform1f(loc('uLimbDark'), DBG.limbDark);
+    const [ar,ag,ab]=DBG.starColour;
+    gl.uniform3f(loc('uAtmo'),ar*0.3,ag*0.35,ab*0.5);
+    gl.uniform1f(loc('uAmbient'),DBG.ambient);
+    gl.uniform1f(loc('uDiffuse'),DBG.diffuse);
+    gl.uniform1f(loc('uSpecular'),DBG.specular);
+    gl.uniform1f(loc('uSpecPow'),DBG.specPow);
+    gl.uniform1f(loc('uAtmoRim'),DBG.atmoRim);
+    gl.uniform1f(loc('uLimbDark'),DBG.limbDark);
     gl.activeTexture(gl.TEXTURE0);
     gl.bindTexture(gl.TEXTURE_2D,tex);
     gl.uniform1i(loc('uTex'),0);
@@ -828,35 +649,31 @@ const DBG = {
     gl.drawElements(gl.TRIANGLES,idxCount,gl.UNSIGNED_SHORT,0);
   }
 
-  // ── LINE SHADER (debug axes) ──────────────────────────────
-  const lineVert = `attribute vec3 aPos;uniform mat4 uMVP;void main(){gl_Position=uMVP*vec4(aPos,1.0);}`;
-  const lineFrag = `precision mediump float;uniform vec3 uCol;void main(){gl_FragColor=vec4(uCol,1.0);}`;
-  const lineProg = makeProg(lineVert, lineFrag);
-  const lineBuffer = gl.createBuffer();
+  const lineVert=`attribute vec3 aPos;uniform mat4 uMVP;void main(){gl_Position=uMVP*vec4(aPos,1.0);}`;
+  const lineFrag=`precision mediump float;uniform vec3 uCol;void main(){gl_FragColor=vec4(uCol,1.0);}`;
+  const lineProg=makeProg(lineVert,lineFrag);
+  const lineBuffer=gl.createBuffer();
 
-  function drawAxis(x, y, z, r, oblX, oblZ) {
-    const len = r * 1.5;
-    const cosX=Math.cos(oblX), sinX=Math.sin(oblX);
-    const cosZ=Math.cos(oblZ), sinZ=Math.sin(oblZ);
-    function transformPole(py) {
-      let tx=-py*sinZ, ty=py*cosZ, tz=0;
-      return [x+tx*len, y+(ty*cosX-tz*sinX)*len, z+(ty*sinX+tz*cosX)*len];
+  function drawAxis(x,y,z,r,oblX,oblZ){
+    const len=r*1.5;
+    const cosX=Math.cos(oblX),sinX=Math.sin(oblX),cosZ=Math.cos(oblZ),sinZ=Math.sin(oblZ);
+    function transformPole(py){
+      let tx=-py*sinZ,ty=py*cosZ,tz=0;
+      return [x+tx*len,y+(ty*cosX-tz*sinX)*len,z+(ty*sinX+tz*cosX)*len];
     }
-    const north=transformPole(1), south=transformPole(-1);
+    const north=transformPole(1),south=transformPole(-1);
     const verts=new Float32Array([south[0],south[1],south[2],north[0],north[1],north[2]]);
     gl.useProgram(lineProg);
     gl.bindBuffer(gl.ARRAY_BUFFER,lineBuffer);
     gl.bufferData(gl.ARRAY_BUFFER,verts,gl.DYNAMIC_DRAW);
     const aP=gl.getAttribLocation(lineProg,'aPos');
     gl.enableVertexAttribArray(aP); gl.vertexAttribPointer(aP,3,gl.FLOAT,false,0,0);
-    const vp=m4mul(proj,view);
-    gl.uniformMatrix4fv(gl.getUniformLocation(lineProg,'uMVP'),false,vp);
+    gl.uniformMatrix4fv(gl.getUniformLocation(lineProg,'uMVP'),false,m4mul(proj,view));
     gl.uniform3f(gl.getUniformLocation(lineProg,'uCol'),1,0,0);
     gl.drawArrays(gl.LINES,0,2);
     gl.useProgram(prog);
   }
 
-  // ── PROJECT TO SCREEN ─────────────────────────────────────
   function worldToScreen(x,y,z){
     const vx=view[0]*x+view[4]*y+view[8]*z+view[12];
     const vy=view[1]*x+view[5]*y+view[9]*z+view[13];
@@ -864,12 +681,11 @@ const DBG = {
     const vw=view[3]*x+view[7]*y+view[11]*z+view[15];
     const cx2=proj[0]*vx+proj[4]*vy+proj[8]*vz+proj[12]*vw;
     const cy2=proj[1]*vx+proj[5]*vy+proj[9]*vz+proj[13]*vw;
-    const cw =proj[3]*vx+proj[7]*vy+proj[11]*vz+proj[15]*vw;
+    const cw=proj[3]*vx+proj[7]*vy+proj[11]*vz+proj[15]*vw;
     if(Math.abs(cw)<0.0001) return null;
     return [(cx2/cw*0.5+0.5)*W,(0.5-cy2/cw*0.5)*H];
   }
 
-  // ── PLANET DATA ──────────────────────────────────────────
   function planetR(sz){
     const sizes=PAGE_DATA.map(p=>p.size);
     const t=(sz-Math.min(...sizes))/(Math.max(...sizes)-Math.min(...sizes));
@@ -879,12 +695,21 @@ const DBG = {
   let planets=[],starTex=null;
 
   function buildPlanets(){
+    if(DBG.randomPreset && planets.length===0){
+      const daily=pickDailyPreset();
+      if(daily!==activePreset){
+        activePreset=daily;
+        Object.assign(DBG,STAR_PRESETS[daily]);
+        syncDebugSliders();
+      }
+    }
     for(const p of planets){
       if(p.tex)gl.deleteTexture(p.tex);
       for(const m of p.moons||[])if(m.tex)gl.deleteTexture(m.tex);
     }
     if(starTex)gl.deleteTexture(starTex);
     starTex=toTex(genStarCanvas());
+    DBG._rebuildStar=false;
 
     const shuffled=shuffle(PAGE_DATA);
     planets=shuffled.map((page,i)=>{
@@ -897,39 +722,38 @@ const DBG = {
         orbitR:r*(2.4+mi*1.2),r:r*DBG.moonR,
         spinSpeed:rr(0.5,2)*-1,spin:rand()*Math.PI*2,
         tex:toTex(genSurfaceCanvas(r*DBG.moonR*100,false)),
-        obliquityX:randObliquity(), obliquityZ:randObliquity(),
+        obliquityX:randObliquity(),obliquityZ:randObliquity(),
         wobbleX:rr(0.002,0.012)*(rand()<0.5?1:-1),
         wobbleZ:rr(0.002,0.012)*(rand()<0.5?1:-1),
-        wobbleAmpX:rr(0,Math.PI/4), wobbleAmpZ:rr(0,Math.PI/4)
+        wobbleAmpX:rr(0,Math.PI/4),wobbleAmpZ:rr(0,Math.PI/4)
       })):[];
       return {
         page,r,orbitR,
         period:18+Math.pow(orbitR/DBG.orbitBase,3)*15,
         startAngle:rand()*Math.PI*2,
-        spinSpeed:rr(0.3,1.8)*-1,
-        spin:rand()*Math.PI*2,
+        spinSpeed:rr(0.3,1.8)*-1,spin:rand()*Math.PI*2,
         hasRings:page.name!=='Projects'&&sizeT>0.6&&rand()<0.4,
         moons,
         tex:toTex(genSurfaceCanvas(r*100,isGas)),
-        obliquityX:randObliquity(), obliquityZ:randObliquity(),
+        obliquityX:randObliquity(),obliquityZ:randObliquity(),
         wobbleX:rr(0.002,0.012)*(rand()<0.5?1:-1),
         wobbleZ:rr(0.002,0.012)*(rand()<0.5?1:-1),
-        wobbleAmpX:rr(0,Math.PI/4), wobbleAmpZ:rr(0,Math.PI/4)
+        wobbleAmpX:rr(0,Math.PI/4),wobbleAmpZ:rr(0,Math.PI/4)
       };
     });
   }
 
   // ── CME SYSTEM ───────────────────────────────────────────
   const CME_LIST=[];
-  let cmePhaseOff=Math.random()*Math.PI*2, cmeLastSpawn=0;
+  let cmePhaseOff=Math.random()*Math.PI*2,cmeLastSpawn=0;
 
   function cmeActivity(t){
     return Math.max(0,Math.sin(t*(Math.PI*2/90)+cmePhaseOff)*0.5+0.5)
-      *(0.7+Math.sin(t*(Math.PI*2/40)+cmePhaseOff*1.7)*0.3) * DBG.cmeActivity;
+      *(0.7+Math.sin(t*(Math.PI*2/40)+cmePhaseOff*1.7)*0.3)*DBG.cmeActivity;
   }
   function cmeMaybeSpawn(t,starSR){
     const act=cmeActivity(t);
-    const interval=(1.5-Math.min(act,1.4)) / DBG.cmeRate;
+    const interval=(1.5-Math.min(act,1.4))/DBG.cmeRate;
     if(t-cmeLastSpawn<interval) return;
     const n=act>0.7&&Math.random()<0.5?ri(2,4):1;
     for(let c=0;c<n;c++)CME_LIST.push(cmeCreate(t+c*rr(0.2,1.5),starSR,act));
@@ -961,10 +785,9 @@ const DBG = {
     if(p3<cme.ejectTime)return{phase:'eject',progress:p3/cme.ejectTime};
     return{phase:'dead',progress:1};
   }
-  function drawAllCMEs(t,starSR,starSpin,planetSPs){
+  function drawAllCMEs(t,starSR,starSpin,planetSPs,starColour){
     cmeMaybeSpawn(t,starSR);
-    const tiltRad = DBG.tiltDeg * Math.PI / 180;
-    const ct = Math.cos(tiltRad);
+    const ct=Math.cos(DBG.tiltDeg*Math.PI/180);
     const cx2=W/2,cy2=H/2;
     for(const cme of CME_LIST){
       const{phase,progress}=cmeGetPhase(cme,t);
@@ -988,7 +811,7 @@ const DBG = {
       let tipX,tipY;
       for(const[wi,w]of cme.wisps.entries()){
         const nt=t*2.3+wi*1.7;
-        hud.beginPath();hud.lineWidth=w.width;hud.strokeStyle=hexToRgba(COL_TEXT,w.opacity*ga);
+        hud.beginPath();hud.lineWidth=w.width;hud.strokeStyle=hexToRgba(starColour,w.opacity*ga);
         let first=true;
         for(let s=0;s<=20;s++){
           const f=s/20,aa=lon+(f-0.5)*(cme.arcSpan+w.spanOffset);
@@ -1015,14 +838,16 @@ const DBG = {
           hud.save();hud.globalAlpha=da*0.6;
           const rr2=ps.sr*(0.5+progress*1.5);
           const rg=hud.createRadialGradient(ps.sx,ps.sy,rr2*0.3,ps.sx,ps.sy,rr2);
-          rg.addColorStop(0,hexToRgba(COL_TEXT,0.4));rg.addColorStop(0.6,hexToRgba(COL_TEXT,0.15));rg.addColorStop(1,hexToRgba(COL_TEXT,0));
+          rg.addColorStop(0,hexToRgba(starColour,0.4));
+          rg.addColorStop(0.6,hexToRgba(starColour,0.15));
+          rg.addColorStop(1,hexToRgba(starColour,0));
           hud.beginPath();hud.arc(ps.sx,ps.sy,rr2,0,Math.PI*2);hud.fillStyle=rg;hud.fill();
           for(let p=0;p<4;p++){
             const pa=(p/4)*Math.PI*2+progress*3,pl=ps.sr*rr(0.3,0.8);
             hud.beginPath();
             hud.moveTo(ps.sx+Math.cos(pa)*ps.sr*0.3,ps.sy+Math.sin(pa)*ps.sr*0.3);
             hud.lineTo(ps.sx+Math.cos(pa)*(ps.sr*0.3+pl),ps.sy+Math.sin(pa)*(ps.sr*0.3+pl));
-            hud.strokeStyle=hexToRgba(COL_TEXT,0.3);hud.lineWidth=rr(0.5,1.5);hud.stroke();
+            hud.strokeStyle=hexToRgba(starColour,0.3);hud.lineWidth=rr(0.5,1.5);hud.stroke();
           }
           hud.restore();
         }
@@ -1031,16 +856,152 @@ const DBG = {
     for(let i=CME_LIST.length-1;i>=0;i--)if(CME_LIST[i].dead)CME_LIST.splice(i,1);
   }
 
-  // ── HUD ──────────────────────────────────────────────────
-  let showLabels  = true;
-  let debugAxes   = false;
-  let debugOrbits = false;
+  // ── JET PARTICLE SYSTEM ──────────────────────────────────
+  const JET_PARTICLES = [];
+  let jetLastSpawn = 0;
 
-  function drawLabel(sx, sy, name, starScreenR) {
-    const cx2=W/2, cy2=H/2;
-    const x1=sx+Math.cos(-Math.PI*3/4)*18, y1=sy+Math.sin(-Math.PI*3/4)*18, x2=x1-36;
-    const dx=x2-cx2, dy=y1-cy2;
-    if(dx*dx+dy*dy < (starScreenR*2.2)*(starScreenR*2.2)) return;
+  function jetMaybeSpawn(t, starR, oblX, oblZ) {
+    if (DBG.jetLength <= 0) return;
+    if (t - jetLastSpawn < 0.05 / DBG.jetRate) return;
+    jetLastSpawn = t;
+
+    const speed = 0.014 * DBG.jetLength;
+    const spread = 0.08;
+
+    // Compute the actual pole directions from the star's obliquity,
+    // matching the rotation order used in drawSphere: rotX then rotZ
+    const cosX = Math.cos(oblX), sinX = Math.sin(oblX);
+    const cosZ = Math.cos(oblZ), sinZ = Math.sin(oblZ);
+
+    // The Y axis after rotX(oblX) then rotZ(oblZ):
+    // rotZ rotates (0,1,0) → (−sinZ, cosZ, 0)
+    // rotX then rotates that → (−sinZ, cosZ*cosX, cosZ*sinX)
+    const poleDir = [
+      -sinZ,
+       cosZ * cosX,
+       cosZ * sinX,
+    ];
+
+    for (const pole of [1, -1]) {
+      // Pole position on star surface along tilted axis
+      const px = poleDir[0] * starR * pole;
+      const py = poleDir[1] * starR * pole;
+      const pz = poleDir[2] * starR * pole;
+
+      const count = ri(1, 3);
+      for (let i = 0; i < count; i++) {
+        const angle = rand() * Math.PI * 2;
+        const coneAngle = rand() * spread;
+
+        // Base direction along pole axis, with cone spread perpendicular to it
+        // Build a perpendicular frame around poleDir
+        const absPD = [Math.abs(poleDir[0]), Math.abs(poleDir[1]), Math.abs(poleDir[2])];
+        const minAxis = absPD.indexOf(Math.min(...absPD));
+        const tmpV = [0, 0, 0]; tmpV[minAxis] = 1;
+        // Cross product poleDir × tmpV for first perp axis
+        const perp1 = [
+          poleDir[1]*tmpV[2] - poleDir[2]*tmpV[1],
+          poleDir[2]*tmpV[0] - poleDir[0]*tmpV[2],
+          poleDir[0]*tmpV[1] - poleDir[1]*tmpV[0],
+        ];
+        const p1len = Math.sqrt(perp1[0]**2 + perp1[1]**2 + perp1[2]**2);
+        perp1[0]/=p1len; perp1[1]/=p1len; perp1[2]/=p1len;
+        // Cross product poleDir × perp1 for second perp axis
+        const perp2 = [
+          poleDir[1]*perp1[2] - poleDir[2]*perp1[1],
+          poleDir[2]*perp1[0] - poleDir[0]*perp1[2],
+          poleDir[0]*perp1[1] - poleDir[1]*perp1[0],
+        ];
+
+        const sinCone = Math.sin(coneAngle);
+        const cosCone = Math.cos(coneAngle);
+        const dx = poleDir[0]*cosCone*pole + (perp1[0]*Math.cos(angle) + perp2[0]*Math.sin(angle))*sinCone;
+        const dy = poleDir[1]*cosCone*pole + (perp1[1]*Math.cos(angle) + perp2[1]*Math.sin(angle))*sinCone;
+        const dz = poleDir[2]*cosCone*pole + (perp1[2]*Math.cos(angle) + perp2[2]*Math.sin(angle))*sinCone;
+
+        JET_PARTICLES.push({
+          x: px, y: py, z: pz,
+          vx: dx * speed, vy: dy * speed, vz: dz * speed,
+          life: 0,
+          maxLife: rr(0.8, 1.4),
+          size: rr(1.5, 4.0),
+          brightness: rr(0.6, 1.0),
+        });
+      }
+    }
+
+    for (let i = JET_PARTICLES.length - 1; i >= 0; i--) {
+      if (JET_PARTICLES[i].life >= JET_PARTICLES[i].maxLife) JET_PARTICLES.splice(i, 1);
+    }
+  }
+
+  function updateAndDrawJets(dt) {
+    if (DBG.jetLength <= 0) { JET_PARTICLES.length = 0; return; }
+
+    const sc = DBG.starColour;
+    const starHex = '#' + sc.map(v=>Math.round(v*255).toString(16).padStart(2,'0')).join('');
+
+    for (const p of JET_PARTICLES) {
+      p.life += dt;
+      const lifeT = p.life / p.maxLife;
+
+      // Decelerate — velocity falls off with age
+      const decel = 1.0 - lifeT * 0.7;
+      p.x += p.vx * decel;
+      p.y += p.vy * decel;
+      p.z += p.vz * decel;
+
+      const ss = worldToScreen(p.x, p.y, p.z);
+      if (!ss) continue;
+
+      // Brief fade in, then fade out with a slightly steepened curve
+      const alpha = lifeT < 0.1
+        ? lifeT / 0.1
+        : 1.0 - Math.pow((lifeT - 0.1) / 0.9, 1.5);
+
+      if (alpha <= 0) continue;
+
+      const finalAlpha = alpha * p.brightness;
+      // Expand slightly as particles age and slow
+      const screenSize = p.size * (1.0 + lifeT * 1.5);
+
+      hud.save();
+
+      // Outer star-coloured halo
+      hud.globalAlpha = finalAlpha * 0.7;
+      const haloGrad = hud.createRadialGradient(ss[0],ss[1],0, ss[0],ss[1],screenSize*3.5);
+      haloGrad.addColorStop(0,   hexToRgba(starHex, 0.9));
+      haloGrad.addColorStop(0.4, hexToRgba(starHex, 0.5));
+      haloGrad.addColorStop(1,   hexToRgba(starHex, 0));
+      hud.beginPath();
+      hud.arc(ss[0], ss[1], screenSize*3.5, 0, Math.PI*2);
+      hud.fillStyle = haloGrad;
+      hud.fill();
+
+      // Bright white core
+      hud.globalAlpha = 1.0;
+      const coreGrad = hud.createRadialGradient(ss[0],ss[1],0, ss[0],ss[1],screenSize);
+      coreGrad.addColorStop(0,    `rgba(255,255,255,${Math.min(1, finalAlpha * 2.5)})`);
+      coreGrad.addColorStop(0.25, `rgba(255,255,255,${finalAlpha})`);
+      coreGrad.addColorStop(0.6,  hexToRgba(starHex, finalAlpha * 0.6));
+      coreGrad.addColorStop(1,    hexToRgba(starHex, 0));
+      hud.beginPath();
+      hud.arc(ss[0], ss[1], screenSize, 0, Math.PI*2);
+      hud.fillStyle = coreGrad;
+      hud.fill();
+
+      hud.restore();
+    }
+  }
+
+  // ── HUD HELPERS ──────────────────────────────────────────
+  let showLabels=true,debugAxes=false,debugOrbits=false;
+
+  function drawLabel(sx,sy,name,starScreenR){
+    const cx2=W/2,cy2=H/2;
+    const x1=sx+Math.cos(-Math.PI*3/4)*18,y1=sy+Math.sin(-Math.PI*3/4)*18,x2=x1-36;
+    const dx=x2-cx2,dy=y1-cy2;
+    if(dx*dx+dy*dy<(starScreenR*2.2)*(starScreenR*2.2)) return;
     hud.strokeStyle=COL_MUTED;hud.lineWidth=0.8;
     hud.beginPath();hud.moveTo(sx,sy);hud.lineTo(x1,y1);hud.lineTo(x2,y1);hud.stroke();
     hud.font='12px '+COL_FONT;
@@ -1048,38 +1009,40 @@ const DBG = {
     hud.fillText(name,x2-3,y1+1);
   }
 
-  function drawOrbitLine(orbitR, cx, cz) {
-    cx=cx||0; cz=cz||0;
-    hud.beginPath();
-    hud.setLineDash([4,8]);
-    hud.strokeStyle=hexToRgba(COL_TEXT,0.2);
-    hud.lineWidth=0.8;
-    const steps=128;
-    for(let i=0;i<=steps;i++){
-      const a=(i/steps)*Math.PI*2;
-      const wx=cx+Math.cos(a)*orbitR;
-      const wz=cz+Math.sin(a)*orbitR;
-      const ss=worldToScreen(wx,0,wz);
+  function drawOrbitLine(orbitR,cx,cz){
+    cx=cx||0;cz=cz||0;
+    hud.beginPath();hud.setLineDash([4,8]);
+    hud.strokeStyle=hexToRgba(COL_TEXT,0.2);hud.lineWidth=0.8;
+    for(let i=0;i<=128;i++){
+      const a=(i/128)*Math.PI*2;
+      const ss=worldToScreen(cx+Math.cos(a)*orbitR,0,cz+Math.sin(a)*orbitR);
       if(!ss)continue;
-      if(i===0)hud.moveTo(ss[0],ss[1]);
-      else hud.lineTo(ss[0],ss[1]);
+      if(i===0)hud.moveTo(ss[0],ss[1]);else hud.lineTo(ss[0],ss[1]);
     }
-    hud.stroke();
-    hud.setLineDash([]);
+    hud.stroke();hud.setLineDash([]);
   }
 
-  function drawStarGlowAndLabel(t,sx,sy,sr){
-    const sc = DBG.starColour;
-    const starHex = '#' + sc.map(v=>Math.round(v*255).toString(16).padStart(2,'0')).join('');
+  function drawStarGlowAndLabel(t,sx,sy,sr,planetSPs){
+    const sc=DBG.starColour;
+    const starHex='#'+sc.map(v=>Math.round(v*255).toString(16).padStart(2,'0')).join('');
     const f=1+Math.sin(t*1.5)*0.01+Math.sin(t*3)*0.007+Math.sin(t*7.5)*0.004+Math.sin(t*9.3)*0.002;
     const gr=sr*f*DBG.glowMult;
+    const oc=document.createElement('canvas'); oc.width=W; oc.height=H;
+    const ox=oc.getContext('2d');
     [0.03,0.04,0.08].forEach((a,i)=>{
       const r2=gr*(3-i*0.5);
-      const g=hud.createRadialGradient(sx,sy,sr*0.8,sx,sy,r2);
-      g.addColorStop(0,hexToRgba(starHex,a));
-      g.addColorStop(1,hexToRgba(starHex,0));
-      hud.beginPath();hud.arc(sx,sy,r2,0,Math.PI*2);hud.fillStyle=g;hud.fill();
+      const g=ox.createRadialGradient(sx,sy,sr*0.8,sx,sy,r2);
+      g.addColorStop(0,hexToRgba(starHex,a));g.addColorStop(1,hexToRgba(starHex,0));
+      ox.beginPath();ox.arc(sx,sy,r2,0,Math.PI*2);ox.fillStyle=g;ox.fill();
     });
+    ox.globalCompositeOperation='destination-out';
+    for(const ps of planetSPs){
+      if(!ps.inFront)continue;
+      ox.beginPath();ox.arc(ps.sx,ps.sy,ps.sr*1.05,0,Math.PI*2);
+      ox.fillStyle='black';ox.fill();
+    }
+    ox.globalCompositeOperation='source-over';
+    hud.drawImage(oc,0,0);
     hud.font='bold '+Math.round(sr*0.38)+'px '+COL_HEADER_FONT;
     hud.fillStyle=COL_BG;hud.textAlign='center';hud.textBaseline='middle';
     hud.fillText('Kittisci',sx,sy);
@@ -1097,36 +1060,37 @@ const DBG = {
   });
 
   // ── RENDER LOOP ──────────────────────────────────────────
-  let starSpinAccum=0;
-  let t0=null;
+  let starSpinAccum=0,t0=null,lastT=0;
   function render(ts){
     if(!t0)t0=ts;
     const t=(ts-t0)/1000;
-    readColours();
+    const dt=t-lastT;
+    lastT=t;
 
-    // Camera may change via debug sliders each frame
+    readColours();
     setupCamera();
 
     gl.viewport(0,0,W,H);
     gl.clearColor(0,0,0,0);
     gl.clear(gl.COLOR_BUFFER_BIT|gl.DEPTH_BUFFER_BIT);
-    gl.enable(gl.DEPTH_TEST);
-    gl.enable(gl.BLEND);
+    gl.enable(gl.DEPTH_TEST);gl.enable(gl.BLEND);
     gl.blendFunc(gl.SRC_ALPHA,gl.ONE_MINUS_SRC_ALPHA);
     gl.useProgram(prog);
 
-    const starScreenR=Math.min(W,H)*0.075;
-    starSpinAccum += DBG.starSpin * 0.016;
-    const starSpin = starSpinAccum;
+    starSpinAccum+=DBG.starSpin*0.016;
+    const starSpin=starSpinAccum;
 
     hitTargets=[];
     const planetSPs=[];
     const starSS=worldToScreen(0,0,0);
     const starEdgeSS=worldToScreen(DBG.starR,0,0);
     const starActualScreenR=starEdgeSS&&starSS?Math.abs(starEdgeSS[0]-starSS[0]):0;
+    const starCamZ=cameraZ(0,0,0);
 
-    // Draw star
-    drawSphere(0,0,0,DBG.starR,starTex,starSpin,0,0,true,[1,1,1]);
+    const precAngle = starSpinAccum * DBG.starPrecess;
+    const starOblX = DBG.starTilt * Math.cos(precAngle);
+    const starOblZ = DBG.starTilt * Math.sin(precAngle);
+    drawSphere(0,0,0,DBG.starR,starTex,starSpin,starOblX,starOblZ,true,DBG.starColour);
 
     const labels=[];
     for(const p of planets){
@@ -1134,7 +1098,7 @@ const DBG = {
       const px=Math.cos(angle)*p.orbitR;
       const pz=Math.sin(angle)*p.orbitR;
       p.spin+=p.spinSpeed*0.004*DBG.planetSpin;
-      const obliqBiasRad = DBG.obliqBias * Math.PI / 180;
+      const obliqBiasRad=DBG.obliqBias*Math.PI/180;
       const oblX=(p.obliquityX+obliqBiasRad)+Math.sin(t*p.wobbleX*DBG.wobbleSpeed)*p.wobbleAmpX*DBG.wobbleAmp;
       const oblZ=(p.obliquityZ+obliqBiasRad)+Math.sin(t*p.wobbleZ*DBG.wobbleSpeed)*p.wobbleAmpZ*DBG.wobbleAmp;
       drawSphere(px,0,pz,p.r,p.tex,p.spin,oblX,oblZ,false,null);
@@ -1143,7 +1107,7 @@ const DBG = {
       if(ss){
         const sr=starActualScreenR*(p.r/DBG.starR);
         hitTargets.push({x:ss[0],y:ss[1],r:sr*1.4,url:p.page.url});
-        planetSPs.push({sx:ss[0],sy:ss[1],sr});
+        planetSPs.push({sx:ss[0],sy:ss[1],sr,inFront:cameraZ(px,0,pz)>starCamZ});
         if(showLabels) labels.push({sx:ss[0],sy:ss[1],name:p.page.name});
       }
       for(const moon of p.moons||[]){
@@ -1159,121 +1123,116 @@ const DBG = {
         if(ms){
           const mr=starActualScreenR*(moon.r/DBG.starR);
           hitTargets.push({x:ms[0],y:ms[1],r:mr*2,url:moon.url});
-          planetSPs.push({sx:ms[0],sy:ms[1],sr:mr});
+          planetSPs.push({sx:ms[0],sy:ms[1],sr:mr,inFront:cameraZ(mx,0,mz)>starCamZ});
         }
       }
     }
 
     hud.clearRect(0,0,W,H);
-    if(starSS) drawStarGlowAndLabel(t,starSS[0],starSS[1],starActualScreenR);
-    drawAllCMEs(t,starScreenR,starSpin,planetSPs);
+    if(starSS) drawStarGlowAndLabel(t,starSS[0],starSS[1],starActualScreenR,planetSPs);
+
+    // Jet particles — spawn then draw in 3D world space
+    jetMaybeSpawn(t, DBG.starR, starOblX, starOblZ);
+    updateAndDrawJets(dt);
+
+    const sc=DBG.starColour;
+    const starHex='#'+sc.map(v=>Math.round(v*255).toString(16).padStart(2,'0')).join('');
+    drawAllCMEs(t,starActualScreenR,starSpin,planetSPs,starHex);
     if(showLabels) for(const l of labels) drawLabel(l.sx,l.sy,l.name,starActualScreenR);
     if(debugOrbits){
       for(const p of planets){
         drawOrbitLine(p.orbitR,0,0);
         const angle=p.startAngle-(t/p.period)*Math.PI*2*DBG.orbitSpeed;
-        const ppx=Math.cos(angle)*p.orbitR;
-        const ppz=Math.sin(angle)*p.orbitR;
+        const ppx=Math.cos(angle)*p.orbitR,ppz=Math.sin(angle)*p.orbitR;
         for(const moon of p.moons||[]) drawOrbitLine(moon.orbitR,ppx,ppz);
       }
     }
-
     requestAnimationFrame(render);
   }
 
-  // ── RESIZE ───────────────────────────────────────────────
   function resize(){
     glCanvas.width=hudCanvas.width=window.innerWidth;
     glCanvas.height=hudCanvas.height=window.innerHeight;
-    readColours();
-    setupCamera();
-    buildPlanets();
+    readColours();setupCamera();buildPlanets();
   }
 
-  // ── DEBUG PANEL INIT ─────────────────────────────────────
-  function initDebug() {
-    if (!sessionStorage.getItem('gbAdminAuth')) return;
-    const panel = document.getElementById('debug-panel');
-    if (!panel) return;
-    if (panel.dataset.init) return;
-    panel.dataset.init = 'true';
-    panel.style.display = 'block';
-    
-    // Helper: wire a slider to a DBG key, with optional rebuild
-    function slider(id, key, fmt, rebuild) {
-      const el  = document.getElementById(id);
-      const val = document.getElementById(id+'-val');
-      if (!el) return;
-      el.addEventListener('input', function() {
-        DBG[key] = parseFloat(this.value);
-        val.textContent = fmt(DBG[key]);
-        if (rebuild) buildPlanets();
+  function initDebug(){
+    if(!sessionStorage.getItem('gbAdminAuth')) return;
+    const panel=document.getElementById('debug-panel');
+    if(!panel||panel.dataset.init) return;
+    panel.dataset.init='true';
+    panel.style.display='block';
+
+    function slider(id,key,fmt,rebuild){
+      const el=document.getElementById(id);
+      const val=document.getElementById(id+'-val');
+      if(!el) return;
+      el.addEventListener('input',function(){
+        DBG[key]=parseFloat(this.value);
+        if(val) val.textContent=fmt(DBG[key]);
+        if(rebuild) buildPlanets();
       });
     }
 
-    // Overlays
-    document.getElementById('debug-axes').addEventListener('change', function(){ debugAxes=this.checked; });
-    document.getElementById('debug-orbits').addEventListener('change', function(){ debugOrbits=this.checked; });
+    document.getElementById('debug-axes').addEventListener('change',function(){debugAxes=this.checked;});
+    document.getElementById('debug-orbits').addEventListener('change',function(){debugOrbits=this.checked;});
 
-    // Camera — no rebuild needed, setupCamera runs every frame
-    slider('dbg-tilt',  'tiltDeg', v=>Math.round(v)+'°');
-    slider('dbg-dist',  'dist',    v=>v.toFixed(1));
-    slider('dbg-fov',   'fovDeg',  v=>Math.round(v)+'°');
+    slider('dbg-tilt','tiltDeg',v=>Math.round(v)+'°');
+    slider('dbg-dist','dist',v=>v.toFixed(1));
+    slider('dbg-fov','fovDeg',v=>Math.round(v)+'°');
 
-    // Star
-    slider('dbg-star-spin', 'starSpin', v=>v.toFixed(3));
-    slider('dbg-star-r',    'starR',    v=>v.toFixed(2), true);
-    slider('dbg-glow',      'glowMult', v=>v.toFixed(1));
-    document.getElementById('dbg-star-colour').addEventListener('input', function() {
-      const [r,g,b] = hexToRgb(this.value);
-      DBG.starColour = [r, g, b];
+    slider('dbg-star-spin','starSpin',v=>v.toFixed(3));
+    slider('dbg-star-r','starR',v=>v.toFixed(2),true);
+    slider('dbg-glow','glowMult',v=>v.toFixed(1));
+    slider('dbg-jet-rate', 'jetRate', v=>v.toFixed(1)+'×');
+    slider('dbg-jet-length','jetLength',v=>v.toFixed(1));
+    document.getElementById('dbg-star-colour').addEventListener('input',function(){
+      const [r,g,b]=hexToRgb(this.value);
+      DBG.starColour=[r,g,b];
     });
-    document.getElementById('dbg-rebuild-star').addEventListener('click', function() {
+    document.getElementById('dbg-rebuild-star').addEventListener('click',function(){
       if(starTex) gl.deleteTexture(starTex);
-      starTex = toTex(genStarCanvas());
+      starTex=toTex(genStarCanvas());
     });
 
-    // Planets — orbit/radius require rebuild
-    slider('dbg-orbit-base',  'orbitBase',  v=>v.toFixed(1), true);
-    slider('dbg-orbit-step',  'orbitStep',  v=>v.toFixed(1), true);
-    slider('dbg-p-rmin',      'pRmin',      v=>v.toFixed(2), true);
-    slider('dbg-p-rmax',      'pRmax',      v=>v.toFixed(2), true);
-    slider('dbg-orbit-speed', 'orbitSpeed', v=>v.toFixed(2)+'×');
-    slider('dbg-planet-spin', 'planetSpin', v=>v.toFixed(2)+'×');
+    const presetSel=document.getElementById('dbg-preset-select');
+    presetSel.value=activePreset;
+    presetSel.addEventListener('change',function(){applyPreset(this.value,true);});
+    document.getElementById('dbg-preset-random').addEventListener('change',function(){DBG.randomPreset=this.checked;});
 
-    // Obliquity & wobble
-    slider('dbg-wobble-speed', 'wobbleSpeed', v=>v.toFixed(1)+'×');
-    slider('dbg-wobble-amp',   'wobbleAmp',   v=>v.toFixed(2)+'×');
-    slider('dbg-obliq-bias',   'obliqBias',   v=>Math.round(v)+'°');
+    slider('dbg-orbit-base','orbitBase',v=>v.toFixed(1),true);
+    slider('dbg-orbit-step','orbitStep',v=>v.toFixed(1),true);
+    slider('dbg-p-rmin','pRmin',v=>v.toFixed(2),true);
+    slider('dbg-p-rmax','pRmax',v=>v.toFixed(2),true);
+    slider('dbg-orbit-speed','orbitSpeed',v=>v.toFixed(2)+'×');
+    slider('dbg-planet-spin','planetSpin',v=>v.toFixed(2)+'×');
 
-    // Moons
-    slider('dbg-moon-r',     'moonR',     v=>v.toFixed(2), true);
-    slider('dbg-moon-speed', 'moonSpeed', v=>v.toFixed(2)+'×');
+    slider('dbg-wobble-speed','wobbleSpeed',v=>v.toFixed(1)+'×');
+    slider('dbg-wobble-amp','wobbleAmp',v=>v.toFixed(2)+'×');
+    slider('dbg-obliq-bias','obliqBias',v=>Math.round(v)+'°');
 
-    // Lighting
-    slider('dbg-ambient',  'ambient',  v=>v.toFixed(3));
-    slider('dbg-diffuse',  'diffuse',  v=>v.toFixed(2));
-    slider('dbg-specular', 'specular', v=>v.toFixed(3));
-    slider('dbg-spec-pow', 'specPow',  v=>Math.round(v));
-    slider('dbg-atmo',     'atmoRim',  v=>v.toFixed(2));
-    slider('dbg-limb',     'limbDark', v=>v.toFixed(2));
+    slider('dbg-moon-r','moonR',v=>v.toFixed(2),true);
+    slider('dbg-moon-speed','moonSpeed',v=>v.toFixed(2)+'×');
 
-    // CME
-    slider('dbg-cme-rate',     'cmeRate',     v=>v.toFixed(2)+'×');
-    slider('dbg-cme-height',   'cmeHeight',   v=>v.toFixed(2)+'×');
-    slider('dbg-cme-activity', 'cmeActivity', v=>v.toFixed(2)+'×');
-    slider('dbg-cme-span',     'cmeSpan',     v=>v.toFixed(2)+'×');
+    slider('dbg-ambient','ambient',v=>v.toFixed(3));
+    slider('dbg-diffuse','diffuse',v=>v.toFixed(2));
+    slider('dbg-specular','specular',v=>v.toFixed(3));
+    slider('dbg-spec-pow','specPow',v=>Math.round(v));
+    slider('dbg-atmo','atmoRim',v=>v.toFixed(2));
+    slider('dbg-limb','limbDark',v=>v.toFixed(2));
 
-    // Rebuild button
-    document.getElementById('dbg-rebuild').addEventListener('click', buildPlanets);
+    slider('dbg-cme-rate','cmeRate',v=>v.toFixed(2)+'×');
+    slider('dbg-cme-height','cmeHeight',v=>v.toFixed(2)+'×');
+    slider('dbg-cme-activity','cmeActivity',v=>v.toFixed(2)+'×');
+    slider('dbg-cme-span','cmeSpan',v=>v.toFixed(2)+'×');
+
+    document.getElementById('dbg-rebuild').addEventListener('click',buildPlanets);
+    syncDebugSliders();
   }
 
-  const debugPollInterval = setInterval(function() {
-    if (sessionStorage.getItem('gbAdminAuth')) {
-      initDebug();
-      clearInterval(debugPollInterval);
-    }
-  }, 200);
+  const debugPollInterval=setInterval(function(){
+    if(sessionStorage.getItem('gbAdminAuth')){initDebug();clearInterval(debugPollInterval);}
+  },200);
 
   document.getElementById('label-toggle').addEventListener('click',function(){
     showLabels=!showLabels;
@@ -1281,8 +1240,8 @@ const DBG = {
   });
 
   resize();
-  document.addEventListener('DOMContentLoaded', initDebug);
-  window.addEventListener('resize', resize);
+  document.addEventListener('DOMContentLoaded',initDebug);
+  window.addEventListener('resize',resize);
   requestAnimationFrame(render);
 })();
 </script>
