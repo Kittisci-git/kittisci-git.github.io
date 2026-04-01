@@ -461,9 +461,6 @@
 
 // ── STATE ─────────────────────────────────────────────────
 const RM_WORKER    = 'https://kittisci-proxy.kittisci.workers.dev';
-const RM_KEY_ITEMS = 'roadmap_items';
-const RM_KEY_TAGS  = 'roadmap_tags';
-
 let rmItems   = [];
 let rmTags    = [];
 let rmFilter  = 'all';
@@ -512,25 +509,33 @@ async function submitAdminPassword() {
   }
 }
 
-// ── LOCAL STORAGE ─────────────────────────────────────────
-function rmLoad() {
+// ── WORKER STORAGE ───────────────────────────────────────
+async function rmLoad() {
+  const status = document.getElementById('rm-status');
+  status.textContent = 'Loading…';
+  status.style.display = 'block';
+  document.getElementById('rm-list').style.display = 'none';
   try {
-    const items = localStorage.getItem(RM_KEY_ITEMS);
-    const tags  = localStorage.getItem(RM_KEY_TAGS);
-    rmItems = items ? JSON.parse(items) : [];
-    rmTags  = tags  ? JSON.parse(tags)  : defaultTags();
+    const res = await fetch(RM_WORKER + '/roadmap');
+    if (!res.ok) throw new Error('Server error');
+    const data = await res.json();
+    rmItems = data.items || [];
+    rmTags  = data.tags  || defaultTags();
   } catch(e) {
-    rmItems = [];
-    rmTags  = defaultTags();
+    status.textContent = 'Could not load roadmap. Please try again later.';
+    return false;
   }
+  return true;
 }
 
-function rmSave() {
-  try {
-    localStorage.setItem(RM_KEY_ITEMS, JSON.stringify(rmItems));
-    localStorage.setItem(RM_KEY_TAGS,  JSON.stringify(rmTags));
-    try { new BroadcastChannel('kittisci-roadmap').postMessage('update'); } catch(e) {}
-  } catch(e) {}
+async function rmPost(body) {
+  const res = await fetch(RM_WORKER + '/roadmap', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ ...body, password: rmAdminPw }),
+  });
+  if (!res.ok) throw new Error('Server error ' + res.status);
+  return res.json();
 }
 
 function defaultTags() {
@@ -547,9 +552,7 @@ function rmId() {
 }
 
 // ── INIT ──────────────────────────────────────────────────
-document.addEventListener('DOMContentLoaded', function() {
-  rmLoad();
-
+document.addEventListener('DOMContentLoaded', async function() {
   rmIsAdmin = !!sessionStorage.getItem('rmAdminAuth');
   rmAdminPw = sessionStorage.getItem('rmAdminPw') || '';
 
@@ -558,10 +561,8 @@ document.addEventListener('DOMContentLoaded', function() {
     if (window.location.hash === '#admin') showAdminOverlay();
   });
 
-  try {
-    const bc = new BroadcastChannel('kittisci-roadmap');
-    bc.onmessage = function() { rmLoad(); renderAll(); };
-  } catch(e) {}
+  const ok = await rmLoad();
+  if (!ok) return;
 
   renderAll();
 
@@ -731,7 +732,7 @@ function rmToggleCompleted() {
 }
 
 // ── DRAG REORDER ──────────────────────────────────────────
-function reorderItem(dragId, dropId) {
+async function reorderItem(dragId, dropId) {
   const active = rmItems.filter(i => !i.completed).sort((a, b) => (a.order ?? 0) - (b.order ?? 0));
   const dragIdx = active.findIndex(i => i.id === dragId);
   const dropIdx = active.findIndex(i => i.id === dropId);
@@ -742,19 +743,30 @@ function reorderItem(dragId, dropId) {
     const found = rmItems.find(i => i.id === item.id);
     if (found) found.order = idx;
   });
-  rmSave();
-  renderList();
+  renderList(); // optimistic
+  try {
+    const res = await rmPost({ action: 'reorder_items', items: active });
+    if (res.items) { rmItems = res.items; renderList(); }
+  } catch(e) { console.error('Reorder failed', e); }
 }
 
 // ── COMPLETE TOGGLE ───────────────────────────────────────
-function rmToggleComplete(id) {
+async function rmToggleComplete(id) {
   if (!rmIsAdmin) return;
   const item = rmItems.find(i => i.id === id);
   if (!item) return;
   item.completed   = !item.completed;
   item.completedAt = item.completed ? Date.now() : null;
-  rmSave();
-  renderList();
+  renderList(); // optimistic
+  try {
+    const res = await rmPost({ action: 'toggle_complete', id });
+    if (res.items) { rmItems = res.items; renderList(); }
+  } catch(e) {
+    // revert on error
+    item.completed = !item.completed;
+    item.completedAt = item.completed ? Date.now() : null;
+    renderList();
+  }
 }
 
 // ── ITEM MODAL ────────────────────────────────────────────
@@ -796,7 +808,7 @@ function closeItemModal() {
   rmEditId = null;
 }
 
-function saveItem() {
+async function saveItem() {
   const title = document.getElementById('rm-item-title').value.trim();
   if (!title) { document.getElementById('rm-item-title').focus(); return; }
   const desc = document.getElementById('rm-item-desc').value.trim();
@@ -815,9 +827,14 @@ function saveItem() {
     rmItems.push({ id: rmId(), title, desc, tags: selected, completed: false, order: maxOrder + 1, completedAt: null });
   }
 
-  rmSave();
   closeItemModal();
-  renderList();
+  renderList(); // optimistic
+  try {
+    const res = await rmPost({ action: 'save_item', item: rmEditId
+      ? rmItems.find(i => i.id === rmEditId)
+      : rmItems[rmItems.length - 1] });
+    if (res.items) { rmItems = res.items; renderList(); }
+  } catch(e) { console.error('Save failed', e); }
 }
 
 // ── DELETE ITEM ───────────────────────────────────────────
@@ -827,7 +844,14 @@ function confirmDeleteItem(id) {
   showConfirm(
     'Delete item?',
     `"${item.title}" will be permanently removed.`,
-    function() { rmItems = rmItems.filter(i => i.id !== id); rmSave(); renderList(); }
+    async function() {
+      rmItems = rmItems.filter(i => i.id !== id);
+      renderList(); // optimistic
+      try {
+        const res = await rmPost({ action: 'delete_item', id });
+        if (res.items) { rmItems = res.items; renderList(); }
+      } catch(e) { console.error('Delete failed', e); }
+    }
   );
 }
 
@@ -853,23 +877,32 @@ function renderTagRows() {
       <input class="tag-colour-input" type="color" value="${tag.colour}" data-id="${tag.id}" />
       <button class="tag-del-btn" data-id="${tag.id}" title="Delete tag"><i class="fa-solid fa-trash"></i></button>
     `;
-    row.querySelector('.tag-name-input').addEventListener('change', function() {
+    row.querySelector('.tag-name-input').addEventListener('change', async function() {
       const t = rmTags.find(t => t.id === this.dataset.id);
-      if (t) { t.name = this.value.trim() || t.name; rmSave(); }
+      if (t) {
+        t.name = this.value.trim() || t.name;
+        try { await rmPost({ action: 'save_tag', tag: t }); } catch(e) {}
+      }
     });
-    row.querySelector('.tag-colour-input').addEventListener('input', function() {
+    row.querySelector('.tag-colour-input').addEventListener('input', async function() {
       const t = rmTags.find(t => t.id === this.dataset.id);
-      if (t) { t.colour = this.value; row.querySelector('.tag-swatch').style.background = this.value; rmSave(); }
+      if (t) {
+        t.colour = this.value;
+        row.querySelector('.tag-swatch').style.background = this.value;
+        try { await rmPost({ action: 'save_tag', tag: t }); } catch(e) {}
+      }
     });
     row.querySelector('.tag-del-btn').addEventListener('click', function() {
       const tid = this.dataset.id;
       showConfirm(
         'Delete tag?',
         "Items with this tag will lose it but won't be deleted.",
-        function() {
-          rmTags = rmTags.filter(t => t.id !== tid);
-          rmItems.forEach(item => { item.tags = (item.tags || []).filter(t => t !== tid); });
-          rmSave();
+        async function() {
+          try {
+            const res = await rmPost({ action: 'delete_tag', id: tid });
+            if (res.tags)  rmTags  = res.tags;
+            if (res.items) rmItems = res.items;
+          } catch(e) { console.error('Delete tag failed', e); }
           renderTagRows();
         }
       );
@@ -878,16 +911,20 @@ function renderTagRows() {
   });
 }
 
-function addTag() {
+async function addTag() {
   const nameEl   = document.getElementById('rm-new-tag-name');
   const colourEl = document.getElementById('rm-new-tag-colour');
   const name = nameEl.value.trim();
   if (!name) { nameEl.focus(); return; }
-  rmTags.push({ id: rmId(), name, colour: colourEl.value });
-  rmSave();
+  const tag = { id: rmId(), name, colour: colourEl.value };
+  rmTags.push(tag);
   nameEl.value = '';
   colourEl.value = '#42a5f5';
   renderTagRows();
+  try {
+    const res = await rmPost({ action: 'save_tag', tag });
+    if (res.tags) { rmTags = res.tags; renderTagRows(); }
+  } catch(e) { console.error('Add tag failed', e); }
 }
 
 // ── CONFIRM ───────────────────────────────────────────────
