@@ -501,13 +501,281 @@
       font-weight: 600;
       letter-spacing: 0.05em;
     }
+
+    /* ============================================================
+       FISH GUIDE OVERLAY
+       ============================================================ */
+    #fish-guide-backdrop {
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.75);
+      z-index: 500;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 1rem;
+    }
+    #fish-guide-backdrop.open { display: flex; }
+
+    #fish-guide-panel {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 0.75rem;
+      display: flex;
+      flex-direction: column;
+      width: clamp(600px, 92vw, 1300px);
+      height: 90vh;
+      max-height: 90vh;
+      overflow: hidden;
+    }
+
+    #fish-guide-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0.75rem 1.25rem;
+      border-bottom: 1px solid var(--border);
+      flex-shrink: 0;
+    }
+    #fish-guide-header h2 {
+      font-size: 1.1rem;
+      font-weight: 700;
+      color: var(--text);
+      margin: 0;
+    }
+    .fish-guide-close {
+      background: none;
+      border: 1px solid var(--border);
+      color: var(--text-muted);
+      border-radius: 0.2rem;
+      padding: 0.3rem 0.75rem;
+      cursor: pointer;
+      font-size: 0.85rem;
+      transition: all 0.2s;
+      flex-shrink: 0;
+    }
+    .fish-guide-close:hover { border-color: var(--accent); color: var(--accent); }
+
+    #fish-guide-grid {
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      grid-template-rows: repeat(2, 1fr);
+      gap: 10px;
+      padding: 14px;
+      flex: 1;
+      min-height: 0;
+    }
+
+    /* 3D flip card */
+    .fg-card {
+      perspective: 900px;
+      cursor: pointer;
+      container-type: inline-size;
+    }
+    .fg-card-inner {
+      position: relative;
+      width: 100%;
+      height: 100%;
+      transform-style: preserve-3d;
+      transition: transform 0.45s ease;
+    }
+    .fg-card.flipped .fg-card-inner { transform: rotateY(180deg); }
+
+    .fg-face {
+      position: absolute;
+      inset: 0;
+      backface-visibility: hidden;
+      -webkit-backface-visibility: hidden;
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: 0.5rem;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+      transition: border-color 0.2s;
+    }
+    .fg-card:hover .fg-face { border-color: #555; }
+    .fg-face-back { transform: rotateY(180deg); }
+
+    /* ── FRONT FACE ── */
+    .fg-front-img-wrap {
+      flex: 0 0 62%;
+      display: flex;
+      align-items: flex-end;
+      justify-content: center;
+      padding: 8px 8px 4px;
+      position: relative;
+      min-height: 0;
+    }
+    .fg-front-img-wrap img {
+      max-width: 100%;
+      max-height: 100%;
+      object-fit: contain;
+      display: block;
+    }
+    .fg-bait-badge {
+      position: absolute;
+      top: 5px;
+      left: 5px;
+      display: inline-flex;
+      align-items: center;
+      font-size: 0.72rem;
+      font-weight: 600;
+      padding: 0.2rem 0.5rem;
+      border-radius: 3px;
+      line-height: 1.3;
+      white-space: nowrap;
+    }
+    .fg-bait-none    { background: #3a3a3a; color: #f0e6ef; border: 1px solid #3a3a3a; }
+    .fg-bait-earth   { background: #e18e7a; color: #3d1500; border: 1px solid #e18e7a; }
+    .fg-bait-leech   { background: #5c4057; color: #f0e6ef; border: 1px solid #5c4057; }
+    .fg-bait-grub    { background: #f9f8f5; color: #1a1a1a; border: 1px solid #f9f8f5; }
+
+    .fg-front-info {
+      padding: 0 0 10%;
+      text-align: center;
+      flex-shrink: 0;
+      display: flex;
+      flex-direction: column;
+      align-items: normal;
+      justify-content: center;
+      min-height: 3.5rem;
+    }
+    .fg-fish-name {
+      font-size: 15cqi;
+      font-weight: 700;
+      color: var(--text);
+      line-height: 1.2;
+      margin-bottom: 3px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .fg-loc-badge {
+      position: absolute;
+      top: 5px;
+      right: 5px;
+      font-size: 0.72rem;
+      font-weight: 600;
+      padding: 0.2rem 0.5rem;
+      border-radius: 3px;
+      border: 1px solid;
+      line-height: 1.3;
+      white-space: nowrap;
+    }
+    .fg-flip-hint {
+      font-size: 0.58rem;
+      color: #444;
+      margin-top: 2px;
+    }
+
+    /* ── BACK FACE ── */
+    .fg-back-header {
+      padding: 8px 10px 5px;
+      border-bottom: 1px solid var(--border);
+      flex-shrink: 0;
+      position: relative;
+      z-index: 1;
+    }
+    .fg-back-name {
+      font-size: 1rem;
+      font-weight: 700;
+      color: var(--text);
+    }
+    .fg-back-sub {
+      font-size: 0.8rem;
+      color: var(--text-muted);
+    }
+    .fg-variants {
+      flex: 1;
+      overflow-y: auto;
+      padding: 6px 10px 8px;
+      display: flex;
+      flex-direction: column;
+      gap: 5px;
+      min-height: 0;
+      scrollbar-width: thin;
+      scrollbar-color: var(--border) transparent;
+      position: relative;
+      z-index: 1;
+    }
+    .fg-variant {
+      font-size: 0.8rem;
+      color: var(--text-muted);
+      line-height: 1.45;
+      padding-bottom: 5px;
+      border-bottom: 1px solid #2a2a2a;
+    }
+    .fg-variant:last-child { border-bottom: none; padding-bottom: 0; }
+    .fg-variant-name {
+      font-weight: 600;
+      color: var(--text);
+      display: block;
+      margin-bottom: 1px;
+    }
+    .fg-flip-hint-back {
+      font-size: 0.55rem;
+      color: #444;
+      text-align: center;
+      padding: 0 8px 6px;
+      flex-shrink: 0;
+      position: relative;
+      z-index: 1;
+    }
+    .fg-back-bg {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      opacity: 0.08;
+      filter: blur(6px);
+      pointer-events: none;
+      user-select: none;
+      transform: scale(1.1);
+      z-index: 0;
+    }
+
+    /* Mobile: 2×5 grid, no scroll, compact cards */
+    @media (max-width: 640px) {
+      #fish-guide-backdrop { padding: 0.4rem; }
+      #fish-guide-panel {
+        width: 100%;
+        height: 96vh;
+        max-height: 96vh;
+        border-radius: 0.5rem;
+      }
+      #fish-guide-header { padding: 0.5rem 0.75rem; }
+      #fish-guide-header h2 { font-size: 0.95rem; }
+      #fish-guide-grid {
+        grid-template-columns: repeat(2, 1fr);
+        grid-template-rows: repeat(5, 1fr);
+        gap: 7px;
+        padding: 8px;
+        overflow: hidden;
+      }
+      .fg-front-img-wrap { padding: 4px 4px 2px; }
+      .fg-front-info { padding: 0 5px 5px; }
+      .fg-fish-name { font-size: 0.78rem; }
+      .fg-flip-hint { display: none; }
+      .fg-loc-badge { font-size: 0.5rem; padding: 0.1rem 0.3rem; }
+      .fg-bait-badge { font-size: 0.52rem; padding: 0.1rem 0.25rem; }
+      .fg-back-header { padding: 5px 7px 4px; }
+      .fg-back-name { font-size: 0.68rem; }
+      .fg-back-sub { font-size: 0.52rem; }
+      .fg-variant { font-size: 0.52rem; }
+      .fg-flip-hint-back { font-size: 0.5rem; padding: 0 6px 4px; }
+    }
   </style>
 </head>
 <body>
 
 <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:0.25rem;">
   <h1>Sea of Thieves Commendation Tracker</h1>
-  <a href='../../#' style="padding:0.4rem 1rem; border:1px solid #dadada; border-radius:0.2rem; color:#dadada; text-decoration:none; font-size:0.9rem; transition:all 0.2s;">Return to Kittisci</a>
+  <div style="display:flex; gap:0.5rem; align-items:center; flex-wrap:wrap; justify-content:flex-end;">
+    <button onclick="openFishGuide()" style="padding:0.4rem 1rem; border:1px solid var(--border); border-radius:0.2rem; background:transparent; color:var(--text-muted); cursor:pointer; font-size:0.9rem; transition:all 0.2s;" onmouseover="this.style.borderColor='var(--accent)';this.style.color='var(--accent)'" onmouseout="this.style.borderColor='var(--border)';this.style.color='var(--text-muted)'">Fish Guide</button>
+    <a href='../../' style="padding:0.4rem 1rem; border:1px solid #dadada; border-radius:0.2rem; color:#dadada; text-decoration:none; font-size:0.9rem; transition:all 0.2s;">Return to Kittisci</a>
+  </div>
 </div>
 <p class="subtitle">Track your progress across all commendations. Progress is saved in your browser. *Adventures at Sea is currently incomplete*</p>
 
@@ -526,6 +794,19 @@
   <div id="category-progress-bar" class="category-progress-wrap" style="margin-bottom:1.5rem;"></div>
   <div class="tabs" id="main-tabs"></div>
   <div id="main-panels"></div>
+</div>
+
+<!-- ============================================================
+     FISH GUIDE OVERLAY
+     ============================================================ -->
+<div id="fish-guide-backdrop">
+  <div id="fish-guide-panel">
+    <div id="fish-guide-header">
+      <div><h2>Fish Guide</h2></div>
+      <button class="fish-guide-close" onclick="closeFishGuide()">✕</button>
+    </div>
+    <div id="fish-guide-grid"></div>
+  </div>
 </div>
 
 <script>
@@ -1071,6 +1352,164 @@ function showOverview() {
   document.getElementById('overview').style.display = 'block';
   document.getElementById('tracker').style.display = 'none';
 }
+
+// ============================================================
+// FISH GUIDE
+// ============================================================
+const FISH_DATA = [
+  {
+    id: 'splashtail', name: 'Splashtail', img: 'images/splashtail.png',
+    bait: null, locBadge: 'Ocean',
+    locColor: '#e8f4f8', locBg: '#1d5f8a', locBorder: '#1d5f8a',
+    backSub: 'No bait',
+    variants: [{ name: 'All variants', detail: 'Found in any open ocean water across all regions. No bait or special conditions needed.' }]
+  },
+  {
+    id: 'plentifin', name: 'Plentifin', img: 'images/plentifin.png',
+    bait: 'Earthworms', locBadge: 'Shores of Plenty',
+    locColor: '#e8f2f9', locBg: '#003863', locBorder: '#003863',
+    backSub: 'Earthworms',
+    variants: [{ name: 'All variants', detail: 'Found only in the open ocean waters of The Shores of Plenty.' }]
+  },
+  {
+    id: 'wildsplash', name: 'Wildsplash', img: 'images/wildsplash.png',
+    bait: 'Earthworms', locBadge: 'The Wilds',
+    locColor: '#f5ede3', locBg: '#6f4d2d', locBorder: '#6f4d2d',
+    backSub: 'Earthworms',
+    variants: [{ name: 'All variants', detail: 'Found only in the open ocean waters of The Wilds.' }]
+  },
+  {
+    id: 'ancientscale', name: 'Ancientscale', img: 'images/ancientscale.png',
+    bait: 'Leeches', locBadge: 'Ancient Isles',
+    locColor: '#e3f5eb', locBg: '#01411d', locBorder: '#01411d',
+    backSub: 'Leeches',
+    variants: [{ name: 'All variants', detail: 'Found only in the open ocean waters of The Ancient Isles.' }]
+  },
+  {
+    id: 'devilfish', name: 'Devilfish', img: 'images/devilfish.png',
+    bait: 'Grubs', locBadge: "Devil's Roar",
+    locColor: '#fde8e8', locBg: '#77070c', locBorder: '#77070c',
+    backSub: 'Grubs',
+    variants: [{ name: 'All variants', detail: "Found only in the open ocean waters of The Devil's Roar." }]
+  },
+  {
+    id: 'pondie', name: 'Pondie', img: 'images/pondie.png',
+    bait: null, locBadge: 'Ponds',
+    locColor: '#e3f5ee', locBg: '#2d6e4e', locBorder: '#2d6e4e',
+    backSub: 'No bait',
+    variants: [{ name: 'All variants', detail: 'Found in freshwater ponds on islands — not in the sea.' }]
+  },
+  {
+    id: 'islehopper', name: 'Islehopper', img: 'images/islehopper.png',
+    bait: null, locBadge: 'Regional',
+    locColor: '#e8f4f8', locBg: '#1d5f8a', locBorder: '#1d5f8a',
+    backSub: 'No bait • Large island shores only',
+    variants: [
+      { name: 'Stone', detail: 'Shipwreck Bay, Shark Bait Cove, Crook\'s Hollow, Sailor\'s Bounty, Cannon Cove, Fetcher\'s Rest.' },
+      { name: 'Moss', detail: 'Ashen Reaches, Thieves\' Haven, Marauder\'s Arch, Lone Cove, Wanderer\'s Refuge, Ruby\'s Fall.' },
+      { name: 'Honey', detail: 'Discovery Ridge, Plunder Valley, Kraken\'s Fall, Sunken Grove, Crescent Isle, The Devil\'s Thirst.' },
+      { name: 'Amethyst', detail: 'Night only — Devil\'s Ridge, Smuggler\'s Bay, Mermaid\'s Hideaway, The Crooked Masts, Old Faithful Isle, Flintlock Peninsula, Snake Island.' },
+      { name: 'Raven', detail: 'Any large island. Most efficiently caught during the day at Amethyst Islehopper islands — only Splashtails and Raven Islehoppers spawn there in daylight.' },
+    ]
+  },
+  {
+    id: 'battlegill', name: 'Battlegill', img: 'images/battlegill.png',
+    bait: 'Grubs', locBadge: 'Skeleton Event',
+    locColor: '#fff3e0', locBg: '#8a5000', locBorder: '#8a5000',
+    backSub: 'Grubs',
+    variants: [{ name: 'All variants', detail: 'Found near Skeleton Ships or an active Skeleton Fort. Cannot be caught near other active World Events.' }]
+  },
+  {
+    id: 'wrecker', name: 'Wrecker', img: 'images/wrecker.png',
+    bait: 'Earthworms', locBadge: 'Shipwrecks',
+    locColor: '#fff8e1', locBg: '#6d4c00', locBorder: '#6d4c00',
+    backSub: 'Earthworms',
+    variants: [
+      { name: 'Rose, Sun, Pebble, Lighthouse', detail: 'Found near any shipwreck location.' },
+      { name: 'Blackcloud', detail: 'Only found near shipwrecks that are inside an active Storm.' }
+    ]
+  },
+  {
+    id: 'stormfish', name: 'Stormfish', img: 'images/stormfish.png',
+    bait: 'Leeches', locBadge: 'Regional',
+    locColor: '#e8f4f8', locBg: '#1d5f8a', locBorder: '#1d5f8a',
+    backSub: 'Leeches • Storm required',
+    variants: [
+      { name: 'Ancient', detail: 'Storms in The Ancient Isles region.' },
+      { name: 'Shores', detail: 'Storms in The Shores of Plenty region.' },
+      { name: 'Wild', detail: 'Storms in The Wilds region.' },
+      { name: 'Twilight', detail: 'Storms anywhere at night. Storms do not occur in The Devil\'s Roar.' },
+      { name: 'Shadow', detail: 'Storms anywhere. Most efficiently caught during a storm in the day at The Glorious Sea Dog Tavern or Uncharted Island N-13 — only Splashtails and Shadow Stormfish spawn there in daylight.' }
+    ]
+  }
+];
+
+const BAIT_LABELS = {
+  null:         { label: 'No Bait',    cls: 'fg-bait-none'  },
+  'Earthworms': { label: 'Earthworms', cls: 'fg-bait-earth' },
+  'Leeches':    { label: 'Leeches',    cls: 'fg-bait-leech' },
+  'Grubs':      { label: 'Grubs',      cls: 'fg-bait-grub'  },
+};
+
+function buildFishGuide() {
+  const grid = document.getElementById('fish-guide-grid');
+  grid.innerHTML = '';
+  FISH_DATA.forEach(fish => {
+    const bait = BAIT_LABELS[fish.bait] || BAIT_LABELS[null];
+    const variantsHTML = fish.variants.map(v => `
+      <div class="fg-variant">
+        <span class="fg-variant-name">${v.name}</span>
+        ${v.detail}
+      </div>`).join('');
+    const card = document.createElement('div');
+    card.className = 'fg-card';
+    card.innerHTML = `
+      <div class="fg-card-inner">
+        <div class="fg-face fg-face-front">
+          <div class="fg-front-img-wrap">
+            <span class="${bait.cls} fg-bait-badge">${bait.label}</span>
+            <span class="fg-loc-badge" style="background:${fish.locBg};color:${fish.locColor};border-color:${fish.locBorder};">${fish.locBadge}</span>
+            <img src="${fish.img}" alt="${fish.name}"
+              onerror="this.style.display='none';this.nextElementSibling.style.display='block'"
+            ><span style="display:none;font-size:2rem;">🐟</span>
+          </div>
+          <div class="fg-front-info">
+            <div class="fg-fish-name">${fish.name}</div>
+            <div class="fg-flip-hint">tap for variants ▸</div>
+          </div>
+        </div>
+        <div class="fg-face fg-face-back">
+          <img class="fg-back-bg" src="${fish.img}" alt="">
+          <div class="fg-back-header">
+            <div class="fg-back-name">${fish.name}</div>
+            <div class="fg-back-sub">${fish.backSub}</div>
+          </div>
+          <div class="fg-variants">${variantsHTML}</div>
+          <div class="fg-flip-hint-back">tap to flip back ◂</div>
+        </div>
+      </div>`;
+    card.addEventListener('click', () => card.classList.toggle('flipped'));
+    grid.appendChild(card);
+  });
+}
+
+function openFishGuide() {
+  document.getElementById('fish-guide-backdrop').classList.add('open');
+}
+function closeFishGuide() {
+  document.getElementById('fish-guide-backdrop').classList.remove('open');
+  document.querySelectorAll('.fg-card.flipped').forEach(c => c.classList.remove('flipped'));
+}
+
+document.addEventListener('DOMContentLoaded', function() {
+  buildFishGuide();
+  document.getElementById('fish-guide-backdrop').addEventListener('click', function(e) {
+    if (e.target === this) closeFishGuide();
+  });
+  document.addEventListener('keydown', function(e) {
+    if (e.key === 'Escape') closeFishGuide();
+  });
+});
 
 function showCategory(catName) {
   document.getElementById('overview').style.display = 'none';
