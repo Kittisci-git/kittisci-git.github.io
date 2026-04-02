@@ -12,6 +12,7 @@
   src: url('../resources/fonts/rockoflf.ttf') format('truetype');
   font-weight: normal;
   font-style: normal;
+  font-display: swap;
 }
 
 @font-face {
@@ -19,6 +20,7 @@
   src: url('../resources/fonts/rockoultraflf.ttf') format('truetype');
   font-weight: normal;
   font-style: normal;
+  font-display: swap;
 }
 
 :root {

@@ -1241,10 +1241,12 @@ function applyPreset(name, rebuildScene) {
     this.classList.toggle('active',showLabels);
   });
 
-  resize();
-  document.addEventListener('DOMContentLoaded',initDebug);
-  window.addEventListener('resize',resize);
-  requestAnimationFrame(render);
+  document.addEventListener('DOMContentLoaded', initDebug);
+  window.addEventListener('resize', resize);
+  document.fonts.ready.then(function() {
+    resize();
+    requestAnimationFrame(render);
+  });
 })();
 </script>
 </body>
