@@ -8,15 +8,15 @@
    DESIGN TOKENS
    ============================================================ */
 @font-face {
-  font-family: 'Rockoflf';
-  src: url('../resources/fonts/rockoflf-Rp06.ttf') format('truetype');
+  font-family: 'rockoflf';
+  src: url('../resources/fonts/rockoflf.ttf') format('truetype');
   font-weight: normal;
   font-style: normal;
 }
 
 @font-face {
-  font-family: 'Rockoultraflf';
-  src: url('../resources/fonts/rockoultraflf-8MeJ.ttf') format('truetype');
+  font-family: 'rockoultraflf';
+  src: url('../resources/fonts/rockoultraflf.ttf') format('truetype');
   font-weight: normal;
   font-style: normal;
 }
@@ -42,7 +42,7 @@
   --link-hover:      #64b5f6;
 
   /* Typography */
-  --font:            'Rockoflf',Verdana, sans-serif;
+  --font:            'rockoflf',Verdana, sans-serif;
   --font-size-base:  1.8rem;   /* theme uses 62.5% html trick, so 1rem = 10px */
   --line-height:     1.7;
 
