@@ -29,26 +29,11 @@
       padding: 2rem;
     }
 
-    h1 {
-      font-size: 1.8rem;
-      margin-bottom: 0.25rem;
-      color: var(--text);
-    }
+    h1 { font-size: 1.8rem; margin-bottom: 0.25rem; color: var(--text); }
+    .subtitle { color: var(--text-muted); margin-bottom: 2rem; font-size: 0.9rem; }
 
-    .subtitle {
-      color: var(--text-muted);
-      margin-bottom: 2rem;
-      font-size: 0.9rem;
-    }
-
-    /* Overview screen */
-    #overview {
-      display: block;
-    }
-
-    #tracker {
-      display: none;
-    }
+    #overview { display: block; }
+    #tracker { display: none; }
 
     .overview-grid {
       display: grid;
@@ -71,688 +56,318 @@
       justify-content: space-between;
       min-height: 130px;
     }
-
-    .category-card:hover {
-      border-color: var(--accent);
-      transform: translateY(-2px);
-    }
+    .category-card:hover { border-color: var(--accent); transform: translateY(-2px); }
 
     .card-bg {
-      position: absolute;
-      right: -5px;
-      bottom: -10px;
-      width: 150px;
-      height: 150px;
-      opacity: 0.4;
-      pointer-events: none;
-      user-select: none;
-      transform: rotate(20deg);
+      position: absolute; right: -5px; bottom: -10px;
+      width: 150px; height: 150px; opacity: 0.4;
+      pointer-events: none; user-select: none; transform: rotate(20deg);
     }
-
-    .card-top {
-      display: flex;
-      flex-direction: column;
-      gap: 0.2rem;
-    }
-
+    .card-top { display: flex; flex-direction: column; gap: 0.2rem; }
     .category-card .card-name {
-      font-size: 1.5rem;
-      font-weight: 700;
-      color: var(--text);
-      line-height: 1.2;
-      z-index: 1;
-      position: relative;
+      font-size: 1.5rem; font-weight: 700; color: var(--text);
+      line-height: 1.2; z-index: 1; position: relative;
       text-shadow: 0 0 5px #000, 0 0 5px #000;
     }
+    .card-bottom { display: flex; flex-direction: column; gap: 0.35rem; z-index: 1; position: relative; }
+    .card-count { font-size: 0.78rem; color: var(--text-muted); }
+    .card-progress-track { height: 5px; background: var(--border); border-radius: 3px; overflow: hidden; }
+    .card-progress-fill { height: 100%; border-radius: 3px; transition: width 0.4s ease; }
 
-    .card-bottom {
-      display: flex;
-      flex-direction: column;
-      gap: 0.35rem;
-      z-index: 1;
-      position: relative;
-    }
-
-    .card-count {
-      font-size: 0.78rem;
-      color: var(--text-muted);
-    }
-
-    .card-progress-track {
-      height: 5px;
-      background: var(--border);
-      border-radius: 3px;
-      overflow: hidden;
-    }
-
-    .card-progress-fill {
-      height: 100%;
-      border-radius: 3px;
-      transition: width 0.4s ease;
-      /* colour set inline via style attribute */
-    }
-
-    /* Tracker background */
-    #tracker {
-      position: relative;
-    }
-
+    #tracker { position: relative; }
     .tracker-bg {
-      position: fixed;
-      display: block;
-      right: 2rem;
-      top: 25%;
-      transform: rotate(20deg);
-      filter: blur(4px);
-      width: 600px;
-      height: 600px;
-      opacity: 0.07;
-      pointer-events: none;
-      user-select: none;
-      z-index: 0;
+      position: fixed; display: block; right: 2rem; top: 25%;
+      transform: rotate(20deg); filter: blur(4px);
+      width: 600px; height: 600px; opacity: 0.07;
+      pointer-events: none; user-select: none; z-index: 0;
     }
+    #tracker > * { position: relative; z-index: 1; }
 
-    #tracker > * {
-      position: relative;
-      z-index: 1;
-    }
-
-    /* Back button */
     .back-btn {
-      padding: 0.4rem 1rem;
-      border: 1px solid var(--border);
-      background: transparent;
-      color: var(--text-muted);
-      cursor: pointer;
-      border-radius: 0.2rem;
-      transition: all 0.2s ease;
-      font-size: 0.9rem;
-      -webkit-appearance: none;
-      appearance: none;
-      margin-bottom: 1rem;
+      padding: 0.4rem 1rem; border: 1px solid var(--border);
+      background: transparent; color: var(--text-muted); cursor: pointer;
+      border-radius: 0.2rem; transition: all 0.2s ease; font-size: 0.9rem;
+      -webkit-appearance: none; appearance: none; margin-bottom: 1rem;
     }
+    .back-btn:hover { border-color: var(--accent); color: var(--accent); }
 
-    .back-btn:hover {
-      border-color: var(--accent);
-      color: var(--accent);
-    }
-
-    /* Category header in tracker view */
-    .category-header {
-      flex: 1;
-      text-align: center;
-    }
-
+    .category-header { flex: 1; text-align: center; }
     .category-header h2 {
-      font-size: 2rem;
-      font-weight: 800;
-      letter-spacing: 0.02em;
+      font-size: 2rem; font-weight: 800; letter-spacing: 0.02em;
       text-shadow: 0 0 20px rgba(0,0,0,0.8), 0 2px 4px rgba(0,0,0,0.9);
-      line-height: 1.1;
-      margin-bottom: 0.6rem;
+      line-height: 1.1; margin-bottom: 0.6rem;
     }
 
-    /* Category-level progress bar */
-    .category-progress-wrap {
-      width: 100%;
-      max-width: 500px;
-      margin: 0 auto;
-    }
+    .category-progress-wrap { width: 100%; max-width: 500px; margin: 0 auto; }
+    .category-progress-label { display: flex; justify-content: space-between; font-size: 0.72rem; color: var(--text-muted); margin-bottom: 0.25rem; }
+    .category-progress-track { height: 6px; background: var(--border); border-radius: 3px; overflow: hidden; }
+    .category-progress-fill { height: 100%; border-radius: 3px; transition: width 0.4s ease; }
 
-    .category-progress-label {
-      display: flex;
-      justify-content: space-between;
-      font-size: 0.72rem;
-      color: var(--text-muted);
-      margin-bottom: 0.25rem;
-    }
+    .subcategory-progress-wrap { width: 100%; max-width: 500px; margin: 0 auto 1.5rem auto; }
+    .subcategory-progress-label { display: flex; justify-content: space-between; font-size: 0.72rem; color: var(--text-muted); margin-bottom: 0.25rem; }
+    .subcategory-progress-track { height: 5px; background: var(--border); border-radius: 3px; overflow: hidden; }
+    .subcategory-progress-fill { height: 100%; background: var(--accent); border-radius: 3px; transition: width 0.4s ease; }
 
-    .category-progress-track {
-      height: 6px;
-      background: var(--border);
-      border-radius: 3px;
-      overflow: hidden;
-    }
-
-    .category-progress-fill {
-      height: 100%;
-      border-radius: 3px;
-      transition: width 0.4s ease;
-    }
-
-    /* Subcategory progress bar */
-    .subcategory-progress-wrap {
-      width: 100%;
-      max-width: 500px;
-      margin: 0 auto 1.5rem auto;
-    }
-
-    .subcategory-progress-label {
-      display: flex;
-      justify-content: space-between;
-      font-size: 0.72rem;
-      color: var(--text-muted);
-      margin-bottom: 0.25rem;
-    }
-
-    .subcategory-progress-track {
-      height: 5px;
-      background: var(--border);
-      border-radius: 3px;
-      overflow: hidden;
-    }
-
-    .subcategory-progress-fill {
-      height: 100%;
-      background: var(--accent);
-      border-radius: 3px;
-      transition: width 0.4s ease;
-    }
-
-    /* Tabs */
-    .tabs {
-      display: flex;
-      gap: 0.5rem;
-      flex-wrap: wrap;
-      margin-bottom: 2rem;
-    }
-
+    .tabs { display: flex; gap: 0.5rem; flex-wrap: wrap; margin-bottom: 2rem; }
     .tab {
-      padding: 0.4rem 1rem;
-      border: 1px solid var(--border);
-      background: transparent;
-      color: var(--text);
-      cursor: pointer;
-      border-radius: 0.2rem;
-      transition: all 0.2s ease;
-      font-size: 0.9rem;
-      -webkit-appearance: none;
-      appearance: none;
+      padding: 0.4rem 1rem; border: 1px solid var(--border);
+      background: transparent; color: var(--text); cursor: pointer;
+      border-radius: 0.2rem; transition: all 0.2s ease; font-size: 0.9rem;
+      -webkit-appearance: none; appearance: none;
     }
-
     .tab:hover { border-color: var(--accent); color: var(--accent); }
     .tab.active { background: var(--border); color: var(--text); }
 
-    /* Subcategory tabs */
-    .subtabs {
-      display: flex;
-      gap: 0.4rem;
-      flex-wrap: wrap;
-      margin-bottom: 1.5rem;
-    }
-
+    .subtabs { display: flex; gap: 0.4rem; flex-wrap: wrap; margin-bottom: 1.5rem; }
     .subtab {
-      padding: 0.3rem 0.8rem;
-      border: 1px solid var(--border);
-      background: transparent;
-      color: var(--text-muted);
-      cursor: pointer;
-      border-radius: 0.2rem;
-      transition: all 0.2s ease;
-      font-size: 0.8rem;
-      -webkit-appearance: none;
-      appearance: none;
+      padding: 0.3rem 0.8rem; border: 1px solid var(--border);
+      background: transparent; color: var(--text-muted); cursor: pointer;
+      border-radius: 0.2rem; transition: all 0.2s ease; font-size: 0.8rem;
+      -webkit-appearance: none; appearance: none;
     }
-
     .subtab:hover { border-color: var(--cat-color, var(--accent)); color: var(--cat-color, var(--accent)); }
     .subtab.active { border-color: var(--cat-color, var(--accent)); color: var(--cat-color, var(--accent)); background: rgba(0,0,0,0.15); }
 
-    /* Panel */
     .panel { display: none; }
     .panel.active { display: block; }
-
     .subpanel { display: none; }
     .subpanel.active { display: block; }
 
-    /* Commendation grid */
-    .commendation-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-      gap: 1rem;
-    }
+    .commendation-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 1rem; }
 
-    /* Commendation card */
     .commendation-card {
-      background: var(--bg-card);
-      border: 1px solid var(--border);
-      border-radius: 0.4rem;
-      padding: 1rem;
-      transition: border-color 0.2s ease;
-      position: relative;
+      background: var(--bg-card); border: 1px solid var(--border);
+      border-radius: 0.4rem; padding: 1rem; transition: border-color 0.2s ease; position: relative;
     }
-
     .commendation-card:hover { border-color: #555; }
     .commendation-card.complete { border-color: var(--complete); }
 
-    .card-header {
-      display: flex;
-      gap: 0.75rem;
-      align-items: flex-start;
-      margin-bottom: 0.75rem;
-    }
-
+    .card-header { display: flex; gap: 0.75rem; align-items: flex-start; margin-bottom: 0.75rem; }
     .card-image {
-      width: 56px;
-      height: 56px;
-      border-radius: 0.3rem;
-      object-fit: cover;
-      background: var(--border);
-      flex-shrink: 0;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      color: var(--text-muted);
-      font-size: 0.6rem;
-      text-align: center;
+      width: 56px; height: 56px; border-radius: 0.3rem; object-fit: cover;
+      background: var(--border); flex-shrink: 0; display: flex;
+      align-items: center; justify-content: center;
+      color: var(--text-muted); font-size: 0.6rem; text-align: center;
     }
+    .card-image img { width: 100%; height: 100%; object-fit: cover; border-radius: 0.3rem; }
+    .card-info { flex: 1; padding-right: 1.5rem; }
+    .card-name { font-size: 0.9rem; font-weight: 600; margin-bottom: 0.3rem; line-height: 1.3; }
+    .card-description { font-size: 0.75rem; color: var(--text-muted); margin-bottom: 0.4rem; line-height: 1.4; }
 
-    .card-image img {
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
-      border-radius: 0.3rem;
-    }
+    .reward-icon { position: absolute; top: 0.75rem; right: 0.75rem; width: 20px; height: 20px; cursor: help; }
 
-    .card-info { 
-      flex: 1;
-      padding-right: 1.5rem;
-    }
-
-    .card-name {
-      font-size: 0.9rem;
-      font-weight: 600;
-      margin-bottom: 0.3rem;
-      line-height: 1.3;
-    }
-
-    .card-description {
-      font-size: 0.75rem;
-      color: var(--text-muted);
-      margin-bottom: 0.4rem;
-      line-height: 1.4;
-    }
-
-    .reward-icon {
-      position: absolute;
-      top: 0.75rem;
-      right: 0.75rem;
-      width: 20px;
-      height: 20px;
-      cursor: help;
-    }
-    
     .tooltip {
-      position: fixed;
-      background: #1a1a1a;
-      color: var(--text);
-      border: 1px solid var(--border);
-      border-radius: 0.3rem;
-      padding: 0.4rem 0.6rem;
-      font-size: 0.75rem;
-      white-space: nowrap;
-      z-index: 1000;
-      pointer-events: none;
-      display: none;
+      position: fixed; background: #1a1a1a; color: var(--text);
+      border: 1px solid var(--border); border-radius: 0.3rem;
+      padding: 0.4rem 0.6rem; font-size: 0.75rem; white-space: nowrap;
+      z-index: 1000; pointer-events: none; display: none;
     }
 
-    /* Grade indicators */
-    .grade-indicators {
-      display: flex;
-      gap: 3px;
-      margin-bottom: 0.75rem;
-    }
-
-    .grade-pip {
-      width: 18px;
-      height: 6px;
-      border-radius: 2px;
-      background: var(--grade-0);
-      transition: background 0.3s ease;
-    }
-
+    .grade-indicators { display: flex; gap: 3px; margin-bottom: 0.75rem; }
+    .grade-pip { width: 18px; height: 6px; border-radius: 2px; background: var(--grade-0); transition: background 0.3s ease; }
     .grade-pip.earned { background: var(--accent); }
     .grade-pip.complete { background: var(--complete); }
 
-    /* Progress bar */
     .progress-section { margin-bottom: 0.5rem; }
-
-    .progress-label {
-      display: flex;
-      justify-content: space-between;
-      font-size: 0.75rem;
-      color: var(--text-muted);
-      margin-bottom: 0.3rem;
-    }
-
-    .progress-bar-track {
-      height: 6px;
-      background: var(--border);
-      border-radius: 3px;
-      overflow: hidden;
-      margin-bottom: 0.5rem;
-    }
-
-    .progress-bar-fill {
-      height: 100%;
-      background: var(--accent);
-      border-radius: 3px;
-      transition: width 0.3s ease;
-    }
-
+    .progress-label { display: flex; justify-content: space-between; font-size: 0.75rem; color: var(--text-muted); margin-bottom: 0.3rem; }
+    .progress-bar-track { height: 6px; background: var(--border); border-radius: 3px; overflow: hidden; margin-bottom: 0.5rem; }
+    .progress-bar-fill { height: 100%; background: var(--accent); border-radius: 3px; transition: width 0.3s ease; }
     .progress-bar-fill.complete { background: var(--complete); }
 
-    /* Numeric input */
-    .numeric-input {
-      display: flex;
-      gap: 0.4rem;
-      align-items: center;
-    }
-
+    .numeric-input { display: flex; gap: 0.4rem; align-items: center; }
     .numeric-input input {
-      width: 100px;
-      padding: 0.3rem 0.5rem;
-      background: var(--bg);
-      border: 1px solid var(--border);
-      border-radius: 0.2rem;
-      color: var(--text);
-      font-size: 0.85rem;
-      text-align: center;
+      width: 100px; padding: 0.3rem 0.5rem; background: var(--bg);
+      border: 1px solid var(--border); border-radius: 0.2rem;
+      color: var(--text); font-size: 0.85rem; text-align: center;
     }
+    .numeric-input input:focus { outline: none; border-color: var(--accent); }
+    .numeric-input label { font-size: 0.8rem; color: var(--text-muted); }
 
-    .numeric-input input:focus {
-      outline: none;
-      border-color: var(--accent);
-    }
+    .checkbox-input { display: flex; align-items: center; gap: 0.5rem; cursor: pointer; font-size: 0.85rem; }
+    .checkbox-input input[type="checkbox"] { width: 16px; height: 16px; accent-color: var(--accent); cursor: pointer; }
 
-    .numeric-input label {
-      font-size: 0.8rem;
-      color: var(--text-muted);
-    }
-
-    /* Checkbox input */
-    .checkbox-input {
-      display: flex;
-      align-items: center;
-      gap: 0.5rem;
-      cursor: pointer;
-      font-size: 0.85rem;
-    }
-
-    .checkbox-input input[type="checkbox"] {
-      width: 16px;
-      height: 16px;
-      accent-color: var(--accent);
-      cursor: pointer;
-    }
-
-    /* Dependent commendation */
-    .dependent-status {
-      font-size: 0.8rem;
-      color: var(--text-muted);
-      font-style: italic;
-    }
-
+    .dependent-status { font-size: 0.8rem; color: var(--text-muted); font-style: italic; }
     .dependent-status.earned { color: var(--complete); font-style: normal; }
 
-    /* Complete badge */
-    .complete-badge {
-      font-size: 0.7rem;
-      color: var(--complete);
-      font-weight: 600;
-      letter-spacing: 0.05em;
+    .complete-badge { font-size: 0.7rem; color: var(--complete); font-weight: 600; letter-spacing: 0.05em; }
+
+    /* ============================================================
+       EXPORT / IMPORT MODAL
+       ============================================================ */
+    #portbackdrop {
+      position: fixed; inset: 0; background: rgba(0,0,0,0.75);
+      z-index: 600; display: none; align-items: center; justify-content: center; padding: 1rem;
     }
+    #portbackdrop.open { display: flex; }
+    #portmodal {
+      background: var(--bg-card); border: 1px solid var(--border);
+      border-radius: 0.75rem; width: min(480px, 100%);
+      display: flex; flex-direction: column; overflow: hidden;
+    }
+    #portmodal-header {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 0.75rem 1.25rem; border-bottom: 1px solid var(--border);
+    }
+    #portmodal-header h2 { font-size: 1.05rem; font-weight: 700; margin: 0; }
+    .port-close {
+      background: none; border: 1px solid var(--border); color: var(--text-muted);
+      border-radius: 0.2rem; padding: 0.3rem 0.75rem; cursor: pointer;
+      font-size: 0.85rem; transition: all 0.2s;
+    }
+    .port-close:hover { border-color: var(--accent); color: var(--accent); }
+    #portmodal-body { padding: 1.25rem; display: flex; flex-direction: column; gap: 1.25rem; }
+
+    .port-section { display: flex; flex-direction: column; gap: 0.5rem; }
+    .port-section h3 { font-size: 0.9rem; font-weight: 600; color: var(--text); }
+    .port-section p { font-size: 0.78rem; color: var(--text-muted); line-height: 1.5; }
+    .port-divider { border: none; border-top: 1px solid var(--border); }
+
+    .port-btns { display: flex; gap: 0.5rem; flex-wrap: wrap; }
+    .port-btn {
+      padding: 0.4rem 1rem; border: 1px solid var(--border);
+      background: transparent; color: var(--text-muted); cursor: pointer;
+      border-radius: 0.2rem; font-size: 0.85rem; transition: all 0.2s;
+      font-family: inherit;
+    }
+    .port-btn:hover { border-color: var(--accent); color: var(--accent); }
+    .port-btn.primary { background: var(--accent); border-color: var(--accent); color: #000; }
+    .port-btn.primary:hover { background: var(--accent-hover); border-color: var(--accent-hover); color: #000; }
+    .port-btn.danger { border-color: #c62828; color: #ef9a9a; }
+    .port-btn.danger:hover { background: #c62828; color: #fff; }
+
+    #port-import-area {
+      width: 100%; min-height: 80px; padding: 0.5rem 0.75rem;
+      background: var(--bg); border: 1px solid var(--border);
+      border-radius: 0.2rem; color: var(--text); font-size: 0.78rem;
+      font-family: monospace; resize: vertical; line-height: 1.4;
+    }
+    #port-import-area:focus { outline: none; border-color: var(--accent); }
+    #port-import-area::placeholder { color: var(--text-muted); }
+
+    #port-status {
+      font-size: 0.78rem; padding: 0.4rem 0.6rem;
+      border-radius: 0.2rem; display: none;
+    }
+    #port-status.ok  { background: rgba(102,187,106,0.15); color: var(--complete); border: 1px solid rgba(102,187,106,0.3); }
+    #port-status.err { background: rgba(239,154,154,0.15); color: #ef9a9a; border: 1px solid rgba(239,154,154,0.3); }
 
     /* ============================================================
        FISH GUIDE OVERLAY
        ============================================================ */
     #fish-guide-backdrop {
-      position: fixed;
-      inset: 0;
-      background: rgba(0,0,0,0.75);
-      z-index: 500;
-      display: none;
-      align-items: center;
-      justify-content: center;
-      padding: 1rem;
+      position: fixed; inset: 0; background: rgba(0,0,0,0.75);
+      z-index: 500; display: none; align-items: center; justify-content: center; padding: 1rem;
     }
     #fish-guide-backdrop.open { display: flex; }
 
     #fish-guide-panel {
-      background: var(--bg-card);
-      border: 1px solid var(--border);
-      border-radius: 0.75rem;
-      display: flex;
-      flex-direction: column;
-      width: clamp(600px, 92vw, 1300px);
-      height: 90vh;
-      max-height: 90vh;
-      overflow: hidden;
+      background: var(--bg-card); border: 1px solid var(--border);
+      border-radius: 0.75rem; display: flex; flex-direction: column;
+      width: clamp(600px, 92vw, 1300px); height: 90vh; max-height: 90vh; overflow: hidden;
     }
 
     #fish-guide-header {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      padding: 0.75rem 1.25rem;
-      border-bottom: 1px solid var(--border);
-      flex-shrink: 0;
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 0.75rem 1.25rem; border-bottom: 1px solid var(--border); flex-shrink: 0;
     }
-    #fish-guide-header h2 {
-      font-size: 1.1rem;
-      font-weight: 700;
-      color: var(--text);
-      margin: 0;
-    }
+    #fish-guide-header h2 { font-size: 1.1rem; font-weight: 700; color: var(--text); margin: 0; }
     .fish-guide-close {
-      background: none;
-      border: 1px solid var(--border);
-      color: var(--text-muted);
-      border-radius: 0.2rem;
-      padding: 0.3rem 0.75rem;
-      cursor: pointer;
-      font-size: 0.85rem;
-      transition: all 0.2s;
-      flex-shrink: 0;
+      background: none; border: 1px solid var(--border); color: var(--text-muted);
+      border-radius: 0.2rem; padding: 0.3rem 0.75rem; cursor: pointer;
+      font-size: 0.85rem; transition: all 0.2s; flex-shrink: 0;
     }
     .fish-guide-close:hover { border-color: var(--accent); color: var(--accent); }
 
     #fish-guide-grid {
-      display: grid;
-      grid-template-columns: repeat(5, 1fr);
-      grid-template-rows: repeat(2, 1fr);
-      gap: 10px;
-      padding: 14px;
-      flex: 1;
-      min-height: 0;
+      display: grid; grid-template-columns: repeat(5, 1fr);
+      grid-template-rows: repeat(2, 1fr); gap: 10px; padding: 14px; flex: 1; min-height: 0;
     }
 
-    /* 3D flip card */
-    .fg-card {
-      perspective: 900px;
-      cursor: pointer;
-      container-type: inline-size;
-    }
+    .fg-card { perspective: 900px; cursor: pointer; container-type: inline-size; }
     .fg-card-inner {
-      position: relative;
-      width: 100%;
-      height: 100%;
-      transform-style: preserve-3d;
-      transition: transform 0.45s ease;
+      position: relative; width: 100%; height: 100%;
+      transform-style: preserve-3d; transition: transform 0.45s ease;
     }
     .fg-card.flipped .fg-card-inner { transform: rotateY(180deg); }
 
     .fg-face {
-      position: absolute;
-      inset: 0;
-      backface-visibility: hidden;
-      -webkit-backface-visibility: hidden;
-      background: var(--bg);
-      border: 1px solid var(--border);
-      border-radius: 0.5rem;
-      display: flex;
-      flex-direction: column;
-      overflow: hidden;
-      transition: border-color 0.2s;
+      position: absolute; inset: 0; backface-visibility: hidden;
+      -webkit-backface-visibility: hidden; background: var(--bg);
+      border: 1px solid var(--border); border-radius: 0.5rem;
+      display: flex; flex-direction: column; overflow: hidden; transition: border-color 0.2s;
     }
     .fg-card:hover .fg-face { border-color: #555; }
     .fg-face-back { transform: rotateY(180deg); }
 
-    /* ── FRONT FACE ── */
     .fg-front-img-wrap {
-      flex: 0 0 62%;
-      display: flex;
-      align-items: flex-end;
-      justify-content: center;
-      padding: 8px 8px 4px;
-      position: relative;
-      min-height: 0;
+      flex: 0 0 62%; display: flex; align-items: flex-end; justify-content: center;
+      padding: 8px 8px 4px; position: relative; min-height: 0;
     }
-    .fg-front-img-wrap img {
-      max-width: 100%;
-      max-height: 100%;
-      object-fit: contain;
-      display: block;
-    }
+    .fg-front-img-wrap img { max-width: 100%; max-height: 100%; object-fit: contain; display: block; }
+
     .fg-bait-badge {
-      position: absolute;
-      top: 5px;
-      left: 5px;
-      display: inline-flex;
-      align-items: center;
-      font-size: 0.72rem;
-      font-weight: 600;
-      padding: 0.2rem 0.5rem;
-      border-radius: 3px;
-      line-height: 1.3;
-      white-space: nowrap;
+      position: absolute; top: 5px; left: 5px; display: inline-flex; align-items: center;
+      font-size: 0.72rem; font-weight: 600; padding: 0.2rem 0.5rem;
+      border-radius: 3px; line-height: 1.3; white-space: nowrap;
     }
-    .fg-bait-none    { background: #3a3a3a; color: #f0e6ef; border: 1px solid #3a3a3a; }
-    .fg-bait-earth   { background: #e18e7a; color: #3d1500; border: 1px solid #e18e7a; }
-    .fg-bait-leech   { background: #5c4057; color: #f0e6ef; border: 1px solid #5c4057; }
-    .fg-bait-grub    { background: #f9f8f5; color: #1a1a1a; border: 1px solid #f9f8f5; }
+    .fg-bait-none  { background: #3a3a3a; color: #f0e6ef; border: 1px solid #3a3a3a; }
+    .fg-bait-earth { background: #e18e7a; color: #3d1500; border: 1px solid #e18e7a; }
+    .fg-bait-leech { background: #5c4057; color: #f0e6ef; border: 1px solid #5c4057; }
+    .fg-bait-grub  { background: #f9f8f5; color: #1a1a1a; border: 1px solid #f9f8f5; }
 
     .fg-front-info {
-      padding: 0 0 10%;
-      text-align: center;
-      flex-shrink: 0;
-      display: flex;
-      flex-direction: column;
-      align-items: normal;
-      justify-content: center;
-      min-height: 3.5rem;
+      padding: 0 0 10%; text-align: center; flex-shrink: 0;
+      display: flex; flex-direction: column; align-items: normal;
+      justify-content: center; min-height: 3.5rem;
     }
     .fg-fish-name {
-      font-size: 15cqi;
-      font-weight: 700;
-      color: var(--text);
-      line-height: 1.2;
-      margin-bottom: 3px;
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
+      font-size: 15cqi; font-weight: 700; color: var(--text);
+      line-height: 1.2; margin-bottom: 3px;
+      white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
     }
     .fg-loc-badge {
-      position: absolute;
-      top: 5px;
-      right: 5px;
-      font-size: 0.72rem;
-      font-weight: 600;
-      padding: 0.2rem 0.5rem;
-      border-radius: 3px;
-      border: 1px solid;
-      line-height: 1.3;
-      white-space: nowrap;
+      position: absolute; top: 5px; right: 5px; font-size: 0.72rem;
+      font-weight: 600; padding: 0.2rem 0.5rem; border-radius: 3px;
+      border: 1px solid; line-height: 1.3; white-space: nowrap;
     }
-    .fg-flip-hint {
-      font-size: 0.58rem;
-      color: #444;
-      margin-top: 2px;
-    }
+    .fg-flip-hint { font-size: 0.58rem; color: #444; margin-top: 2px; }
 
-    /* ── BACK FACE ── */
     .fg-back-header {
-      padding: 8px 10px 5px;
-      border-bottom: 1px solid var(--border);
-      flex-shrink: 0;
-      position: relative;
-      z-index: 1;
+      padding: 8px 10px 5px; border-bottom: 1px solid var(--border);
+      flex-shrink: 0; position: relative; z-index: 1;
     }
-    .fg-back-name {
-      font-size: 1rem;
-      font-weight: 700;
-      color: var(--text);
-    }
-    .fg-back-sub {
-      font-size: 0.8rem;
-      color: var(--text-muted);
-    }
+    .fg-back-name { font-size: 1rem; font-weight: 700; color: var(--text); }
+    .fg-back-sub { font-size: 0.8rem; color: var(--text-muted); }
     .fg-variants {
-      flex: 1;
-      overflow-y: auto;
-      padding: 6px 10px 8px;
-      display: flex;
-      flex-direction: column;
-      gap: 5px;
-      min-height: 0;
-      scrollbar-width: thin;
-      scrollbar-color: var(--border) transparent;
-      position: relative;
-      z-index: 1;
+      flex: 1; overflow-y: auto; padding: 6px 10px 8px;
+      display: flex; flex-direction: column; gap: 5px; min-height: 0;
+      scrollbar-width: thin; scrollbar-color: var(--border) transparent;
+      position: relative; z-index: 1;
     }
     .fg-variant {
-      font-size: 0.8rem;
-      color: var(--text-muted);
-      line-height: 1.45;
-      padding-bottom: 5px;
-      border-bottom: 1px solid #2a2a2a;
+      font-size: 0.8rem; color: var(--text-muted);
+      line-height: 1.45; padding-bottom: 5px; border-bottom: 1px solid #2a2a2a;
     }
     .fg-variant:last-child { border-bottom: none; padding-bottom: 0; }
-    .fg-variant-name {
-      font-weight: 600;
-      color: var(--text);
-      display: block;
-      margin-bottom: 1px;
-    }
+    .fg-variant-name { font-weight: 600; color: var(--text); display: block; margin-bottom: 1px; }
     .fg-flip-hint-back {
-      font-size: 0.55rem;
-      color: #444;
-      text-align: center;
-      padding: 0 8px 6px;
-      flex-shrink: 0;
-      position: relative;
-      z-index: 1;
+      font-size: 0.55rem; color: #444; text-align: center;
+      padding: 0 8px 6px; flex-shrink: 0; position: relative; z-index: 1;
     }
     .fg-back-bg {
-      position: absolute;
-      inset: 0;
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
-      opacity: 0.08;
-      filter: blur(6px);
-      pointer-events: none;
-      user-select: none;
-      transform: scale(1.1);
-      z-index: 0;
+      position: absolute; inset: 0; width: 100%; height: 100%;
+      object-fit: cover; opacity: 0.08; filter: blur(6px);
+      pointer-events: none; user-select: none; transform: scale(1.1); z-index: 0;
     }
 
-    /* Mobile: 2×5 grid, no scroll, compact cards */
     @media (max-width: 640px) {
       #fish-guide-backdrop { padding: 0.4rem; }
-      #fish-guide-panel {
-        width: 100%;
-        height: 96vh;
-        max-height: 96vh;
-        border-radius: 0.5rem;
-      }
+      #fish-guide-panel { width: 100%; height: 96vh; max-height: 96vh; border-radius: 0.5rem; }
       #fish-guide-header { padding: 0.5rem 0.75rem; }
       #fish-guide-header h2 { font-size: 0.95rem; }
       #fish-guide-grid {
-        grid-template-columns: repeat(2, 1fr);
-        grid-template-rows: repeat(5, 1fr);
-        gap: 7px;
-        padding: 8px;
-        overflow: hidden;
+        grid-template-columns: repeat(2, 1fr); grid-template-rows: repeat(5, 1fr);
+        gap: 7px; padding: 8px; overflow: hidden;
       }
       .fg-front-img-wrap { padding: 4px 4px 2px; }
       .fg-front-info { padding: 0 5px 5px; }
@@ -773,6 +388,7 @@
 <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:0.25rem;">
   <h1>Sea of Thieves Commendation Tracker</h1>
   <div style="display:flex; gap:0.5rem; align-items:center; flex-wrap:wrap; justify-content:flex-end;">
+    <button onclick="openPortModal()" style="padding:0.4rem 1rem; border:1px solid var(--border); border-radius:0.2rem; background:transparent; color:var(--text-muted); cursor:pointer; font-size:0.9rem; transition:all 0.2s;" onmouseover="this.style.borderColor='var(--accent)';this.style.color='var(--accent)'" onmouseout="this.style.borderColor='var(--border)';this.style.color='var(--text-muted)'">Export / Import</button>
     <button onclick="openFishGuide()" style="padding:0.4rem 1rem; border:1px solid var(--border); border-radius:0.2rem; background:transparent; color:var(--text-muted); cursor:pointer; font-size:0.9rem; transition:all 0.2s;" onmouseover="this.style.borderColor='var(--accent)';this.style.color='var(--accent)'" onmouseout="this.style.borderColor='var(--border)';this.style.color='var(--text-muted)'">Fish Guide</button>
     <a href='../../' style="padding:0.4rem 1rem; border:1px solid #dadada; border-radius:0.2rem; color:#dadada; text-decoration:none; font-size:0.9rem; transition:all 0.2s;">Return to Kittisci</a>
   </div>
@@ -796,9 +412,42 @@
   <div id="main-panels"></div>
 </div>
 
-<!-- ============================================================
-     FISH GUIDE OVERLAY
-     ============================================================ -->
+<!-- EXPORT / IMPORT MODAL -->
+<div id="portbackdrop">
+  <div id="portmodal">
+    <div id="portmodal-header">
+      <h2>Export / Import Progress</h2>
+      <button class="port-close" onclick="closePortModal()">✕</button>
+    </div>
+    <div id="portmodal-body">
+      <div class="port-section">
+        <h3>Export</h3>
+        <p>Download your progress as a file, or copy it to your clipboard to share or back up.</p>
+        <div class="port-btns">
+          <button class="port-btn primary" onclick="exportDownload()">⬇ Download file</button>
+          <button class="port-btn" onclick="exportCopy()">⎘ Copy to clipboard</button>
+        </div>
+      </div>
+      <hr class="port-divider">
+      <div class="port-section">
+        <h3>Import</h3>
+        <p>Load a previously exported file, or paste the exported text directly. This will overwrite your current progress.</p>
+        <div class="port-btns">
+          <label class="port-btn" style="cursor:pointer;">
+            ⬆ Load file <input type="file" accept=".json,application/json" id="port-file-input" style="display:none;" onchange="importFromFile(event)">
+          </label>
+        </div>
+        <textarea id="port-import-area" placeholder="…or paste exported text here"></textarea>
+        <div class="port-btns">
+          <button class="port-btn" onclick="importFromText()">Import from text</button>
+        </div>
+        <div id="port-status"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- FISH GUIDE OVERLAY -->
 <div id="fish-guide-backdrop">
   <div id="fish-guide-panel">
     <div id="fish-guide-header">
@@ -829,16 +478,93 @@ init();
 // STORAGE
 // ============================================================
 function loadProgress() {
-  try {
-    return JSON.parse(localStorage.getItem('sot-tracker') || '{}');
-  } catch { return {}; }
+  try { return JSON.parse(localStorage.getItem('sot-tracker') || '{}'); }
+  catch { return {}; }
 }
-
 function saveProgress(progress) {
   localStorage.setItem('sot-tracker', JSON.stringify(progress));
 }
-
 let progress = loadProgress();
+
+// ============================================================
+// EXPORT / IMPORT
+// ============================================================
+function openPortModal() {
+  document.getElementById('portbackdrop').classList.add('open');
+  document.getElementById('port-import-area').value = '';
+  setPortStatus('', '');
+}
+function closePortModal() {
+  document.getElementById('portbackdrop').classList.remove('open');
+}
+function setPortStatus(msg, type) {
+  const el = document.getElementById('port-status');
+  el.textContent = msg;
+  el.className = type;
+  el.style.display = msg ? 'block' : 'none';
+}
+
+function exportDownload() {
+  const blob = new Blob([JSON.stringify(loadProgress(), null, 2)], { type: 'application/json' });
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = 'sot-progress.json';
+  a.click();
+  URL.revokeObjectURL(a.href);
+}
+
+function exportCopy() {
+  const text = JSON.stringify(loadProgress(), null, 2);
+  navigator.clipboard.writeText(text).then(function() {
+    setPortStatus('Copied to clipboard!', 'ok');
+  }).catch(function() {
+    // Fallback for browsers without clipboard API
+    const ta = document.createElement('textarea');
+    ta.value = text;
+    document.body.appendChild(ta);
+    ta.select();
+    document.execCommand('copy');
+    document.body.removeChild(ta);
+    setPortStatus('Copied to clipboard!', 'ok');
+  });
+}
+
+function applyImport(text) {
+  let parsed;
+  try { parsed = JSON.parse(text); }
+  catch (e) { setPortStatus('Invalid data — could not parse JSON.', 'err'); return; }
+  if (typeof parsed !== 'object' || Array.isArray(parsed) || parsed === null) {
+    setPortStatus('Invalid data — unexpected format.', 'err'); return;
+  }
+  if (!confirm('This will replace all your current progress. Continue?')) return;
+  progress = parsed;
+  saveProgress(progress);
+  refreshCards();
+  buildOverview();
+  setPortStatus('Progress imported successfully!', 'ok');
+  document.getElementById('port-import-area').value = '';
+}
+
+function importFromFile(event) {
+  const file = event.target.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = function(e) { applyImport(e.target.result); };
+  reader.readAsText(file);
+  event.target.value = '';
+}
+
+function importFromText() {
+  const text = document.getElementById('port-import-area').value.trim();
+  if (!text) { setPortStatus('Please paste exported text first.', 'err'); return; }
+  applyImport(text);
+}
+
+document.addEventListener('DOMContentLoaded', function() {
+  document.getElementById('portbackdrop').addEventListener('click', function(e) {
+    if (e.target === this) closePortModal();
+  });
+});
 
 // ============================================================
 // GRADE CALCULATION
@@ -852,14 +578,11 @@ function getGrade(commendation) {
     }
     return grade;
   }
-  if (commendation.type === 'action') {
-    return progress[commendation.id] ? 1 : 0;
-  }
+  if (commendation.type === 'action') return progress[commendation.id] ? 1 : 0;
   if (commendation.type === 'dependent') {
     const allMet = commendation.dependsOn.every(dep => {
       const depComm = findCommendation(dep.id);
-      if (!depComm) return false;
-      return getGrade(depComm) >= dep.minGrade;
+      return depComm && getGrade(depComm) >= dep.minGrade;
     });
     return allMet ? 1 : 0;
   }
@@ -908,8 +631,6 @@ function renderCard(commendation) {
     const nextThreshold = commendation.grades[grade] || commendation.grades[commendation.grades.length - 1];
     const prevThreshold = grade > 0 ? commendation.grades[grade - 1] : 0;
     const pct = isComplete ? 100 : Math.min(100, ((val - prevThreshold) / (nextThreshold - prevThreshold)) * 100);
-    const label = isComplete ? 'Complete!' : `${val} / ${nextThreshold}`;
-
     progressSection = `
       <div class="progress-section">
         <div class="progress-label">
@@ -950,7 +671,6 @@ function renderCard(commendation) {
     const statusText = isComplete
       ? '✓ Automatically unlocked'
       : `Requires ${remaining.length} more commendation${remaining.length !== 1 ? 's' : ''}`;
-
     progressSection = `
       <div class="progress-section">
         <div class="progress-bar-track">
@@ -967,7 +687,6 @@ function renderCard(commendation) {
       return depComm && getGrade(depComm) >= dep.minGrade;
     }).length;
     const isComplete = metCount >= commendation.required;
-
     progressSection = `
       <div class="progress-section">
         <div class="progress-label">
@@ -982,6 +701,7 @@ function renderCard(commendation) {
         </div>
       </div>`;
   }
+
   const imagePath = `images/commendation_images/${commendation.id}.png`;
   const imageContent = `<img src="${imagePath}" alt="${commendation.name}"
     onerror="this.parentElement.innerHTML='<div style=\\'font-size:0.6rem;color:var(--text-muted);text-align:center;line-height:1.2\\'>Grade<br>${grade}/${maxGrade}</div>'">`;
@@ -992,9 +712,7 @@ function renderCard(commendation) {
       <div class="card-header">
         <div class="card-image">${imageContent}</div>
         <div class="card-info">
-          <div class="card-name">
-            ${commendation.name}
-          </div>
+          <div class="card-name">${commendation.name}</div>
           ${commendation.description ? `<div class="card-description">${commendation.description}</div>` : ''}
           <div class="grade-indicators">${pips}</div>
           ${isComplete ? '<div class="complete-badge">✓ COMPLETE</div>' : ''}
@@ -1004,16 +722,7 @@ function renderCard(commendation) {
     </div>`;
 }
 
-function renderSubpanel(commendations, id) {
-  return `<div class="subpanel active" id="${id}">
-    <div class="commendation-grid">
-      ${commendations.map(renderCard).join('')}
-    </div>
-  </div>`;
-}
-
 function buildUI() {
-  const tabsEl = document.createElement('div');
   const panelsEl = document.getElementById('main-panels');
   panelsEl.innerHTML = '';
 
@@ -1035,44 +744,33 @@ function buildUI() {
       const firstSubpanel = panel.querySelector('.subpanel');
       if (firstSubtab) firstSubtab.classList.add('active');
       if (firstSubpanel) firstSubpanel.classList.add('active');
-      // Update background, header colour, and progress bars
       document.getElementById('tracker').style.setProperty('--cat-color', catData.color || 'var(--accent)');
       const bg = document.getElementById('tracker-bg');
-      bg.style.display = 'block';
-      bg.onerror = null;
+      bg.style.display = 'block'; bg.onerror = null;
       bg.src = catData.icon || 'images/SoT.png';
       bg.onerror = () => { bg.onerror = null; bg.src = 'images/SoT.png'; };
       document.getElementById('category-header').innerHTML = `<h2 style="color:${catData.color || 'var(--accent)'}">${catName}</h2>`;
       renderCategoryProgressBar(catName, catData.color);
       if (firstSubpanel) renderSubcategoryProgressBar(firstSubpanel.id, catName, catData.color);
     };
-    tabsEl.appendChild(tab);
+    document.getElementById('main-tabs').appendChild(tab);
 
     const subcats = Object.entries(catData.subcategories);
     let panelHTML = `<div class="panel" id="panel-${catId}">`;
-
     if (subcats.length > 0) {
       panelHTML += `<div class="subtabs">`;
-      subcats.forEach(([subName], subIndex) => {
+      subcats.forEach(([subName]) => {
         const subId = `${catId}-${subName.replace(/[^a-z0-9]/gi, '-').toLowerCase()}`;
-        panelHTML += `<button class="subtab" 
-          onclick="showSubtab('${catId}', '${subId}', this)">${subName}</button>`;
+        panelHTML += `<button class="subtab" onclick="showSubtab('${catId}', '${subId}', this)">${subName}</button>`;
       });
-      panelHTML += `</div>`;
-      panelHTML += `<div id="subprogress-${catId}" class="subcategory-progress-wrap"></div>`;
-
-      subcats.forEach(([subName, comms], subIndex) => {
+      panelHTML += `</div><div id="subprogress-${catId}" class="subcategory-progress-wrap"></div>`;
+      subcats.forEach(([subName, comms]) => {
         const subId = `${catId}-${subName.replace(/[^a-z0-9]/gi, '-').toLowerCase()}`;
-        panelHTML += `<div class="subpanel" id="${subId}">
-          <div class="commendation-grid">
-            ${comms.map(renderCard).join('')}
-          </div>
-        </div>`;
+        panelHTML += `<div class="subpanel" id="${subId}"><div class="commendation-grid">${comms.map(renderCard).join('')}</div></div>`;
       });
     } else {
       panelHTML += `<p style="color:var(--text-muted)">No commendations added yet.</p>`;
     }
-
     panelHTML += `</div>`;
     panelsEl.innerHTML += panelHTML;
   });
@@ -1085,41 +783,27 @@ function renderCategoryProgressBar(catName, catColor) {
   const total = allComms.length;
   const completed = allComms.filter(c => getGrade(c) >= getMaxGrade(c)).length;
   const pct = total > 0 ? (completed / total) * 100 : 0;
-
   document.getElementById('category-progress-bar').innerHTML = `
-    <div class="category-progress-label">
-      <span>Overall Progress</span>
-      <span>${completed} / ${total} complete</span>
-    </div>
-    <div class="category-progress-track">
-      <div class="category-progress-fill" style="width:${pct}%; background:${catColor || 'var(--accent)'};"></div>
-    </div>`;
+    <div class="category-progress-label"><span>Overall Progress</span><span>${completed} / ${total} complete</span></div>
+    <div class="category-progress-track"><div class="category-progress-fill" style="width:${pct}%; background:${catColor || 'var(--accent)'};"></div></div>`;
 }
 
 function renderSubcategoryProgressBar(subpanelId, catName, catColor) {
   const catData = data[catName];
   const catId = catName.replace(/[^a-z0-9]/gi, '-').toLowerCase();
-  let subComms = null;
-  let subName = '';
+  let subComms = null, subName = '';
   for (const [sName, comms] of Object.entries(catData.subcategories)) {
     const sId = `${catId}-${sName.replace(/[^a-z0-9]/gi, '-').toLowerCase()}`;
     if (sId === subpanelId) { subComms = comms; subName = sName; break; }
   }
   const container = document.getElementById(`subprogress-${catId}`);
   if (!subComms || !container) return;
-
   const total = subComms.length;
   const completed = subComms.filter(c => getGrade(c) >= getMaxGrade(c)).length;
   const pct = total > 0 ? (completed / total) * 100 : 0;
-
   container.innerHTML = `
-    <div class="subcategory-progress-label">
-      <span>${subName}</span>
-      <span>${completed} / ${total} complete</span>
-    </div>
-    <div class="subcategory-progress-track">
-      <div class="subcategory-progress-fill" style="width:${pct}%; background:${catColor};"></div>
-    </div>`;
+    <div class="subcategory-progress-label"><span>${subName}</span><span>${completed} / ${total} complete</span></div>
+    <div class="subcategory-progress-track"><div class="subcategory-progress-fill" style="width:${pct}%; background:${catColor};"></div></div>`;
 }
 
 function showSubtab(catId, subId, btn) {
@@ -1127,8 +811,6 @@ function showSubtab(catId, subId, btn) {
   document.querySelectorAll(`#panel-${catId} .subpanel`).forEach(p => p.classList.remove('active'));
   btn.classList.add('active');
   document.getElementById(subId).classList.add('active');
-
-  // Find which category this catId belongs to and update subcategory progress bar
   const catName = Object.keys(data).find(n => n.replace(/[^a-z0-9]/gi, '-').toLowerCase() === catId);
   if (catName) renderSubcategoryProgressBar(subId, catName, data[catName].color);
 }
@@ -1139,8 +821,6 @@ function showSubtab(catId, subId, btn) {
 function updateNumeric(id, val) {
   progress[id] = Math.max(0, parseInt(val) || 0);
   saveProgress(progress);
-  
-  // Update the active card's visuals without re-rendering it
   const comm = findCommendation(id);
   if (comm) {
     const grade = getGrade(comm);
@@ -1150,48 +830,31 @@ function updateNumeric(id, val) {
     const nextThreshold = comm.grades[grade] || comm.grades[comm.grades.length - 1];
     const prevThreshold = grade > 0 ? comm.grades[grade - 1] : 0;
     const pct = isComplete ? 100 : Math.min(100, ((value - prevThreshold) / (nextThreshold - prevThreshold)) * 100);
-
     const card = document.getElementById(`card-${id}`);
     if (card) {
-      // Update progress bar
       const fill = card.querySelector('.progress-bar-fill');
-      if (fill) {
-        fill.style.width = `${pct}%`;
-        fill.className = `progress-bar-fill ${isComplete ? 'complete' : ''}`;
-      }
-      // Update label
+      if (fill) { fill.style.width = `${pct}%`; fill.className = `progress-bar-fill ${isComplete ? 'complete' : ''}`; }
       const label = card.querySelector('.progress-label span:first-child');
       if (label) label.textContent = isComplete ? '✓ Complete' : `Next grade: ${nextThreshold}`;
       const countLabel = card.querySelector('.progress-label span:last-child');
       if (countLabel) countLabel.textContent = `${value} delivered`;
-      // Update grade pips
       const pips = card.querySelectorAll('.grade-pip');
-      pips.forEach((pip, i) => {
-        pip.className = i < grade ? (isComplete ? 'grade-pip complete' : 'grade-pip earned') : 'grade-pip';
-      });
-      // Update complete badge
+      pips.forEach((pip, i) => { pip.className = i < grade ? (isComplete ? 'grade-pip complete' : 'grade-pip earned') : 'grade-pip'; });
       const info = card.querySelector('.card-info');
       const existingBadge = info.querySelector('.complete-badge');
-      if (isComplete && !existingBadge) {
-        info.innerHTML += '<div class="complete-badge">✓ COMPLETE</div>';
-      } else if (!isComplete && existingBadge) {
-        existingBadge.remove();
-      }
-      // Update card border
+      if (isComplete && !existingBadge) info.innerHTML += '<div class="complete-badge">✓ COMPLETE</div>';
+      else if (!isComplete && existingBadge) existingBadge.remove();
       card.className = `commendation-card ${isComplete ? 'complete' : ''}`;
     }
   }
-
   refreshCards();
 }
 
 function updateAction(id, checked) {
   progress[id] = checked;
   saveProgress(progress);
-  // Re-render this specific card immediately
   const el = document.getElementById(`card-${id}`);
   if (el) el.outerHTML = renderCard(findCommendation(id));
-  // Then refresh all others for dependent updates
   refreshCards();
   buildOverview();
 }
@@ -1199,7 +862,6 @@ function updateAction(id, checked) {
 function refreshCards() {
   const activeInput = document.activeElement;
   const activeId = activeInput?.closest('.commendation-card')?.id?.replace('card-', '');
-
   Object.values(data).forEach(cat => {
     Object.values(cat.subcategories).forEach(comms => {
       comms.forEach(comm => {
@@ -1209,10 +871,7 @@ function refreshCards() {
       });
     });
   });
-
   buildOverview();
-
-  // Refresh progress bars if in tracker view
   if (document.getElementById('tracker').style.display !== 'none') {
     const activeTab = document.querySelector('.tab.active');
     if (activeTab) {
@@ -1229,32 +888,23 @@ function refreshCards() {
 
 function resetCurrentSubcategory() {
   if (!confirm('Reset all progress in the current subcategory?')) return;
-
   const activeSubpanel = document.querySelector('.subpanel.active');
   if (!activeSubpanel) return;
-
   const activeSubpanelId = activeSubpanel.id;
-
   let comms = null;
   for (const [catName, catData] of Object.entries(data)) {
     const catId = catName.replace(/[^a-z0-9]/gi, '-').toLowerCase();
     for (const [subName, subComms] of Object.entries(catData.subcategories)) {
       const subId = `${catId}-${subName.replace(/[^a-z0-9]/gi, '-').toLowerCase()}`;
-      if (subId === activeSubpanelId) {
-        comms = subComms;
-        break;
-      }
+      if (subId === activeSubpanelId) { comms = subComms; break; }
     }
     if (comms) break;
   }
-
   if (!comms) return;
-
   comms.forEach(comm => {
     if (comm.type === 'numeric') progress[comm.id] = 0;
     if (comm.type === 'action') progress[comm.id] = false;
   });
-
   saveProgress(progress);
   refreshCards();
 }
@@ -1267,79 +917,46 @@ function positionTooltips() {
     tooltip.className = 'tooltip';
     document.body.appendChild(tooltip);
   }
-
   document.querySelectorAll('.reward-icon').forEach(icon => {
     icon.addEventListener('mouseenter', function() {
       tooltip.textContent = this.dataset.reward;
       tooltip.style.display = 'block';
-
       const rect = this.getBoundingClientRect();
-      const tipW = tooltip.offsetWidth;
-      const tipH = tooltip.offsetHeight;
-
+      const tipW = tooltip.offsetWidth, tipH = tooltip.offsetHeight;
       let left = rect.left + rect.width / 2 - tipW / 2;
       let top = rect.top - tipH - 6;
-
       left = Math.max(8, Math.min(left, window.innerWidth - tipW - 8));
       if (top < 8) top = rect.bottom + 6;
-
       tooltip.style.left = left + 'px';
       tooltip.style.top = top + 'px';
     });
-
-    icon.addEventListener('mouseleave', function() {
-      tooltip.style.display = 'none';
-    });
+    icon.addEventListener('mouseleave', function() { tooltip.style.display = 'none'; });
   });
 }
 
 // ============================================================
 // OVERVIEW
 // ============================================================
-function getCategoryStats(catData) {
-  let total = 0;
-  let completed = 0;
-  Object.values(catData.subcategories).forEach(comms => {
-    comms.forEach(comm => {
-      total++;
-      if (getGrade(comm) >= getMaxGrade(comm)) completed++;
-    });
-  });
-  return { total, completed };
-}
-
 function buildOverview() {
   const grid = document.getElementById('overview-grid');
   grid.innerHTML = '';
-
   for (const [catName, cat] of Object.entries(data)) {
-    const total = Object.values(cat.subcategories)
-      .flatMap(sub => sub)
-      .filter(c => c.type !== 'dependent' && c.type !== 'counted-dependent')
-      .length;
-
-    const completed = Object.values(cat.subcategories)
-      .flatMap(sub => sub)
+    const total = Object.values(cat.subcategories).flatMap(sub => sub)
+      .filter(c => c.type !== 'dependent' && c.type !== 'counted-dependent').length;
+    const completed = Object.values(cat.subcategories).flatMap(sub => sub)
       .filter(c => getGrade(c) >= getMaxGrade(c)).length;
-
     const pct = total > 0 ? (completed / total) * 100 : 0;
     const barColor = cat.color || 'var(--accent)';
-
     const card = document.createElement('div');
     card.className = 'category-card';
     card.setAttribute('data-cat', catName);
     card.innerHTML = `
       ${cat.icon ? `<img class="card-bg" src="${cat.icon}" alt="" aria-hidden="true">` : ''}
-      <div class="card-top">
-        <div class="card-name" style="color:${cat.color || 'var(--text)'};">${catName}</div>
-      </div>
+      <div class="card-top"><div class="card-name" style="color:${cat.color || 'var(--text)'};">${catName}</div></div>
       <div class="card-bottom">
         <div class="card-count">${completed} / ${total} commendations complete</div>
-        <div class="card-progress-track">
-          <div class="card-progress-fill" style="width:${pct}%; background:${barColor};"></div>
-        </div>
-      </div>
-    `;
+        <div class="card-progress-track"><div class="card-progress-fill" style="width:${pct}%; background:${barColor};"></div></div>
+      </div>`;
     card.addEventListener('click', () => showCategory(catName));
     grid.appendChild(card);
   }
@@ -1347,8 +964,7 @@ function buildOverview() {
 
 function showOverview() {
   buildOverview();
-  const bg = document.getElementById('tracker-bg');
-  bg.style.display = 'none';
+  document.getElementById('tracker-bg').style.display = 'none';
   document.getElementById('overview').style.display = 'block';
   document.getElementById('tracker').style.display = 'none';
 }
@@ -1357,91 +973,31 @@ function showOverview() {
 // FISH GUIDE
 // ============================================================
 const FISH_DATA = [
-  {
-    id: 'splashtail', name: 'Splashtail', img: 'images/splashtail.png',
-    bait: null, locBadge: 'Ocean',
-    locColor: '#e8f4f8', locBg: '#1d5f8a', locBorder: '#1d5f8a',
-    backSub: 'No bait',
-    variants: [{ name: 'All variants', detail: 'Found in any open ocean water across all regions. No bait or special conditions needed.' }]
-  },
-  {
-    id: 'plentifin', name: 'Plentifin', img: 'images/plentifin.png',
-    bait: 'Earthworms', locBadge: 'Shores of Plenty',
-    locColor: '#e8f2f9', locBg: '#003863', locBorder: '#003863',
-    backSub: 'Earthworms',
-    variants: [{ name: 'All variants', detail: 'Found only in the open ocean waters of The Shores of Plenty.' }]
-  },
-  {
-    id: 'wildsplash', name: 'Wildsplash', img: 'images/wildsplash.png',
-    bait: 'Earthworms', locBadge: 'The Wilds',
-    locColor: '#f5ede3', locBg: '#6f4d2d', locBorder: '#6f4d2d',
-    backSub: 'Earthworms',
-    variants: [{ name: 'All variants', detail: 'Found only in the open ocean waters of The Wilds.' }]
-  },
-  {
-    id: 'ancientscale', name: 'Ancientscale', img: 'images/ancientscale.png',
-    bait: 'Leeches', locBadge: 'Ancient Isles',
-    locColor: '#e3f5eb', locBg: '#01411d', locBorder: '#01411d',
-    backSub: 'Leeches',
-    variants: [{ name: 'All variants', detail: 'Found only in the open ocean waters of The Ancient Isles.' }]
-  },
-  {
-    id: 'devilfish', name: 'Devilfish', img: 'images/devilfish.png',
-    bait: 'Grubs', locBadge: "Devil's Roar",
-    locColor: '#fde8e8', locBg: '#77070c', locBorder: '#77070c',
-    backSub: 'Grubs',
-    variants: [{ name: 'All variants', detail: "Found only in the open ocean waters of The Devil's Roar." }]
-  },
-  {
-    id: 'pondie', name: 'Pondie', img: 'images/pondie.png',
-    bait: null, locBadge: 'Ponds',
-    locColor: '#e3f5ee', locBg: '#2d6e4e', locBorder: '#2d6e4e',
-    backSub: 'No bait',
-    variants: [{ name: 'All variants', detail: 'Found in freshwater ponds on islands — not in the sea.' }]
-  },
-  {
-    id: 'islehopper', name: 'Islehopper', img: 'images/islehopper.png',
-    bait: null, locBadge: 'Regional',
-    locColor: '#e8f4f8', locBg: '#1d5f8a', locBorder: '#1d5f8a',
-    backSub: 'No bait • Large island shores only',
-    variants: [
-      { name: 'Stone', detail: 'Shipwreck Bay, Shark Bait Cove, Crook\'s Hollow, Sailor\'s Bounty, Cannon Cove, Fetcher\'s Rest.' },
-      { name: 'Moss', detail: 'Ashen Reaches, Thieves\' Haven, Marauder\'s Arch, Lone Cove, Wanderer\'s Refuge, Ruby\'s Fall.' },
-      { name: 'Honey', detail: 'Discovery Ridge, Plunder Valley, Kraken\'s Fall, Sunken Grove, Crescent Isle, The Devil\'s Thirst.' },
-      { name: 'Amethyst', detail: 'Night only — Devil\'s Ridge, Smuggler\'s Bay, Mermaid\'s Hideaway, The Crooked Masts, Old Faithful Isle, Flintlock Peninsula, Snake Island.' },
-      { name: 'Raven', detail: 'Any large island. Most efficiently caught during the day at Amethyst Islehopper islands — only Splashtails and Raven Islehoppers spawn there in daylight.' },
-    ]
-  },
-  {
-    id: 'battlegill', name: 'Battlegill', img: 'images/battlegill.png',
-    bait: 'Grubs', locBadge: 'Skeleton Event',
-    locColor: '#fff3e0', locBg: '#8a5000', locBorder: '#8a5000',
-    backSub: 'Grubs',
-    variants: [{ name: 'All variants', detail: 'Found near Skeleton Ships or an active Skeleton Fort. Cannot be caught near other active World Events.' }]
-  },
-  {
-    id: 'wrecker', name: 'Wrecker', img: 'images/wrecker.png',
-    bait: 'Earthworms', locBadge: 'Shipwrecks',
-    locColor: '#fff8e1', locBg: '#6d4c00', locBorder: '#6d4c00',
-    backSub: 'Earthworms',
-    variants: [
-      { name: 'Rose, Sun, Pebble, Lighthouse', detail: 'Found near any shipwreck location.' },
-      { name: 'Blackcloud', detail: 'Only found near shipwrecks that are inside an active Storm.' }
-    ]
-  },
-  {
-    id: 'stormfish', name: 'Stormfish', img: 'images/stormfish.png',
-    bait: 'Leeches', locBadge: 'Regional',
-    locColor: '#e8f4f8', locBg: '#1d5f8a', locBorder: '#1d5f8a',
-    backSub: 'Leeches • Storm required',
-    variants: [
-      { name: 'Ancient', detail: 'Storms in The Ancient Isles region.' },
-      { name: 'Shores', detail: 'Storms in The Shores of Plenty region.' },
-      { name: 'Wild', detail: 'Storms in The Wilds region.' },
-      { name: 'Twilight', detail: 'Storms anywhere at night. Storms do not occur in The Devil\'s Roar.' },
-      { name: 'Shadow', detail: 'Storms anywhere. Most efficiently caught during a storm in the day at The Glorious Sea Dog Tavern or Uncharted Island N-13 — only Splashtails and Shadow Stormfish spawn there in daylight.' }
-    ]
-  }
+  { id: 'splashtail', name: 'Splashtail', img: 'images/splashtail.png', bait: null, locBadge: 'Ocean', locColor: '#e8f4f8', locBg: '#1d5f8a', locBorder: '#1d5f8a', backSub: 'No bait', variants: [{ name: 'All variants', detail: 'Found in any open ocean water across all regions. No bait or special conditions needed.' }] },
+  { id: 'plentifin', name: 'Plentifin', img: 'images/plentifin.png', bait: 'Earthworms', locBadge: 'Shores of Plenty', locColor: '#e8f2f9', locBg: '#003863', locBorder: '#003863', backSub: 'Earthworms', variants: [{ name: 'All variants', detail: 'Found only in the open ocean waters of The Shores of Plenty.' }] },
+  { id: 'wildsplash', name: 'Wildsplash', img: 'images/wildsplash.png', bait: 'Earthworms', locBadge: 'The Wilds', locColor: '#f5ede3', locBg: '#6f4d2d', locBorder: '#6f4d2d', backSub: 'Earthworms', variants: [{ name: 'All variants', detail: 'Found only in the open ocean waters of The Wilds.' }] },
+  { id: 'ancientscale', name: 'Ancientscale', img: 'images/ancientscale.png', bait: 'Leeches', locBadge: 'Ancient Isles', locColor: '#e3f5eb', locBg: '#01411d', locBorder: '#01411d', backSub: 'Leeches', variants: [{ name: 'All variants', detail: 'Found only in the open ocean waters of The Ancient Isles.' }] },
+  { id: 'devilfish', name: 'Devilfish', img: 'images/devilfish.png', bait: 'Grubs', locBadge: "Devil's Roar", locColor: '#fde8e8', locBg: '#77070c', locBorder: '#77070c', backSub: 'Grubs', variants: [{ name: 'All variants', detail: "Found only in the open ocean waters of The Devil's Roar." }] },
+  { id: 'pondie', name: 'Pondie', img: 'images/pondie.png', bait: null, locBadge: 'Ponds', locColor: '#e3f5ee', locBg: '#2d6e4e', locBorder: '#2d6e4e', backSub: 'No bait', variants: [{ name: 'All variants', detail: 'Found in freshwater ponds on islands — not in the sea.' }] },
+  { id: 'islehopper', name: 'Islehopper', img: 'images/islehopper.png', bait: null, locBadge: 'Regional', locColor: '#e8f4f8', locBg: '#1d5f8a', locBorder: '#1d5f8a', backSub: 'No bait \u2022 Large island shores only', variants: [
+    { name: 'Stone', detail: "Shipwreck Bay, Shark Bait Cove, Crook's Hollow, Sailor's Bounty, Cannon Cove, Fetcher's Rest." },
+    { name: 'Moss', detail: "Ashen Reaches, Thieves' Haven, Marauder's Arch, Lone Cove, Wanderer's Refuge, Ruby's Fall." },
+    { name: 'Honey', detail: "Discovery Ridge, Plunder Valley, Kraken's Fall, Sunken Grove, Crescent Isle, The Devil's Thirst." },
+    { name: 'Amethyst', detail: "Night only \u2014 Devil's Ridge, Smuggler's Bay, Mermaid's Hideaway, The Crooked Masts, Old Faithful Isle, Flintlock Peninsula, Snake Island." },
+    { name: 'Raven', detail: 'Any large island. Most efficiently caught during the day at Amethyst Islehopper islands \u2014 only Splashtails and Raven Islehoppers spawn there in daylight.' }
+  ]},
+  { id: 'battlegill', name: 'Battlegill', img: 'images/battlegill.png', bait: 'Grubs', locBadge: 'Skeleton Event', locColor: '#fff3e0', locBg: '#8a5000', locBorder: '#8a5000', backSub: 'Grubs', variants: [{ name: 'All variants', detail: 'Found near Skeleton Ships or an active Skeleton Fort. Cannot be caught near other active World Events.' }] },
+  { id: 'wrecker', name: 'Wrecker', img: 'images/wrecker.png', bait: 'Earthworms', locBadge: 'Shipwrecks', locColor: '#fff8e1', locBg: '#6d4c00', locBorder: '#6d4c00', backSub: 'Earthworms', variants: [
+    { name: 'Rose, Sun, Pebble, Lighthouse', detail: 'Found near any shipwreck location.' },
+    { name: 'Blackcloud', detail: 'Only found near shipwrecks that are inside an active Storm.' }
+  ]},
+  { id: 'stormfish', name: 'Stormfish', img: 'images/stormfish.png', bait: 'Leeches', locBadge: 'Regional', locColor: '#e8f4f8', locBg: '#1d5f8a', locBorder: '#1d5f8a', backSub: 'Leeches \u2022 Storm required', variants: [
+    { name: 'Ancient', detail: 'Storms in The Ancient Isles region.' },
+    { name: 'Shores', detail: 'Storms in The Shores of Plenty region.' },
+    { name: 'Wild', detail: 'Storms in The Wilds region.' },
+    { name: 'Twilight', detail: "Storms anywhere at night. Storms do not occur in The Devil's Roar." },
+    { name: 'Shadow', detail: 'Storms anywhere. Most efficiently caught during a storm in the day at The Glorious Sea Dog Tavern or Uncharted Island N-13 \u2014 only Splashtails and Shadow Stormfish spawn there in daylight.' }
+  ]}
 ];
 
 const BAIT_LABELS = {
@@ -1456,11 +1012,7 @@ function buildFishGuide() {
   grid.innerHTML = '';
   FISH_DATA.forEach(fish => {
     const bait = BAIT_LABELS[fish.bait] || BAIT_LABELS[null];
-    const variantsHTML = fish.variants.map(v => `
-      <div class="fg-variant">
-        <span class="fg-variant-name">${v.name}</span>
-        ${v.detail}
-      </div>`).join('');
+    const variantsHTML = fish.variants.map(v => `<div class="fg-variant"><span class="fg-variant-name">${v.name}</span>${v.detail}</div>`).join('');
     const card = document.createElement('div');
     card.className = 'fg-card';
     card.innerHTML = `
@@ -1469,13 +1021,11 @@ function buildFishGuide() {
           <div class="fg-front-img-wrap">
             <span class="${bait.cls} fg-bait-badge">${bait.label}</span>
             <span class="fg-loc-badge" style="background:${fish.locBg};color:${fish.locColor};border-color:${fish.locBorder};">${fish.locBadge}</span>
-            <img src="${fish.img}" alt="${fish.name}"
-              onerror="this.style.display='none';this.nextElementSibling.style.display='block'"
-            ><span style="display:none;font-size:2rem;">🐟</span>
+            <img src="${fish.img}" alt="${fish.name}" onerror="this.style.display='none';this.nextElementSibling.style.display='block'"><span style="display:none;font-size:2rem;">&#x1F41F;</span>
           </div>
           <div class="fg-front-info">
             <div class="fg-fish-name">${fish.name}</div>
-            <div class="fg-flip-hint">tap for variants ▸</div>
+            <div class="fg-flip-hint">tap for variants &#x25B8;</div>
           </div>
         </div>
         <div class="fg-face fg-face-back">
@@ -1485,7 +1035,7 @@ function buildFishGuide() {
             <div class="fg-back-sub">${fish.backSub}</div>
           </div>
           <div class="fg-variants">${variantsHTML}</div>
-          <div class="fg-flip-hint-back">tap to flip back ◂</div>
+          <div class="fg-flip-hint-back">tap to flip back &#x25C2;</div>
         </div>
       </div>`;
     card.addEventListener('click', () => card.classList.toggle('flipped'));
@@ -1493,9 +1043,7 @@ function buildFishGuide() {
   });
 }
 
-function openFishGuide() {
-  document.getElementById('fish-guide-backdrop').classList.add('open');
-}
+function openFishGuide() { document.getElementById('fish-guide-backdrop').classList.add('open'); }
 function closeFishGuide() {
   document.getElementById('fish-guide-backdrop').classList.remove('open');
   document.querySelectorAll('.fg-card.flipped').forEach(c => c.classList.remove('flipped'));
@@ -1503,56 +1051,32 @@ function closeFishGuide() {
 
 document.addEventListener('DOMContentLoaded', function() {
   buildFishGuide();
-  document.getElementById('fish-guide-backdrop').addEventListener('click', function(e) {
-    if (e.target === this) closeFishGuide();
-  });
-  document.addEventListener('keydown', function(e) {
-    if (e.key === 'Escape') closeFishGuide();
-  });
+  document.getElementById('fish-guide-backdrop').addEventListener('click', function(e) { if (e.target === this) closeFishGuide(); });
+  document.addEventListener('keydown', function(e) { if (e.key === 'Escape') { closeFishGuide(); closePortModal(); } });
 });
 
 function showCategory(catName) {
   document.getElementById('overview').style.display = 'none';
   document.getElementById('tracker').style.display = 'block';
-
   const catData = data[catName];
   const catId = catName.replace(/[^a-z0-9]/gi, '-').toLowerCase();
   const catColor = catData.color || 'var(--accent)';
-
-  // Set background image
   const bgImg = document.getElementById('tracker-bg');
-  bgImg.style.display = 'block';
-  bgImg.onerror = null;
+  bgImg.style.display = 'block'; bgImg.onerror = null;
   bgImg.src = catData.icon || 'images/SoT.png';
-  bgImg.onerror = () => {
-    bgImg.onerror = null;
-    bgImg.src = 'images/SoT.png';
-  };
-
-  // Set CSS variable for subtab colours
+  bgImg.onerror = () => { bgImg.onerror = null; bgImg.src = 'images/SoT.png'; };
   document.getElementById('tracker').style.setProperty('--cat-color', catColor);
-
-  // Set category header (name only, large, category colour)
-  const header = document.getElementById('category-header');
-  header.innerHTML = `<h2 style="color:${catColor};">${catName}</h2>`;
-
-  // Hide all panels and deactivate all subtabs/subpanels
+  document.getElementById('category-header').innerHTML = `<h2 style="color:${catColor};">${catName}</h2>`;
   document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
   document.querySelectorAll('.subpanel').forEach(p => p.classList.remove('active'));
   document.querySelectorAll('.subtab').forEach(t => t.classList.remove('active'));
-
-  // Activate the correct panel and its first subtab/subpanel
   const panel = document.getElementById(`panel-${catId}`);
   panel.classList.add('active');
   const firstSubtab = panel.querySelector('.subtab');
   const firstSubpanel = panel.querySelector('.subpanel');
   if (firstSubtab) firstSubtab.classList.add('active');
   if (firstSubpanel) firstSubpanel.classList.add('active');
-
-  // Render category progress bar
   renderCategoryProgressBar(catName, catColor);
-
-  // Render subcategory progress bar for the first subcategory
   if (firstSubpanel) renderSubcategoryProgressBar(firstSubpanel.id, catName, catColor);
 }
 </script>
