@@ -723,6 +723,7 @@ function applyPreset(name, rebuildScene) {
         name:moon.name,url:moon.url,orbitOffset:moon.orbitOffset,
         orbitR:r*(2.4+mi*1.2),r:r*DBG.moonR,
         spinSpeed:rr(0.5,2)*-1,spin:rand()*Math.PI*2,
+        orbitSpeed: Math.pow(2.4 / (2.4 + mi * 1.2), 0.5),
         tex:toTex(genSurfaceCanvas(r*DBG.moonR*100,false)),
         obliquityX:randObliquity(),obliquityZ:randObliquity(),
         wobbleX:rr(0.002,0.012)*(rand()<0.5?1:-1),
@@ -1113,7 +1114,7 @@ function applyPreset(name, rebuildScene) {
         if(showLabels) labels.push({sx:ss[0],sy:ss[1],name:p.page.name});
       }
       for(const moon of p.moons||[]){
-        const ma=moon.orbitOffset-t*0.9*DBG.moonSpeed;
+        const ma=moon.orbitOffset-t*moon.orbitSpeed*DBG.moonSpeed;
         const mx=px+Math.cos(ma)*moon.orbitR;
         const mz=pz+Math.sin(ma)*moon.orbitR;
         moon.spin+=moon.spinSpeed*0.004*DBG.planetSpin;
