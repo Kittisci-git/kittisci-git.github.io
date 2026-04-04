@@ -428,6 +428,10 @@ function applyPreset(name, rebuildScene) {
     const u=rand();
     return rand()<0.65 ? (u-0.5)*Math.PI/2 : (u-0.5)*Math.PI*2;
   }
+  function randInclination() {
+    const deg = Math.min(30, -Math.log(rand()) * 5);
+    return deg * Math.PI / 180;
+  }
 
   const VERT = `
     attribute vec3 aPos; attribute vec3 aNormal; attribute vec2 aUV;
@@ -726,6 +730,8 @@ function applyPreset(name, rebuildScene) {
         orbitSpeed: Math.pow(2.4 / (2.4 + mi * 1.2), 0.5),
         tex:toTex(genSurfaceCanvas(r*DBG.moonR*100,false)),
         obliquityX:randObliquity(),obliquityZ:randObliquity(),
+        inclination: randInclination(),
+        nodeAngle: rand() * Math.PI * 2,
         wobbleX:rr(0.002,0.012)*(rand()<0.5?1:-1),
         wobbleZ:rr(0.002,0.012)*(rand()<0.5?1:-1),
         wobbleAmpX:rr(0,Math.PI/4),wobbleAmpZ:rr(0,Math.PI/4)
@@ -739,6 +745,8 @@ function applyPreset(name, rebuildScene) {
         moons,
         tex:toTex(genSurfaceCanvas(r*100,isGas)),
         obliquityX:randObliquity(),obliquityZ:randObliquity(),
+        inclination: randInclination(),
+        nodeAngle: rand() * Math.PI * 2,
         wobbleX:rr(0.002,0.012)*(rand()<0.5?1:-1),
         wobbleZ:rr(0.002,0.012)*(rand()<0.5?1:-1),
         wobbleAmpX:rr(0,Math.PI/4),wobbleAmpZ:rr(0,Math.PI/4)
@@ -1012,17 +1020,21 @@ function applyPreset(name, rebuildScene) {
     hud.fillText(name,x2-3,y1+1);
   }
 
-  function drawOrbitLine(orbitR,cx,cz){
-    cx=cx||0;cz=cz||0;
-    hud.beginPath();hud.setLineDash([4,8]);
-    hud.strokeStyle=hexToRgba(COL_TEXT,0.2);hud.lineWidth=0.8;
-    for(let i=0;i<=128;i++){
+  function drawOrbitLine(orbitR, cx, cy, cz, inclination, nodeAngle) {
+    cx=cx||0; cy=cy||0; cz=cz||0; inclination=inclination||0; nodeAngle=nodeAngle||0;
+    hud.beginPath(); hud.setLineDash([4,8]);
+    hud.strokeStyle=hexToRgba(COL_TEXT,0.2); hud.lineWidth=0.8;
+    for (let i=0; i<=128; i++) {
       const a=(i/128)*Math.PI*2;
-      const ss=worldToScreen(cx+Math.cos(a)*orbitR,0,cz+Math.sin(a)*orbitR);
+      const nu=a-nodeAngle;
+      const x=cx+orbitR*(Math.cos(nodeAngle)*Math.cos(nu)-Math.sin(nodeAngle)*Math.sin(nu)*Math.cos(inclination));
+      const y=cy+orbitR*Math.sin(inclination)*Math.sin(nu);
+      const z=cz+orbitR*(Math.sin(nodeAngle)*Math.cos(nu)+Math.cos(nodeAngle)*Math.sin(nu)*Math.cos(inclination));
+      const ss=worldToScreen(x,y,z);
       if(!ss)continue;
       if(i===0)hud.moveTo(ss[0],ss[1]);else hud.lineTo(ss[0],ss[1]);
     }
-    hud.stroke();hud.setLineDash([]);
+    hud.stroke(); hud.setLineDash([]);
   }
 
   function drawStarGlowAndLabel(t,sx,sy,sr,planetSPs){
@@ -1098,35 +1110,39 @@ function applyPreset(name, rebuildScene) {
     const labels=[];
     for(const p of planets){
       const angle=p.startAngle-(t/p.period)*Math.PI*2*DBG.orbitSpeed;
-      const px=Math.cos(angle)*p.orbitR;
-      const pz=Math.sin(angle)*p.orbitR;
+      const nu = angle - p.nodeAngle;
+      const px = p.orbitR*(Math.cos(p.nodeAngle)*Math.cos(nu) - Math.sin(p.nodeAngle)*Math.sin(nu)*Math.cos(p.inclination));
+      const py = p.orbitR*Math.sin(p.inclination)*Math.sin(nu);
+      const pz = p.orbitR*(Math.sin(p.nodeAngle)*Math.cos(nu) + Math.cos(p.nodeAngle)*Math.sin(nu)*Math.cos(p.inclination));
       p.spin+=p.spinSpeed*0.004*DBG.planetSpin;
       const obliqBiasRad=DBG.obliqBias*Math.PI/180;
       const oblX=(p.obliquityX+obliqBiasRad)+Math.sin(t*p.wobbleX*DBG.wobbleSpeed)*p.wobbleAmpX*DBG.wobbleAmp;
       const oblZ=(p.obliquityZ+obliqBiasRad)+Math.sin(t*p.wobbleZ*DBG.wobbleSpeed)*p.wobbleAmpZ*DBG.wobbleAmp;
-      drawSphere(px,0,pz,p.r,p.tex,p.spin,oblX,oblZ,false,null);
+      drawSphere(px,py,pz,p.r,p.tex,p.spin,oblX,oblZ,false,null);
       if(debugAxes) drawAxis(px,0,pz,p.r,oblX,oblZ);
-      const ss=worldToScreen(px,0,pz);
+      const ss=worldToScreen(px,py,pz);
       if(ss){
         const sr=starActualScreenR*(p.r/DBG.starR);
         hitTargets.push({x:ss[0],y:ss[1],r:sr*1.4,url:p.page.url});
-        planetSPs.push({sx:ss[0],sy:ss[1],sr,inFront:cameraZ(px,0,pz)>starCamZ});
+        planetSPs.push({sx:ss[0],sy:ss[1],sr,inFront:cameraZ(px,py,pz)>starCamZ});
         if(showLabels) labels.push({sx:ss[0],sy:ss[1],name:p.page.name});
       }
       for(const moon of p.moons||[]){
         const ma=moon.orbitOffset-t*moon.orbitSpeed*DBG.moonSpeed;
-        const mx=px+Math.cos(ma)*moon.orbitR;
-        const mz=pz+Math.sin(ma)*moon.orbitR;
+        const mnu = ma - moon.nodeAngle;
+        const mx = px + moon.orbitR*(Math.cos(moon.nodeAngle)*Math.cos(mnu) - Math.sin(moon.nodeAngle)*Math.sin(mnu)*Math.cos(moon.inclination));
+        const mmy = py + moon.orbitR*Math.sin(moon.inclination)*Math.sin(mnu);
+        const mz = pz + moon.orbitR*(Math.sin(moon.nodeAngle)*Math.cos(mnu) + Math.cos(moon.nodeAngle)*Math.sin(mnu)*Math.cos(moon.inclination));
         moon.spin+=moon.spinSpeed*0.004*DBG.planetSpin;
         const moblX=(moon.obliquityX+obliqBiasRad)+Math.sin(t*moon.wobbleX*DBG.wobbleSpeed)*moon.wobbleAmpX*DBG.wobbleAmp;
         const moblZ=(moon.obliquityZ+obliqBiasRad)+Math.sin(t*moon.wobbleZ*DBG.wobbleSpeed)*moon.wobbleAmpZ*DBG.wobbleAmp;
-        drawSphere(mx,0,mz,moon.r,moon.tex,moon.spin,moblX,moblZ,false,null);
+        drawSphere(mx,mmy,mz,moon.r,moon.tex,moon.spin,moblX,moblZ,false,null);
         if(debugAxes) drawAxis(mx,0,mz,moon.r,moblX,moblZ);
-        const ms=worldToScreen(mx,0,mz);
+        const ms=worldToScreen(mx,mmy,mz);
         if(ms){
           const mr=starActualScreenR*(moon.r/DBG.starR);
           hitTargets.push({x:ms[0],y:ms[1],r:mr*2,url:moon.url});
-          planetSPs.push({sx:ms[0],sy:ms[1],sr:mr,inFront:cameraZ(mx,0,mz)>starCamZ});
+          planetSPs.push({sx:ms[0],sy:ms[1],sr:mr,inFront:cameraZ(mx,mmy,mz)>starCamZ});
         }
       }
     }
@@ -1144,10 +1160,13 @@ function applyPreset(name, rebuildScene) {
     if(showLabels) for(const l of labels) drawLabel(l.sx,l.sy,l.name,starActualScreenR);
     if(debugOrbits){
       for(const p of planets){
-        drawOrbitLine(p.orbitR,0,0);
+        drawOrbitLine(p.orbitR,0,0,0,p.inclination,p.nodeAngle);
         const angle=p.startAngle-(t/p.period)*Math.PI*2*DBG.orbitSpeed;
-        const ppx=Math.cos(angle)*p.orbitR,ppz=Math.sin(angle)*p.orbitR;
-        for(const moon of p.moons||[]) drawOrbitLine(moon.orbitR,ppx,ppz);
+        const nu=angle-p.nodeAngle;
+        const ppx=p.orbitR*(Math.cos(p.nodeAngle)*Math.cos(nu)-Math.sin(p.nodeAngle)*Math.sin(nu)*Math.cos(p.inclination));
+        const ppy=p.orbitR*Math.sin(p.inclination)*Math.sin(nu);
+        const ppz=p.orbitR*(Math.sin(p.nodeAngle)*Math.cos(nu)+Math.cos(p.nodeAngle)*Math.sin(nu)*Math.cos(p.inclination));
+        for(const moon of p.moons||[]) drawOrbitLine(moon.orbitR,ppx,ppy,ppz,moon.inclination,moon.nodeAngle);
       }
     }
     requestAnimationFrame(render);
