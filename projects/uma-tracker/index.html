@@ -1,0 +1,986 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Uma Tracker — Kittisci</title>
+  <link rel="icon" type="image/x-icon" href="/resources/favicon.ico">
+  <link rel="icon" type="image/png" sizes="32x32" href="/resources/favicon-32x32.png">
+  <link rel="apple-touch-icon" sizes="180x180" href="/resources/apple-touch-icon.png">
+  <link rel="stylesheet" href="/layouts/styles.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.0/chart.umd.min.js"></script>
+  <style>
+    /* Alias the site's CSS variables to the shorter names used throughout this page.
+       The site's styles.css provides --bg, --bg-secondary, --bg-tertiary,
+       --text, --text-muted, --border, --accent and handles dark/light mode. */
+    :root {
+      --card: var(--bg-secondary);
+      --raised: var(--bg-tertiary);
+      --muted: var(--text-muted);
+      --green:#66bb6a; --amber:#ffa726; --red:#ef5350; --purple:#ce93d8;
+      --spark-blue:#42a5f5; --spark-pink:#f06292; --spark-green:#66bb6a;
+      --r:0.4rem;
+    }
+    /* Reset the site's 62.5% html scaling so tracker rem values stay at 16px base */
+    html{font-size:100%!important;}
+    *{box-sizing:border-box;margin:0;padding:0;}
+    body{background:var(--bg);color:var(--text);font-family:var(--font,'Segoe UI',system-ui,sans-serif);font-size:.9rem;min-height:100vh;}
+    a{color:var(--accent);text-decoration:none;}
+    .hdr{display:flex;align-items:center;justify-content:space-between;padding:.85rem 1.5rem;border-bottom:1px solid var(--border);background:var(--card);gap:1rem;flex-wrap:wrap;}
+    .hdr h1{font-size:1.25rem;font-weight:700;}
+    .hdr-acts{display:flex;gap:.5rem;flex-wrap:wrap;align-items:center;}
+    .btn{padding:.3rem .8rem;border:1px solid var(--border);border-radius:var(--r);background:transparent;color:var(--muted);cursor:pointer;font-size:.82rem;font-family:inherit;white-space:nowrap;transition:all .15s;}
+    .btn:hover{border-color:var(--accent);color:var(--accent);}
+    .btn.pri{background:var(--accent);border-color:var(--accent);color:#000;}
+    .btn.pri:hover{opacity:.85;}
+    .btn.del{border-color:#b71c1c;color:#ef9a9a;}
+    .btn.del:hover{background:#b71c1c;color:#fff;}
+    .btn.sm{padding:.18rem .5rem;font-size:.72rem;}
+    .tabs{display:flex;gap:.4rem;padding:.6rem 1.5rem;border-bottom:1px solid var(--border);background:var(--card);overflow-x:auto;}
+    .tab{padding:.35rem .9rem;border:1px solid var(--border);border-radius:var(--r);background:transparent;color:var(--muted);cursor:pointer;font-size:.82rem;font-family:inherit;white-space:nowrap;transition:all .15s;}
+    .tab:hover{color:var(--accent);}
+    .tab.on{background:var(--border);color:var(--text);}
+    .sec{display:none;padding:1.25rem 1.5rem;}
+    .sec.on{display:block;}
+    .chips{display:flex;gap:.75rem;flex-wrap:wrap;margin-bottom:1.25rem;}
+    .chip{background:var(--card);border:1px solid var(--border);border-radius:.5rem;padding:.6rem 1rem;text-align:center;min-width:90px;}
+    .chip .v{font-size:1.6rem;font-weight:700;color:var(--accent);}
+    .chip .l{font-size:.68rem;color:var(--muted);margin-top:.15rem;}
+    /* Game-accurate grade colours */
+    .g{display:inline-flex;align-items:center;justify-content:center;width:22px;height:22px;border-radius:3px;font-size:.7rem;font-weight:700;flex-shrink:0;}
+    .gS{background:#EFC34B;color:#000;}
+    .gA{background:#ED9D76;color:#000;}
+    .gB{background:#FA94B2;color:#000;}
+    .gC{background:#92DE90;color:#000;}
+    .gD{background:#7DCAF7;color:#000;}
+    .gE{background:#E58FEE;color:#000;}
+    .gF{background:#B4B0D4;color:#000;}
+    .gG{background:#D0CFCD;color:#000;}
+    /* Spark badges */
+    .spark{display:inline-flex;align-items:center;gap:3px;padding:.1rem .35rem;border-radius:999px;font-size:.64rem;font-weight:700;border:1px solid;white-space:nowrap;}
+    .spark-blue{background:rgba(66,165,245,.15);border-color:var(--spark-blue);color:var(--spark-blue);}
+    .spark-pink{background:rgba(240,98,146,.15);border-color:var(--spark-pink);color:var(--spark-pink);}
+    .spark-green{background:rgba(102,187,106,.15);border-color:var(--spark-green);color:var(--spark-green);}
+    .sdot{width:6px;height:6px;border-radius:50%;flex-shrink:0;}
+    .sdot-blue{background:var(--spark-blue);}
+    .sdot-pink{background:var(--spark-pink);}
+    .sdot-green{background:var(--spark-green);}
+    .sparks-cell{display:flex;flex-direction:column;gap:2px;}
+    .tbl-wrap{overflow-x:auto;margin-top:.75rem;}
+    table{width:100%;border-collapse:collapse;font-size:.8rem;}
+    th{padding:.45rem .6rem;text-align:left;border-bottom:2px solid var(--border);color:var(--muted);font-weight:600;white-space:nowrap;cursor:pointer;user-select:none;}
+    th:hover{color:var(--accent);}
+    th.sorted{color:var(--accent);}
+    td{padding:.4rem .6rem;border-bottom:1px solid var(--border);vertical-align:middle;}
+    tr:hover td{background:rgba(255,255,255,.03);}
+    .traded-row td{opacity:.4;}
+    .apt-group{display:flex;gap:2px;}
+    .apt-group+.apt-group{margin-left:4px;}
+    .filter-bar{display:flex;gap:.6rem;flex-wrap:wrap;align-items:center;margin-bottom:.75rem;}
+    .fi{padding:.3rem .55rem;background:var(--card);border:1px solid var(--border);border-radius:var(--r);color:var(--text);font-size:.78rem;font-family:inherit;}
+    .fi:focus{outline:none;border-color:var(--accent);}
+    .fi option{background:var(--card);}
+    .sub-tabs{display:flex;gap:.4rem;margin-bottom:1rem;}
+    .sub-tab{padding:.28rem .8rem;border:1px solid var(--border);border-radius:var(--r);background:transparent;color:var(--muted);cursor:pointer;font-size:.78rem;font-family:inherit;transition:all .15s;}
+    .sub-tab.on{border-color:var(--accent);color:var(--accent);background:rgba(66,165,245,.08);}
+    .team-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:1rem;}
+    @media(max-width:900px){.team-grid{grid-template-columns:repeat(3,1fr);}}
+    @media(max-width:580px){.team-grid{grid-template-columns:1fr 1fr;}}
+    .dist-col{display:flex;flex-direction:column;gap:.6rem;}
+    .dist-hdr{font-size:.78rem;font-weight:700;color:var(--accent);padding-bottom:.4rem;border-bottom:1px solid var(--border);margin-bottom:.2rem;}
+    .slot-card{background:var(--card);border:1px solid var(--border);border-radius:.5rem;padding:.65rem;display:flex;flex-direction:column;gap:.4rem;transition:border-color .2s;}
+    .slot-card.q-good{border-color:var(--green);}
+    .slot-card.q-ok{border-color:var(--amber);}
+    .slot-card.q-poor{border-color:var(--red);}
+    .slot-n{font-size:.65rem;color:var(--muted);}
+    .slot-sel{width:100%;padding:.28rem .35rem;background:var(--bg);border:1px solid var(--border);border-radius:var(--r);color:var(--text);font-size:.73rem;font-family:inherit;}
+    .slot-sel:focus{outline:none;border-color:var(--accent);}
+    .slot-name{font-weight:600;font-size:.72rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:100%;}
+    .slot-rating{color:var(--muted);font-size:.68rem;}
+    .slot-apts{display:flex;gap:3px;margin-top:.25rem;flex-wrap:wrap;}
+    .slot-apt-item{display:flex;flex-direction:column;align-items:center;gap:1px;}
+    .slot-apt-label{font-size:.55rem;color:var(--muted);}
+    .team-bar{background:var(--card);border:1px solid var(--border);border-radius:.5rem;padding:.75rem 1rem;margin-bottom:1.25rem;display:flex;align-items:center;gap:1.5rem;flex-wrap:wrap;}
+    .team-score{font-size:.9rem;} .team-score strong{color:var(--accent);font-size:1.3rem;}
+    .dist-scores{display:flex;gap:1rem;flex-wrap:wrap;font-size:.8rem;color:var(--muted);}
+    .dash-grid{display:grid;grid-template-columns:1fr 1fr;gap:1.25rem;}
+    @media(max-width:700px){.dash-grid{grid-template-columns:1fr;}}
+    .dash-card{background:var(--card);border:1px solid var(--border);border-radius:.5rem;padding:1rem;}
+    .dash-card h3{font-size:.72rem;color:var(--muted);text-transform:uppercase;letter-spacing:.06em;margin-bottom:.85rem;}
+    .health-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:.4rem;}
+    .hg-header{font-size:.65rem;text-align:center;color:var(--muted);font-weight:600;padding-bottom:.3rem;}
+    .hg-cell{padding:.35rem .2rem;border-radius:var(--r);text-align:center;font-size:.62rem;border:1px solid;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+    .hg-good{background:rgba(102,187,106,.2);border-color:var(--green);color:var(--green);}
+    .hg-ok{background:rgba(255,167,38,.15);border-color:var(--amber);color:var(--amber);}
+    .hg-poor{background:rgba(239,83,80,.15);border-color:var(--red);color:var(--red);}
+    .hg-empty{background:transparent;border-color:var(--border);color:var(--muted);}
+    .radar-wrap{position:relative;height:260px;}
+    .cmp-pickers{display:flex;gap:.75rem;flex-wrap:wrap;align-items:center;margin-bottom:1.25rem;}
+    .cmp-tbl-wrap{overflow-x:auto;}
+    .cmp-tbl{width:100%;border-collapse:collapse;font-size:.82rem;}
+    .cmp-tbl th,.cmp-tbl td{padding:.45rem .75rem;border:1px solid var(--border);}
+    .cmp-tbl th{background:var(--card);color:var(--muted);font-weight:600;}
+    .cmp-tbl td.lbl{background:var(--card);color:var(--muted);font-weight:600;white-space:nowrap;}
+    .cmp-tbl td.best{background:rgba(102,187,106,.1);}
+    .cmp-tbl td.worst{background:rgba(239,83,80,.08);}
+    .lin-picker{display:flex;gap:.75rem;align-items:center;flex-wrap:wrap;margin-bottom:1.25rem;}
+    .lin-2col{display:grid;grid-template-columns:1fr 1fr;gap:1.25rem;}
+    @media(max-width:600px){.lin-2col{grid-template-columns:1fr;}}
+    .lin-section-title{font-size:.82rem;font-weight:700;color:var(--accent);margin-bottom:.75rem;}
+    .lin-item{background:var(--card);border:1px solid var(--border);border-radius:.5rem;padding:.6rem .85rem;margin-bottom:.4rem;display:flex;align-items:center;gap:.65rem;cursor:pointer;transition:border-color .15s;}
+    .lin-item:hover{border-color:var(--accent);}
+    .lin-item.traded{opacity:.45;}
+    .lin-item.guest{border-color:var(--purple);}
+    .lin-item.manual{border-color:var(--border);cursor:default;}
+    .lin-item.manual:hover{border-color:var(--border);}
+    .lin-av{width:36px;height:36px;border-radius:50%;background:var(--raised);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;font-size:.72rem;font-weight:700;color:var(--muted);overflow:hidden;flex-shrink:0;}
+    .lin-av img{width:100%;height:100%;object-fit:cover;border-radius:50%;}
+    .lin-meta .lname{font-weight:600;font-size:.83rem;}
+    .lin-meta .lsub{font-size:.68rem;color:var(--muted);}
+    .tag{display:inline-block;padding:.06rem .35rem;border-radius:999px;font-size:.62rem;border:1px solid;margin-left:.35rem;}
+    .tag-guest{color:var(--purple);border-color:var(--purple);}
+    .tag-traded{color:var(--red);border-color:var(--red);}
+    .overlay{position:fixed;inset:0;background:rgba(0,0,0,.72);z-index:500;display:none;align-items:center;justify-content:center;padding:1rem;}
+    .overlay.on{display:flex;}
+    .modal{background:var(--card);border:1px solid var(--border);border-radius:.75rem;width:min(680px,100%);max-height:92vh;display:flex;flex-direction:column;overflow:hidden;}
+    .modal-hdr{display:flex;align-items:center;justify-content:space-between;padding:.8rem 1.2rem;border-bottom:1px solid var(--border);flex-shrink:0;}
+    .modal-hdr h2{font-size:1rem;}
+    .modal-body{padding:1.2rem;overflow-y:auto;flex:1;}
+    .modal-ftr{padding:.8rem 1.2rem;border-top:1px solid var(--border);display:flex;gap:.5rem;justify-content:flex-end;flex-shrink:0;}
+    .fs{margin-bottom:1.1rem;}
+    .fs-title{font-size:.7rem;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.06em;margin-bottom:.65rem;padding-bottom:.35rem;border-bottom:1px solid var(--border);}
+    .fr{display:flex;gap:.65rem;flex-wrap:wrap;margin-bottom:.55rem;}
+    .ff{display:flex;flex-direction:column;gap:.22rem;}
+    .ff.grow{flex:1;min-width:110px;}
+    .ff.full{width:100%;}
+    label.lbl{font-size:.72rem;color:var(--muted);}
+    input[type=text],input[type=number],textarea,select.form-sel{padding:.3rem .5rem;background:var(--bg);border:1px solid var(--border);border-radius:var(--r);color:var(--text);font-size:.83rem;font-family:inherit;width:100%;}
+    input:focus,textarea:focus,select.form-sel:focus{outline:none;border-color:var(--accent);}
+    select.form-sel option{background:var(--bg);}
+    textarea{resize:vertical;min-height:52px;}
+    .chk-row{display:flex;align-items:center;gap:.5rem;font-size:.83rem;cursor:pointer;}
+    .chk-row input{accent-color:var(--accent);width:15px;height:15px;cursor:pointer;}
+    .apt-form-grid{display:grid;grid-template-columns:62px 1fr;gap:.4rem .75rem;align-items:start;}
+    .apt-group-lbl{font-size:.72rem;color:var(--muted);padding-top:.32rem;}
+    .apt-selects{display:flex;gap:.4rem;flex-wrap:wrap;}
+    .apt-item{display:flex;flex-direction:column;align-items:center;gap:.2rem;}
+    .apt-item .apt-lbl{font-size:.62rem;color:var(--muted);}
+    select.gs{width:46px;padding:.25rem .1rem;text-align:center;border-radius:var(--r);border:1px solid var(--border);font-size:.8rem;font-weight:700;font-family:inherit;cursor:pointer;}
+    select.gs:focus{outline:none;}
+    /* Spark form */
+    .spark-form{display:flex;flex-direction:column;gap:.6rem;}
+    .spark-row{display:flex;align-items:center;gap:.6rem;flex-wrap:wrap;}
+    .spark-label{font-size:.75rem;font-weight:700;min-width:42px;}
+    .spark-label-blue{color:var(--spark-blue);}
+    .spark-label-pink{color:var(--spark-pink);}
+    .spark-label-green{color:var(--spark-green);}
+    .spark-level-btns{display:flex;gap:.25rem;}
+    .slvl{width:28px;height:26px;border:1px solid var(--border);border-radius:var(--r);background:transparent;color:var(--muted);cursor:pointer;font-size:.72rem;font-family:inherit;transition:all .15s;}
+    .slvl.on-blue{background:var(--spark-blue);border-color:var(--spark-blue);color:#000;}
+    .slvl.on-pink{background:var(--spark-pink);border-color:var(--spark-pink);color:#000;}
+    .slvl.on-green{background:var(--spark-green);border-color:var(--spark-green);color:#000;}
+    .slvl.on-none{background:var(--border);border-color:var(--border);color:var(--muted);}
+    /* Image upload */
+    .img-preview{width:54px;height:54px;border-radius:50%;background:var(--raised);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;font-size:.7rem;font-weight:700;color:var(--muted);overflow:hidden;flex-shrink:0;cursor:pointer;position:relative;}
+    .img-preview img{width:100%;height:100%;object-fit:cover;border-radius:50%;}
+    .img-overlay{position:absolute;inset:0;background:rgba(0,0,0,.5);border-radius:50%;display:flex;align-items:center;justify-content:center;opacity:0;transition:opacity .15s;font-size:.58rem;color:#fff;text-align:center;pointer-events:none;}
+    .img-preview:hover .img-overlay{opacity:1;}
+    input[type=file]{display:none;}
+    /* Parent block */
+    .parent-block{background:var(--bg);border:1px solid var(--border);border-radius:var(--r);padding:.7rem;margin-bottom:.5rem;}
+    .parent-lbl{font-size:.68rem;color:var(--muted);margin-bottom:.4rem;}
+    .ptype-tabs{display:flex;gap:.3rem;margin-bottom:.5rem;flex-wrap:wrap;}
+    .ptype-btn{padding:.18rem .55rem;border:1px solid var(--border);border-radius:var(--r);background:transparent;color:var(--muted);cursor:pointer;font-size:.72rem;font-family:inherit;transition:all .15s;}
+    .ptype-btn.on{border-color:var(--accent);color:var(--accent);background:rgba(66,165,245,.1);}
+    /* Port */
+    .port-block{margin-bottom:1.1rem;}
+    .port-block h3{font-size:.83rem;font-weight:700;margin-bottom:.25rem;}
+    .port-block p{font-size:.75rem;color:var(--muted);margin-bottom:.5rem;}
+    .port-ta{width:100%;padding:.45rem;background:var(--bg);border:1px solid var(--border);border-radius:var(--r);color:var(--text);font-size:.7rem;font-family:monospace;resize:vertical;min-height:68px;}
+    .port-ta:focus{outline:none;border-color:var(--accent);}
+    .port-status{font-size:.75rem;padding:.35rem .6rem;border-radius:var(--r);display:none;margin-top:.4rem;}
+    .port-status.ok{background:rgba(102,187,106,.15);color:var(--green);border:1px solid rgba(102,187,106,.3);}
+    .port-status.err{background:rgba(239,83,80,.12);color:var(--red);border:1px solid rgba(239,83,80,.3);}
+    .empty{text-align:center;padding:3rem 1rem;color:var(--muted);}
+    .divider{height:1px;background:var(--border);margin:.85rem 0;}
+    .uma-name-cell{font-weight:600;max-width:175px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+    .rating-val{color:var(--accent);font-weight:700;}
+    .action-btns{display:flex;gap:.3rem;white-space:nowrap;}
+    .nota{font-size:.72rem;color:var(--muted);font-style:italic;max-width:150px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+  </style>
+</head>
+<body>
+
+<header class="hdr">
+  <h1>Uma Tracker</h1>
+  <div class="hdr-acts">
+    <button class="btn pri" onclick="openUmaModal('veteran',null)">+ Veteran</button>
+    <button class="btn" onclick="openUmaModal('guest',null)">+ Guest</button>
+    <button class="btn" onclick="openPortModal()">Export / Import</button>
+    <a href="../../" class="btn">← Kittisci</a>
+  </div>
+</header>
+
+<nav class="tabs">
+  <button class="tab on" onclick="showTab('dashboard')">Dashboard</button>
+  <button class="tab" onclick="showTab('roster')">Roster</button>
+  <button class="tab" onclick="showTab('team')">Team Builder</button>
+  <button class="tab" onclick="showTab('compare')">Compare</button>
+  <button class="tab" onclick="showTab('lineage')">Lineage</button>
+</nav>
+
+<section class="sec on" id="s-dashboard">
+  <div id="dash-chips" class="chips"></div>
+  <div class="dash-grid">
+    <div class="dash-card"><h3>Team Slot Health</h3><div id="health-grid"></div></div>
+    <div class="dash-card"><h3>Team Strength by Distance</h3><div class="radar-wrap"><canvas id="radar-chart"></canvas></div></div>
+  </div>
+</section>
+
+<section class="sec" id="s-roster">
+  <div class="sub-tabs">
+    <button class="sub-tab on" onclick="switchRosterTab('veterans')">Veterans</button>
+    <button class="sub-tab" onclick="switchRosterTab('guests')">Guests</button>
+  </div>
+  <div id="roster-content"></div>
+</section>
+
+<section class="sec" id="s-team">
+  <div class="team-bar" id="team-bar"></div>
+  <div style="display:flex;justify-content:flex-end;margin-bottom:1rem;gap:.5rem;">
+    <button class="btn" onclick="optimiseTeam()">⚡ Optimise Team</button>
+    <button class="btn del sm" onclick="clearTeam()">Clear Team</button>
+  </div>
+  <div class="team-grid" id="team-grid"></div>
+</section>
+
+<section class="sec" id="s-compare">
+  <div class="cmp-pickers">
+    <div><label class="lbl">Uma A</label><br><select class="fi" id="cmp-a" onchange="renderCompare()" style="min-width:200px"><option value="">Select uma…</option></select></div>
+    <div><label class="lbl">Uma B</label><br><select class="fi" id="cmp-b" onchange="renderCompare()" style="min-width:200px"><option value="">Select uma…</option></select></div>
+  </div>
+  <div id="cmp-result"></div>
+</section>
+
+<section class="sec" id="s-lineage">
+  <div class="lin-picker">
+    <div><label class="lbl">Select Veteran</label><br><select class="fi" id="lin-sel" onchange="renderLineage()" style="min-width:220px"><option value="">Select uma…</option></select></div>
+  </div>
+  <div id="lin-result"></div>
+</section>
+
+<!-- UMA MODAL -->
+<div class="overlay" id="modal-uma">
+  <div class="modal">
+    <div class="modal-hdr"><h2 id="uma-modal-title">Add Veteran</h2><button class="btn sm" onclick="closeModal('modal-uma')">✕</button></div>
+    <div class="modal-body" id="uma-modal-body"></div>
+    <div class="modal-ftr">
+      <button class="btn del" id="uma-del-btn" style="display:none;margin-right:auto" onclick="deleteCurrentUma()">Delete</button>
+      <button class="btn" onclick="closeModal('modal-uma')">Cancel</button>
+      <button class="btn pri" onclick="saveUma()">Save</button>
+    </div>
+  </div>
+</div>
+
+<!-- EXPORT/IMPORT MODAL -->
+<div class="overlay" id="modal-port">
+  <div class="modal">
+    <div class="modal-hdr"><h2>Export / Import</h2><button class="btn sm" onclick="closeModal('modal-port')">✕</button></div>
+    <div class="modal-body">
+      <div class="port-block">
+        <h3>Export Full Roster</h3>
+        <p>Download all veterans, guests and team assignment. Images are included.</p>
+        <button class="btn" onclick="exportFull()">⬇ Download JSON</button>
+        &nbsp;<button class="btn" onclick="copyFull()">Copy to clipboard</button>
+      </div>
+      <div class="divider"></div>
+      <div class="port-block">
+        <h3>Import Full Roster</h3>
+        <p>Paste exported JSON below. <strong>This will overwrite all current data.</strong></p>
+        <textarea class="port-ta" id="port-import-ta" placeholder="Paste JSON here…"></textarea>
+        <div class="port-status" id="port-import-status"></div>
+        <br><button class="btn" onclick="importFull()">Import</button>
+      </div>
+      <div class="divider"></div>
+      <div class="port-block">
+        <h3>Share Uma</h3>
+        <p>Export a single veteran — recipients import it as a Guest.</p>
+        <select class="fi" id="port-share-sel" style="margin-bottom:.5rem;min-width:200px"><option value="">Select veteran…</option></select><br>
+        <button class="btn" onclick="shareUma()">Copy share code</button>
+        <div class="port-status" id="port-share-status"></div>
+      </div>
+      <div class="divider"></div>
+      <div class="port-block">
+        <h3>Import Share Code</h3>
+        <p>Paste a share code to add someone's uma to your Guest list.</p>
+        <textarea class="port-ta" id="port-guest-ta" placeholder="Paste share code here…"></textarea>
+        <div class="port-status" id="port-guest-status"></div>
+        <br><button class="btn" onclick="importGuest()">Import as Guest</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<input type="file" id="img-file-input" accept="image/*" onchange="handleImageUpload(event)">
+<datalist id="blue-spark-opts">
+  <option value="Speed"><option value="Stamina"><option value="Power"><option value="Guts"><option value="Wits">
+</datalist>
+<datalist id="pink-spark-opts">
+  <option value="Turf"><option value="Dirt"><option value="Sprint"><option value="Mile"><option value="Medium">
+  <option value="Long"><option value="Front Runner"><option value="Pace Chaser"><option value="Late Surger"><option value="End Closer">
+</datalist>
+
+<footer class="footer">
+  <section class="container">
+    &copy; 2026 Kittisci
+  </section>
+</footer>
+
+<script>
+'use strict';
+// ── Constants ──────────────────────────────────────────────────
+const GRADES=['S','A','B','C','D','E','F','G'];
+const GC={S:'#EFC34B',A:'#ED9D76',B:'#FA94B2',C:'#92DE90',D:'#7DCAF7',E:'#E58FEE',F:'#B4B0D4',G:'#D0CFCD'};
+const GT={S:'#000',A:'#fff',B:'#000',C:'#fff',D:'#000',E:'#fff',F:'#fff',G:'#fff'};
+const GS={S:8,A:7,B:6,C:5,D:4,E:3,F:2,G:1};
+const DISTANCES=['sprint','mile','medium','long','dirt'];
+const DL={sprint:'Sprint',mile:'Mile',medium:'Medium',long:'Long',dirt:'Dirt'};
+const DLS={sprint:'Spr',mile:'Mi',medium:'Med',long:'Lng',dirt:'Dirt'};
+const STYLES=['front','pace','late','end'];
+const SL={front:'Front',pace:'Pace',late:'Late',end:'End'};
+const STATS=['speed','stamina','power','guts','wit'];
+const STAT_L={speed:'Spe',stamina:'Sta',power:'Pow',guts:'Gut',wit:'Wit'};
+const APT_KEYS=['turf','dirt','sprint','mile','medium','long','front','pace','late','end'];
+const APT_L={turf:'Turf',dirt:'Dirt',sprint:'Spr',mile:'Mi',medium:'Med',long:'Lng',front:'Fr',pace:'Pa',late:'La',end:'En'};
+const DIST_GROUND={sprint:'turf',mile:'turf',medium:'turf',long:'turf',dirt:'dirt'};
+const DIST_APT={sprint:'sprint',mile:'mile',medium:'medium',long:'long',dirt:'mile'};
+const SLOT_DEFS=DISTANCES.flatMap(d=>[1,2,3].map(n=>({distance:d,num:n})));
+
+// ── Data helpers ───────────────────────────────────────────────
+const defApts=()=>Object.fromEntries(APT_KEYS.map(k=>[k,'G']));
+const defStats=()=>({speed:0,stamina:0,power:0,guts:0,wit:0});
+const defTeam=()=>SLOT_DEFS.map(s=>({...s,style:null,veteranId:null}));
+const defSparks=()=>({blue:{name:'',level:1},pink:{name:'',level:1},green:{name:'',level:0}});
+const defParent=()=>({type:'none',id:null,name:'',sparks:defSparks()});
+
+let db={veterans:[],guests:[],team:[]};
+let imgs={};
+const SK={v:'ut-veterans',g:'ut-guests',t:'ut-team',i:'ut-img'};
+
+function load(){
+  try{
+    db.veterans=JSON.parse(localStorage.getItem(SK.v)||'[]');
+    db.guests=JSON.parse(localStorage.getItem(SK.g)||'[]');
+    db.team=JSON.parse(localStorage.getItem(SK.t)||'null')||defTeam();
+    if(!Array.isArray(db.team)||db.team.length!==15) db.team=defTeam();
+    [...db.veterans,...db.guests].forEach(u=>{if(!u.sparks)u.sparks=defSparks();});
+    imgs=JSON.parse(localStorage.getItem(SK.i)||'{}');
+  }catch(e){db={veterans:[],guests:[],team:defTeam()};imgs={};}
+}
+function save(){
+  localStorage.setItem(SK.v,JSON.stringify(db.veterans));
+  localStorage.setItem(SK.g,JSON.stringify(db.guests));
+  localStorage.setItem(SK.t,JSON.stringify(db.team));
+}
+function saveImgs(){try{localStorage.setItem(SK.i,JSON.stringify(imgs));}catch(e){alert('Image storage full — try a smaller image.');}}
+
+const uid=()=>Date.now().toString(36)+Math.random().toString(36).slice(2,6);
+const esc=s=>String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+const initials=n=>n.trim().split(/\s+/).slice(0,2).map(w=>w[0]).join('').toUpperCase()||'?';
+const findUma=id=>db.veterans.find(u=>u.id===id)||db.guests.find(u=>u.id===id)||null;
+const statTotal=u=>STATS.reduce((s,k)=>s+(u.stats[k]||0),0);
+const gradeBadge=g=>`<span class="g g${g}">${g}</span>`;
+
+function avatarHtml(uma,sz=32){
+  const img=imgs[uma.id];
+  const s=`width:${sz}px;height:${sz}px;border-radius:50%;background:var(--raised);border:1px solid var(--border);display:inline-flex;align-items:center;justify-content:center;font-size:${Math.round(sz*.28)}px;font-weight:700;color:var(--muted);overflow:hidden;flex-shrink:0;`;
+  return img?`<span style="${s}"><img src="${img}" style="width:100%;height:100%;object-fit:cover;border-radius:50%;"></span>`:`<span style="${s}">${esc(initials(uma.name))}</span>`;
+}
+
+function sparkHtml(sp){
+  if(!sp) return '';
+  const r=[];
+  if(sp.blue?.name) r.push(`<span class="spark spark-blue"><span class="sdot sdot-blue"></span>${esc(sp.blue.name)} ${sp.blue.level||1}</span>`);
+  if(sp.pink?.name) r.push(`<span class="spark spark-pink"><span class="sdot sdot-pink"></span>${esc(sp.pink.name)} ${sp.pink.level||1}</span>`);
+  if(sp.green?.level&&sp.green?.name) r.push(`<span class="spark spark-green"><span class="sdot sdot-green"></span>${esc(sp.green.name)} ${sp.green.level}</span>`);
+  return r.join('');
+}
+
+// ── Tab management ─────────────────────────────────────────────
+let activeTab='dashboard',rosterTab='veterans';
+let rSort={key:'rating',dir:-1};
+let rFilter={search:'',distance:'',style:'',includeTraded:false};
+
+function showTab(n){
+  document.querySelectorAll('.sec').forEach(s=>s.classList.remove('on'));
+  ['dashboard','roster','team','compare','lineage'].forEach((t,i)=>document.querySelectorAll('.tab')[i].classList.toggle('on',t===n));
+  document.getElementById('s-'+n).classList.add('on');
+  activeTab=n; renderTab(n);
+}
+function renderTab(n){
+  if(n==='dashboard') renderDashboard();
+  else if(n==='roster') renderRoster();
+  else if(n==='team') renderTeam();
+  else if(n==='compare') renderCompareSetup();
+  else if(n==='lineage') renderLineageSetup();
+}
+function render(){renderTab(activeTab);}
+function switchRosterTab(t){
+  rosterTab=t;
+  document.querySelectorAll('.sub-tab').forEach((el,i)=>el.classList.toggle('on',(i===0&&t==='veterans')||(i===1&&t==='guests')));
+  renderRoster();
+}
+
+// ── Dashboard ──────────────────────────────────────────────────
+let radarChart=null;
+function renderDashboard(){
+  const active=db.veterans.filter(u=>!u.traded).length;
+  const filled=db.team.filter(s=>s.veteranId).length;
+  document.getElementById('dash-chips').innerHTML=`
+    <div class="chip"><div class="v">${db.veterans.length}</div><div class="l">Veterans</div></div>
+    <div class="chip"><div class="v">${active}</div><div class="l">Active</div></div>
+    <div class="chip"><div class="v">${db.guests.length}</div><div class="l">Guests</div></div>
+    <div class="chip"><div class="v">${filled}/15</div><div class="l">Team Filled</div></div>
+    <div class="chip"><div class="v">${db.veterans.filter(u=>u.traded).length}</div><div class="l">Traded</div></div>`;
+  renderHealthGrid(); renderRadar();
+}
+function slotQ(slot){
+  if(!slot.veteranId) return 'empty';
+  const u=db.veterans.find(v=>v.id===slot.veteranId);
+  if(!u||!slot.style) return u?'ok':'empty';
+  const good=[u.apt[DIST_GROUND[slot.distance]],u.apt[DIST_APT[slot.distance]],u.apt[slot.style]].filter(g=>GS[g]>=7).length;
+  return good===3?'good':good>=1?'ok':'poor';
+}
+function renderHealthGrid(){
+  let h='<div class="health-grid">';
+  DISTANCES.forEach(d=>h+=`<div class="hg-header">${DLS[d]}</div>`);
+  [0,1,2].forEach(n=>DISTANCES.forEach(d=>{
+    const slot=db.team.find(s=>s.distance===d&&s.num===n+1);
+    if(!slot){h+=`<div class="hg-cell hg-empty">—</div>`;return;}
+    const q=slotQ(slot);
+    const u=slot.veteranId?db.veterans.find(v=>v.id===slot.veteranId):null;
+    const label=u?u.name.split('[')[0].trim().split(' ').slice(-1)[0]:'—';
+    h+=`<div class="hg-cell hg-${q}" title="${u?esc(u.name):'Empty'}">${esc(label)}</div>`;
+  }));
+  document.getElementById('health-grid').innerHTML=h+'</div>';
+}
+function renderRadar(){
+  const canvas=document.getElementById('radar-chart');
+  const data=DISTANCES.map(d=>{
+    const slots=db.team.filter(s=>s.distance===d&&s.veteranId);
+    if(!slots.length) return 0;
+    return Math.round(slots.map(s=>{const u=db.veterans.find(v=>v.id===s.veteranId);return u?u.rating:0;}).reduce((a,b)=>a+b,0)/slots.length);
+  });
+  if(radarChart) radarChart.destroy();
+  radarChart=new Chart(canvas,{type:'radar',data:{labels:DISTANCES.map(d=>DL[d]),datasets:[{label:'Avg Rating',data,backgroundColor:'rgba(66,165,245,.15)',borderColor:'#42a5f5',pointBackgroundColor:'#42a5f5',pointRadius:4}]},options:{responsive:true,maintainAspectRatio:false,scales:{r:{beginAtZero:true,ticks:{color:'#666',backdropColor:'transparent',font:{size:10}},grid:{color:'#424242'},angleLines:{color:'#424242'},pointLabels:{color:'#dadada',font:{size:12}}}},plugins:{legend:{labels:{color:'#888',font:{size:11}}}}}});
+}
+
+// ── Roster ─────────────────────────────────────────────────────
+function renderRoster(){
+  document.getElementById('roster-content').innerHTML=rosterTab==='veterans'?vetTableHtml():guestTableHtml();
+}
+function applyFilters(list){
+  let r=[...list];
+  if(!rFilter.includeTraded) r=r.filter(u=>!u.traded);
+  if(rFilter.search) r=r.filter(u=>u.name.toLowerCase().includes(rFilter.search.toLowerCase()));
+  if(rFilter.distance) r=r.filter(u=>GS[u.apt[rFilter.distance]]>=7);
+  if(rFilter.style) r=r.filter(u=>GS[u.apt[rFilter.style]]>=7);
+  return r;
+}
+function sortUmas(list){
+  return [...list].sort((a,b)=>{
+    let av,bv;
+    if(rSort.key==='name'){av=a.name;bv=b.name;}
+    else if(rSort.key==='total'){av=statTotal(a);bv=statTotal(b);}
+    else{av=a[rSort.key]||0;bv=b[rSort.key]||0;}
+    return av<bv?rSort.dir:av>bv?-rSort.dir:0;
+  });
+}
+function sortBy(k){if(rSort.key===k)rSort.dir*=-1;else{rSort.key=k;rSort.dir=-1;}renderRoster();}
+const arr=k=>rSort.key===k?(rSort.dir>0?' ↑':' ↓'):'';
+const scls=k=>rSort.key===k?'sorted':'';
+
+function vetTableHtml(){
+  const sorted=sortUmas(applyFilters(db.veterans));
+  const ctrl=`<div class="filter-bar">
+    <input class="fi" placeholder="Search…" value="${esc(rFilter.search)}" oninput="rFilter.search=this.value;renderRoster()" style="min-width:130px">
+    <select class="fi" onchange="rFilter.distance=this.value;renderRoster()">
+      <option value="">All distances</option>
+      ${DISTANCES.map(d=>`<option value="${d}"${rFilter.distance===d?' selected':''}>${DL[d]} A+</option>`).join('')}
+    </select>
+    <select class="fi" onchange="rFilter.style=this.value;renderRoster()">
+      <option value="">All styles</option>
+      ${STYLES.map(s=>`<option value="${s}"${rFilter.style===s?' selected':''}>${SL[s]} A+</option>`).join('')}
+    </select>
+    <label class="chk-row"><input type="checkbox" ${rFilter.includeTraded?'checked':''} onchange="rFilter.includeTraded=this.checked;renderRoster()"> Include traded</label>
+    <span style="margin-left:auto;font-size:.75rem;color:var(--muted)">${sorted.length} uma${sorted.length!==1?'s':''}</span>
+  </div>`;
+  if(!sorted.length) return ctrl+`<div class="empty"><p>${db.veterans.length?'No umas match filters.':'No veterans yet — add your first!'}</p></div>`;
+  const rows=sorted.map(u=>`<tr${u.traded?' class="traded-row"':''}>
+    <td>${avatarHtml(u,28)}</td>
+    <td><div class="uma-name-cell" title="${esc(u.name)}">${esc(u.name)}</div>${u.traded?'<span class="tag tag-traded">traded</span>':''}</td>
+    <td class="rating-val">${u.rating.toLocaleString()}</td>
+    <td>${statTotal(u).toLocaleString()}</td>
+    <td><div class="apt-group">${gradeBadge(u.apt.turf)}${gradeBadge(u.apt.dirt)}</div></td>
+    <td><div class="apt-group">${gradeBadge(u.apt.sprint)}${gradeBadge(u.apt.mile)}${gradeBadge(u.apt.medium)}${gradeBadge(u.apt.long)}</div></td>
+    <td><div class="apt-group">${gradeBadge(u.apt.front)}${gradeBadge(u.apt.pace)}${gradeBadge(u.apt.late)}${gradeBadge(u.apt.end)}</div></td>
+    <td><div class="sparks-cell">${sparkHtml(u.sparks)}</div></td>
+    <td class="nota" title="${esc(u.notes)}">${esc(u.notes)}</td>
+    <td><div class="action-btns">
+      <button class="btn sm" onclick="openUmaModal('veteran','${u.id}')">Edit</button>
+      <button class="btn sm" onclick="shareUmaId('${u.id}')">Share</button>
+    </div></td>
+  </tr>`).join('');
+  return ctrl+`<div class="tbl-wrap"><table>
+    <thead><tr>
+      <th></th>
+      <th class="${scls('name')}" onclick="sortBy('name')">Name${arr('name')}</th>
+      <th class="${scls('rating')}" onclick="sortBy('rating')">Rating${arr('rating')}</th>
+      <th class="${scls('total')}" onclick="sortBy('total')">Total${arr('total')}</th>
+      <th>Ground</th><th>Distance</th><th>Style</th><th>Sparks</th><th>Notes</th><th></th>
+    </tr></thead><tbody>${rows}</tbody></table></div>`;
+}
+function guestTableHtml(){
+  const list=sortUmas(db.guests);
+  if(!list.length) return `<div class="empty"><p>No guest umas. Import a share code or add one manually.</p></div>`;
+  const rows=list.map(u=>`<tr>
+    <td>${avatarHtml(u,28)}</td>
+    <td><div class="uma-name-cell" title="${esc(u.name)}">${esc(u.name)}</div></td>
+    <td class="rating-val">${u.rating.toLocaleString()}</td>
+    <td>${statTotal(u).toLocaleString()}</td>
+    <td><div class="apt-group">${gradeBadge(u.apt.turf)}${gradeBadge(u.apt.dirt)}</div></td>
+    <td><div class="apt-group">${gradeBadge(u.apt.sprint)}${gradeBadge(u.apt.mile)}${gradeBadge(u.apt.medium)}${gradeBadge(u.apt.long)}</div></td>
+    <td><div class="apt-group">${gradeBadge(u.apt.front)}${gradeBadge(u.apt.pace)}${gradeBadge(u.apt.late)}${gradeBadge(u.apt.end)}</div></td>
+    <td><div class="sparks-cell">${sparkHtml(u.sparks)}</div></td>
+    <td><button class="btn sm" onclick="openUmaModal('guest','${u.id}')">Edit</button></td>
+  </tr>`).join('');
+  return `<div class="tbl-wrap"><table>
+    <thead><tr><th></th><th>Name</th><th>Rating</th><th>Total</th><th>Ground</th><th>Distance</th><th>Style</th><th>Sparks</th><th></th></tr></thead>
+    <tbody>${rows}</tbody></table></div>`;
+}
+
+// ── Team Builder ───────────────────────────────────────────────
+function renderTeam(){
+  renderTeamBar();
+  document.getElementById('team-grid').innerHTML=DISTANCES.map(d=>{
+    const slots=db.team.filter(s=>s.distance===d);
+    const note=d==='dirt'?' <span style="font-size:.6rem;color:var(--muted)">(Dirt/Mi)</span>':'';
+    const cards=slots.map(slot=>{
+      const u=slot.veteranId?db.veterans.find(v=>v.id===slot.veteranId):null;
+      const q=slotQ(slot);
+      const si=SLOT_DEFS.findIndex(s=>s.distance===slot.distance&&s.num===slot.num);
+      const vetOpts=db.veterans.filter(v=>!v.traded).map(v=>`<option value="${v.id}"${slot.veteranId===v.id?' selected':''}>${esc(v.name)} (${v.rating.toLocaleString()})</option>`).join('');
+      const styleOpts=STYLES.map(s=>`<option value="${s}"${slot.style===s?' selected':''}>${SL[s]}</option>`).join('');
+      let info='';
+      if(u&&slot.style){
+        const gk=DIST_GROUND[slot.distance],dk=DIST_APT[slot.distance],sk=slot.style;
+        info=`<div style="font-size:.72rem">
+          <div class="slot-name" title="${esc(u.name)}">${esc(u.name)}</div>
+          <div class="slot-rating">${u.rating.toLocaleString()}</div>
+          <div class="slot-apts">
+            <div class="slot-apt-item"><div class="slot-apt-label">${APT_L[gk]}</div>${gradeBadge(u.apt[gk])}</div>
+            <div class="slot-apt-item"><div class="slot-apt-label">${APT_L[dk]}</div>${gradeBadge(u.apt[dk])}</div>
+            <div class="slot-apt-item"><div class="slot-apt-label">${APT_L[sk]}</div>${gradeBadge(u.apt[sk])}</div>
+          </div></div>`;
+      } else if(u){
+        info=`<div class="slot-name" title="${esc(u.name)}">${esc(u.name)}</div><div class="slot-rating">${u.rating.toLocaleString()}</div>`;
+      }
+      return `<div class="slot-card q-${q}">
+        <div class="slot-n">Slot ${slot.num}</div>
+        <select class="slot-sel" onchange="setSlotStyle(${si},this.value)"><option value="">Style…</option>${styleOpts}</select>
+        <select class="slot-sel" onchange="setSlotVet(${si},this.value)"><option value="">Select veteran…</option>${vetOpts}</select>
+        ${info}
+      </div>`;
+    }).join('');
+    return `<div class="dist-col"><div class="dist-hdr">${DL[d]}${note}</div>${cards}</div>`;
+  }).join('');
+}
+function renderTeamBar(){
+  const drt=DISTANCES.map(d=>({d,total:db.team.filter(s=>s.distance===d&&s.veteranId).reduce((acc,s)=>{const u=db.veterans.find(v=>v.id===s.veteranId);return acc+(u?u.rating:0);},0)}));
+  const overall=drt.reduce((a,x)=>a+x.total,0);
+  document.getElementById('team-bar').innerHTML=`<div class="team-score">Total Rating <strong>${overall.toLocaleString()}</strong></div><div class="dist-scores">${drt.map(x=>`<span>${DLS[x.d]}: <span>${x.total.toLocaleString()}</span></span>`).join('')}</div>`;
+}
+function setSlotStyle(i,v){db.team[i].style=v||null;save();renderTeam();if(activeTab==='dashboard')renderDashboard();}
+function setSlotVet(i,v){db.team[i].veteranId=v||null;save();renderTeam();if(activeTab==='dashboard')renderDashboard();}
+function clearTeam(){if(!confirm('Clear all team assignments?'))return;db.team=defTeam();save();renderTeam();if(activeTab==='dashboard')renderDashboard();}
+function scoreSlot(u,slot){
+  if(!slot.style) return u.rating;
+  return (GS[u.apt[DIST_GROUND[slot.distance]]]||0+GS[u.apt[DIST_APT[slot.distance]]]||0+GS[u.apt[slot.style]]||0)*2000+u.rating;
+}
+function optimiseTeam(){
+  const styled=db.team.filter(s=>s.style);
+  if(!styled.length){alert('Set styles for slots first.');return;}
+  const avail=db.veterans.filter(u=>!u.traded);
+  const pairs=[];
+  styled.forEach(slot=>avail.forEach(u=>pairs.push({slot,u,score:scoreSlot(u,slot)})));
+  pairs.sort((a,b)=>b.score-a.score);
+  styled.forEach(s=>s.veteranId=null);
+  const used=new Set();
+  pairs.forEach(({slot,u})=>{if(slot.veteranId||used.has(u.id))return;slot.veteranId=u.id;used.add(u.id);});
+  save();renderTeam();if(activeTab==='dashboard')renderDashboard();
+}
+
+// ── Compare ────────────────────────────────────────────────────
+function renderCompareSetup(){
+  const all=[...db.veterans,...db.guests];
+  const opts=all.map(u=>`<option value="${u.id}">${esc(u.name)}</option>`).join('');
+  ['cmp-a','cmp-b'].forEach(id=>{const s=document.getElementById(id),c=s.value;s.innerHTML=`<option value="">Select uma…</option>${opts}`;if(c)s.value=c;});
+  renderCompare();
+}
+function renderCompare(){
+  const idA=document.getElementById('cmp-a').value,idB=document.getElementById('cmp-b').value;
+  const el=document.getElementById('cmp-result');
+  if(!idA||!idB){el.innerHTML='<div class="empty"><p>Select two umas to compare.</p></div>';return;}
+  const a=findUma(idA),b=findUma(idB);
+  if(!a||!b){el.innerHTML='';return;}
+  const statRows=STATS.map(k=>{const av=a.stats[k]||0,bv=b.stats[k]||0;const ac=av>bv?'best':av<bv?'worst':'',bc=bv>av?'best':bv<av?'worst':'';return `<tr><td class="lbl">${STAT_L[k]}</td><td class="${ac}">${av.toLocaleString()}</td><td class="${bc}">${bv.toLocaleString()}</td></tr>`;}).join('');
+  const aptRows=APT_KEYS.map(k=>{const ag=a.apt[k]||'G',bg=b.apt[k]||'G';const ac=GS[ag]>GS[bg]?'best':GS[ag]<GS[bg]?'worst':'',bc=GS[bg]>GS[ag]?'best':GS[bg]<GS[ag]?'worst':'';return `<tr><td class="lbl">${APT_L[k]}</td><td class="${ac}">${gradeBadge(ag)}</td><td class="${bc}">${gradeBadge(bg)}</td></tr>`;}).join('');
+  const isVetA=db.veterans.some(u=>u.id===idA),isVetB=db.veterans.some(u=>u.id===idB);
+  el.innerHTML=`<div class="cmp-tbl-wrap"><table class="cmp-tbl">
+    <thead><tr><th>Attribute</th><th>${esc(a.name)}</th><th>${esc(b.name)}</th></tr></thead>
+    <tbody>
+      <tr><td class="lbl">Type</td><td>${isVetA?'Veteran':'Guest'}</td><td>${isVetB?'Veteran':'Guest'}</td></tr>
+      <tr><td class="lbl">Rating</td><td class="${a.rating>b.rating?'best':a.rating<b.rating?'worst':''}">${a.rating.toLocaleString()}</td><td class="${b.rating>a.rating?'best':b.rating<a.rating?'worst':''}">${b.rating.toLocaleString()}</td></tr>
+      <tr><td class="lbl">Stat Total</td><td class="${statTotal(a)>statTotal(b)?'best':statTotal(a)<statTotal(b)?'worst':''}">${statTotal(a).toLocaleString()}</td><td class="${statTotal(b)>statTotal(a)?'best':statTotal(b)<statTotal(a)?'worst':''}">${statTotal(b).toLocaleString()}</td></tr>
+      ${statRows}
+      <tr><td class="lbl" colspan="3" style="background:var(--raised);font-size:.68rem;color:var(--muted)">APTITUDES</td></tr>
+      ${aptRows}
+      <tr><td class="lbl" colspan="3" style="background:var(--raised);font-size:.68rem;color:var(--muted)">SPARKS</td></tr>
+      <tr><td class="lbl">Blue</td><td>${a.sparks?.blue?.name?`${esc(a.sparks.blue.name)} Lv${a.sparks.blue.level}`:'—'}</td><td>${b.sparks?.blue?.name?`${esc(b.sparks.blue.name)} Lv${b.sparks.blue.level}`:'—'}</td></tr>
+      <tr><td class="lbl">Pink</td><td>${a.sparks?.pink?.name?`${esc(a.sparks.pink.name)} Lv${a.sparks.pink.level}`:'—'}</td><td>${b.sparks?.pink?.name?`${esc(b.sparks.pink.name)} Lv${b.sparks.pink.level}`:'—'}</td></tr>
+      <tr><td class="lbl">Green</td><td>${a.sparks?.green?.level?`${esc(a.sparks.green.name)} Lv${a.sparks.green.level}`:'—'}</td><td>${b.sparks?.green?.level?`${esc(b.sparks.green.name)} Lv${b.sparks.green.level}`:'—'}</td></tr>
+    </tbody></table></div>`;
+}
+
+// ── Lineage ────────────────────────────────────────────────────
+function renderLineageSetup(){
+  const sel=document.getElementById('lin-sel'),cur=sel.value;
+  sel.innerHTML=`<option value="">Select uma…</option>`+db.veterans.map(u=>`<option value="${u.id}">${esc(u.name)}${u.traded?' (traded)':''}</option>`).join('');
+  if(cur) sel.value=cur;
+  renderLineage();
+}
+function renderLineage(){
+  const id=document.getElementById('lin-sel').value,el=document.getElementById('lin-result');
+  if(!id){el.innerHTML='';return;}
+  const uma=db.veterans.find(u=>u.id===id);
+  if(!uma){el.innerHTML='';return;}
+  const parents=(uma.parents||[]).filter(p=>p.type!=='none'&&(p.id||p.name));
+  const pc=parents.length?parents.map(p=>parentLinCard(p)).join(''):'<p style="color:var(--muted);font-size:.8rem">No parent data recorded.</p>';
+  const children=db.veterans.filter(v=>v.id!==id&&(v.parents||[]).some(p=>(p.id&&p.id===id)||(p.name&&p.name===uma.name)));
+  const cc=children.length?children.map(c=>vetLinCard(c)).join(''):'<p style="color:var(--muted);font-size:.8rem">No offspring found.</p>';
+  el.innerHTML=`<div class="lin-2col"><div><div class="lin-section-title">Parents</div>${pc}</div><div><div class="lin-section-title">Offspring in Roster</div>${cc}</div></div>`;
+}
+function parentLinCard(p){
+  const linked=p.id?findUma(p.id):null;
+  if(linked){
+    const isGuest=db.guests.some(u=>u.id===p.id),traded=!isGuest&&linked.traded;
+    return `<div class="lin-item ${traded?'traded':''} ${isGuest?'guest':''}" onclick="${!isGuest&&!traded?`navigateUma('${linked.id}')`:''}" style="${isGuest||traded?'cursor:default':''}">
+      <div class="lin-av">${imgs[linked.id]?`<img src="${imgs[linked.id]}">`:esc(initials(linked.name))}</div>
+      <div class="lin-meta">
+        <div class="lname">${esc(linked.name)}${isGuest?'<span class="tag tag-guest">guest</span>':''}${traded?'<span class="tag tag-traded">traded</span>':''}</div>
+        <div class="lsub">${linked.rating.toLocaleString()}</div>
+        ${linked.sparks?`<div style="margin-top:3px">${sparkHtml(linked.sparks)}</div>`:''}
+      </div></div>`;
+  }
+  return `<div class="lin-item manual">
+    <div class="lin-av">?</div>
+    <div class="lin-meta">
+      <div class="lname">${esc(p.name||'Unknown')}</div>
+      <div class="lsub">Manual entry</div>
+      ${p.sparks?`<div style="margin-top:3px">${sparkHtml(p.sparks)}</div>`:''}
+    </div></div>`;
+}
+function vetLinCard(u){
+  return `<div class="lin-item ${u.traded?'traded':''}" onclick="navigateUma('${u.id}')">
+    <div class="lin-av">${imgs[u.id]?`<img src="${imgs[u.id]}">`:esc(initials(u.name))}</div>
+    <div class="lin-meta">
+      <div class="lname">${esc(u.name)}${u.traded?'<span class="tag tag-traded">traded</span>':''}</div>
+      <div class="lsub">${u.rating.toLocaleString()}</div>
+    </div></div>`;
+}
+function navigateUma(id){if(!db.veterans.some(u=>u.id===id))return;showTab('lineage');document.getElementById('lin-sel').value=id;renderLineage();}
+
+// ── Image upload ───────────────────────────────────────────────
+let pendingImgId=null;
+function triggerImgUpload(id){pendingImgId=id;document.getElementById('img-file-input').click();}
+function handleImageUpload(e){
+  const file=e.target.files[0];
+  if(!file||!pendingImgId) return;
+  const reader=new FileReader();
+  reader.onload=ev=>{
+    imgs[pendingImgId]=ev.target.result;
+    saveImgs();
+    const prev=document.getElementById('img-preview-'+pendingImgId);
+    if(prev){prev.innerHTML=`<img src="${ev.target.result}" style="width:100%;height:100%;object-fit:cover;border-radius:50%;"><div class="img-overlay">Change</div>`;}
+  };
+  reader.readAsDataURL(file);
+  e.target.value='';
+}
+
+// ── Uma form modal ─────────────────────────────────────────────
+let fState={};
+function openUmaModal(type,id){
+  const uma=id?findUma(id):null;
+  const f=uma||{name:'',rating:0,stats:defStats(),apt:defApts(),sparks:defSparks(),parents:[defParent(),defParent()],traded:false,notes:''};
+  fState={type,id:id||null,existingAdded:uma?.added||null,
+    parents:f.parents?f.parents.map(p=>({...p,sparks:{...(p.sparks||defSparks())}})):[defParent(),defParent()],
+    newId:id||uid()};
+  // Derive UI-level parent type (separates active/traded veterans)
+  fState.pUIType=fState.parents.map(p=>{
+    if(!p||p.type==='none') return 'none';
+    if(p.type==='manual') return 'manual';
+    if(p.type==='guest') return 'guest';
+    if(p.type==='veteran'){
+      if(p.id){const v=db.veterans.find(v=>v.id===p.id);return v?.traded?'traded':'active';}
+      return 'active';
+    }
+    return 'none';
+  });
+  document.getElementById('uma-modal-title').textContent=(id?'Edit':'Add ')+( type==='veteran'?'Veteran':'Guest');
+  document.getElementById('uma-del-btn').style.display=id?'inline-block':'none';
+  document.getElementById('uma-modal-body').innerHTML=buildForm(type,f);
+  APT_KEYS.forEach(k=>{const el=document.getElementById(`f-apt-${k}`);if(el)styleGS(el);});
+  document.getElementById('modal-uma').classList.add('on');
+}
+function buildForm(type,f){
+  const isVet=type==='veteran';
+  const imgId=fState.id||fState.newId;
+  const existImg=imgs[imgId];
+  const imgBlock=`<div class="ff" style="align-items:center">
+    <label class="lbl">Photo</label>
+    <div class="img-preview" id="img-preview-${imgId}" onclick="triggerImgUpload('${imgId}')">
+      ${existImg?`<img src="${existImg}" style="width:100%;height:100%;object-fit:cover;border-radius:50%;">`:esc(initials(f.name||'?'))}
+      <div class="img-overlay">${existImg?'Change':'Upload'}</div>
+    </div>
+    ${existImg?`<button type="button" class="btn sm del" style="margin-top:.3rem" onclick="delete imgs['${imgId}'];saveImgs();this.parentElement.querySelector('.img-preview').innerHTML='${esc(initials(f.name||'?'))}<div class=&quot;img-overlay&quot;>Upload</div>';this.remove()">Remove</button>`:''}
+  </div>`;
+  const aptGrid=`<div class="apt-form-grid">
+    <div class="apt-group-lbl">Ground</div><div class="apt-selects">${aptSel('turf',f.apt.turf)}${aptSel('dirt',f.apt.dirt)}</div>
+    <div class="apt-group-lbl">Distance</div><div class="apt-selects">${aptSel('sprint',f.apt.sprint)}${aptSel('mile',f.apt.mile)}${aptSel('medium',f.apt.medium)}${aptSel('long',f.apt.long)}</div>
+    <div class="apt-group-lbl">Style</div><div class="apt-selects">${aptSel('front',f.apt.front)}${aptSel('pace',f.apt.pace)}${aptSel('late',f.apt.late)}${aptSel('end',f.apt.end)}</div>
+  </div>`;
+  const sp=f.sparks||defSparks();
+  const additionalSec=`<div class="fs"><div class="fs-title">Additional</div>
+    ${fState.type==='veteran'?`<div class="fr"><label class="chk-row"><input type="checkbox" id="f-traded" ${f.traded?'checked':''}> Traded (hide from active roster)</label></div>`:''}
+    <div class="fr"><div class="ff full"><label class="lbl">Notes</label><textarea id="f-notes">${esc(f.notes||'')}</textarea></div></div>
+  </div>`;
+  const parentSec=`<div class="fs"><div class="fs-title">Parents</div>${pBlock(0,fState.parents[0],fState.pUIType[0])}${pBlock(1,fState.parents[1],fState.pUIType[1])}</div>${additionalSec}`;
+  return `
+  <div class="fs"><div class="fs-title">Basic Info</div>
+    <div class="fr" style="align-items:flex-end">
+      ${imgBlock}
+      <div class="ff grow"><label class="lbl">Full Name</label><input type="text" id="f-name" value="${esc(f.name)}" placeholder="e.g. Taiki Shuttle [Wild Frontier]"></div>
+      <div class="ff" style="width:90px"><label class="lbl">Rating</label><input type="number" id="f-rating" value="${f.rating||0}" min="0"></div>
+    </div>
+  </div>
+  <div class="fs"><div class="fs-title">Stats</div>
+    <div class="fr" style="align-items:flex-end">
+      ${STATS.map(s=>`<div class="ff" style="width:59px"><label class="lbl">${STAT_L[s]}</label><input type="number" id="f-${s}" value="${f.stats[s]||0}" min="0" max="1200" oninput="updateStatTotal()"></div>`).join('')}
+      <div class="ff" style="width:68px"><label class="lbl">Total</label><div id="f-stat-total" style="padding:.3rem;font-weight:700;color:var(--accent)">${statTotal(f).toLocaleString()}</div></div>
+    </div>
+  </div>
+  <div class="fs"><div class="fs-title">Aptitudes</div>${aptGrid}</div>
+  <div class="fs"><div class="fs-title">Sparks</div>${sparkForm(sp,'f')}</div>
+  ${parentSec}`;
+}
+
+function sparkForm(sp,pfx){
+  return `<div class="spark-form">
+    ${sparkRow('blue','Blue',sp.blue?.name||'',sp.blue?.level||1,false,pfx)}
+    ${sparkRow('pink','Pink',sp.pink?.name||'',sp.pink?.level||1,false,pfx)}
+    ${sparkRow('green','Green',sp.green?.name||'',sp.green?.level||0,true,pfx)}
+  </div>`;
+}
+function sparkRow(colour,label,name,level,optional,pfx){
+  const lvls=optional?[0,1,2,3]:[1,2,3];
+  const btns=lvls.map(l=>`<button type="button" class="slvl ${l===level?(l===0?'on-none':'on-'+colour):''}" data-c="${colour}" data-p="${pfx}" data-v="${l}" onclick="setSparkLv(this)">${l===0?'—':l}</button>`).join('');
+  const show=optional?level>0:true;
+  // Blue and pink use constrained datalists; green is free text
+  const listAttr=colour==='blue'?' list="blue-spark-opts"':colour==='pink'?' list="pink-spark-opts"':'';
+  return `<div class="spark-row">
+    <div class="spark-label spark-label-${colour}">${label}</div>
+    <div class="spark-level-btns">${btns}</div>
+    <div id="snw-${pfx}-${colour}" style="${show?'flex:1;min-width:140px':'display:none;flex:1;min-width:140px'}">
+      <input type="text"${listAttr} id="${pfx}-sp-${colour}" value="${esc(name)}" placeholder="${label} spark name…" style="height:26px;padding:.2rem .4rem;width:100%;">
+    </div>
+  </div>`;
+}
+function setSparkLv(btn){
+  const c=btn.dataset.c,p=btn.dataset.p,v=parseInt(btn.dataset.v);
+  btn.parentElement.querySelectorAll('.slvl').forEach(b=>{b.className='slvl';if(parseInt(b.dataset.v)===v)b.classList.add(v===0?'on-none':'on-'+c);});
+  const wrap=document.getElementById(`snw-${p}-${c}`);
+  if(wrap) wrap.style.display=v===0?'none':'';
+  wrap && (wrap.style.flex='1',wrap.style.minWidth='140px');
+}
+function aptSel(key,val){
+  return `<div class="apt-item"><div class="apt-lbl">${APT_L[key]}</div><select class="gs" id="f-apt-${key}" onchange="styleGS(this)">${GRADES.map(g=>`<option value="${g}"${g===val?' selected':''}>${g}</option>`).join('')}</select></div>`;
+}
+function styleGS(el){el.style.background=GC[el.value]||'#37474F';el.style.color=GT[el.value]||'#fff';}
+
+function pBlock(idx,p,uiType){
+  uiType=uiType||'none';
+  const activeVets=db.veterans.filter(v=>!v.traded);
+  const tradedVets=db.veterans.filter(v=>v.traded);
+  const makeOpts=(list)=>list.map(u=>`<option value="${u.id}"${p.id===u.id?' selected':''}>(${u.rating.toLocaleString()}) ${esc(u.name)}</option>`).join('');
+  const showSel=uiType==='active'||uiType==='traded'||uiType==='guest';
+  const showMan=uiType==='manual';
+  const selList=uiType==='active'?activeVets:uiType==='traded'?tradedVets:db.guests;
+  const sp=p.sparks||defSparks();
+  const typeBtns=[
+    {k:'active',l:'Active'},
+    {k:'traded',l:'Traded'},
+    {k:'guest',l:'Guest'},
+    {k:'manual',l:'Manual'},
+    {k:'none',l:'N/A'},
+  ].map(({k,l})=>`<button type="button" class="ptype-btn ${uiType===k?'on':''}" onclick="setPType(${idx},'${k}')">${l}</button>`).join('');
+  return `<div class="parent-block" id="pb-${idx}">
+    <div class="parent-lbl">Parent ${idx+1}</div>
+    <div class="ptype-tabs">${typeBtns}</div>
+    <div id="pi-${idx}">
+      ${showSel?`<select class="slot-sel" id="f-pid-${idx}" style="width:100%"><option value="">Select…</option>${makeOpts(selList)}</select>`:''}
+      ${showMan?`<div class="fr"><div class="ff full"><label class="lbl">Name</label><input type="text" id="f-pname-${idx}" value="${esc(p.name||'')}" placeholder="Parent name…"></div></div>
+      <div style="margin-top:.45rem;font-size:.7rem;color:var(--muted);margin-bottom:.2rem">Sparks</div>
+      ${sparkForm(sp,'p'+idx)}`:''}
+    </div>
+  </div>`;
+}
+function setPType(idx,uiType){
+  // Store veteran type for both active and traded; uiType tracked separately in fState
+  const dataType=(uiType==='active'||uiType==='traded')?'veteran':uiType;
+  fState.parents[idx]={type:dataType,id:null,name:'',sparks:defSparks()};
+  fState.pUIType[idx]=uiType;
+  document.getElementById(`pb-${idx}`).outerHTML=pBlock(idx,fState.parents[idx],uiType);
+}
+function updateStatTotal(){
+  const t=STATS.reduce((s,k)=>s+(parseInt(document.getElementById('f-'+k)?.value)||0),0);
+  const el=document.getElementById('f-stat-total');
+  if(el) el.textContent=t.toLocaleString();
+}
+function readSparks(pfx){
+  function getLv(colour){
+    let lv=colour==='green'?0:1;
+    document.querySelectorAll(`.slvl[data-c="${colour}"][data-p="${pfx}"]`).forEach(b=>{
+      if(b.classList.contains('on-none')) lv=0;
+      else if(b.classList.contains('on-'+colour)) lv=parseInt(b.dataset.v);
+    });
+    return lv;
+  }
+  return {
+    blue:{name:(document.getElementById(`${pfx}-sp-blue`)?.value||'').trim(),level:getLv('blue')||1},
+    pink:{name:(document.getElementById(`${pfx}-sp-pink`)?.value||'').trim(),level:getLv('pink')||1},
+    green:{name:(document.getElementById(`${pfx}-sp-green`)?.value||'').trim(),level:getLv('green')},
+  };
+}
+function readParents(){
+  return [0,1].map(i=>{
+    const p=fState.parents[i];
+    const ui=fState.pUIType[i];
+    if(!p||ui==='none') return defParent();
+    if(ui==='active'||ui==='traded'){
+      const pid=document.getElementById(`f-pid-${i}`)?.value||'';
+      const found=db.veterans.find(v=>v.id===pid);
+      return {type:'veteran',id:pid||null,name:found?found.name:'',sparks:defSparks()};
+    }
+    if(ui==='guest'){
+      const pid=document.getElementById(`f-pid-${i}`)?.value||'';
+      const found=db.guests.find(v=>v.id===pid);
+      return {type:'guest',id:pid||null,name:found?found.name:'',sparks:defSparks()};
+    }
+    return {type:'manual',id:null,name:(document.getElementById(`f-pname-${i}`)?.value||'').trim(),sparks:readSparks('p'+i)};
+  });
+}
+function saveUma(){
+  const name=(document.getElementById('f-name')?.value||'').trim();
+  if(!name){alert('Please enter a name.');return;}
+  const id=fState.id||fState.newId;
+  const uma={id,name,rating:parseInt(document.getElementById('f-rating')?.value)||0,
+    stats:Object.fromEntries(STATS.map(k=>[k,parseInt(document.getElementById('f-'+k)?.value)||0])),
+    apt:Object.fromEntries(APT_KEYS.map(k=>[k,document.getElementById('f-apt-'+k)?.value||'G'])),
+    sparks:readSparks('f'),
+    parents:readParents(),
+    notes:document.getElementById('f-notes')?.value||'',
+    added:fState.existingAdded||new Date().toISOString()};
+  if(fState.type==='veteran'){
+    uma.traded=document.getElementById('f-traded')?.checked||false;
+    if(fState.id){const idx=db.veterans.findIndex(u=>u.id===fState.id);if(idx>=0)db.veterans[idx]=uma;else db.veterans.push(uma);}
+    else db.veterans.push(uma);
+  } else {
+    if(fState.id){const idx=db.guests.findIndex(u=>u.id===fState.id);if(idx>=0)db.guests[idx]=uma;else db.guests.push(uma);}
+    else db.guests.push(uma);
+  }
+  save();closeModal('modal-uma');render();
+  if(activeTab==='compare') renderCompareSetup();
+  if(activeTab==='lineage') renderLineageSetup();
+}
+function deleteCurrentUma(){
+  if(!fState.id) return;
+  const u=findUma(fState.id);
+  if(!confirm(`Delete "${u?.name}"? This cannot be undone.`)) return;
+  if(fState.type==='veteran'){db.veterans=db.veterans.filter(v=>v.id!==fState.id);db.team.forEach(s=>{if(s.veteranId===fState.id)s.veteranId=null;});}
+  else db.guests=db.guests.filter(v=>v.id!==fState.id);
+  delete imgs[fState.id];saveImgs();
+  save();closeModal('modal-uma');render();
+}
+
+// ── Export / Import ────────────────────────────────────────────
+function openPortModal(){
+  document.getElementById('port-share-sel').innerHTML=`<option value="">Select veteran…</option>`+db.veterans.map(u=>`<option value="${u.id}">${esc(u.name)}</option>`).join('');
+  document.getElementById('modal-port').classList.add('on');
+}
+function exportFull(){
+  const data=JSON.stringify({uma_roster:true,version:2,veterans:db.veterans,guests:db.guests,team:db.team,images:imgs},null,2);
+  const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([data],{type:'application/json'}));a.download='uma-roster.json';a.click();
+}
+function copyFull(){navigator.clipboard.writeText(JSON.stringify({uma_roster:true,version:2,veterans:db.veterans,guests:db.guests,team:db.team,images:imgs})).then(()=>alert('Copied!'));}
+function importFull(){
+  const text=document.getElementById('port-import-ta').value.trim();
+  const st=document.getElementById('port-import-status');
+  try{
+    const p=JSON.parse(text);
+    if(!p.uma_roster) throw new Error('Not a valid roster export.');
+    if(!confirm('This will overwrite ALL current data. Continue?')) return;
+    db.veterans=p.veterans||[];db.guests=p.guests||[];db.team=p.team||defTeam();
+    if(db.team.length!==15) db.team=defTeam();
+    if(p.images){imgs=p.images;saveImgs();}
+    save();st.className='port-status ok';st.style.display='block';st.textContent='Imported successfully!';render();
+  }catch(e){st.className='port-status err';st.style.display='block';st.textContent='Error: '+(e.message||'Invalid JSON.');}
+}
+function shareUmaId(id){
+  const u=db.veterans.find(v=>v.id===id);if(!u) return;
+  const share={uma_share:true,version:2,uma:{name:u.name,rating:u.rating,stats:u.stats,apt:u.apt,sparks:u.sparks,notes:u.notes||''},image:imgs[id]||null};
+  navigator.clipboard.writeText(JSON.stringify(share)).then(()=>alert(`Share code for "${u.name}" copied!`));
+}
+function shareUma(){
+  const id=document.getElementById('port-share-sel').value;
+  const st=document.getElementById('port-share-status');
+  if(!id){st.className='port-status err';st.style.display='block';st.textContent='Select a veteran first.';return;}
+  shareUmaId(id);st.className='port-status ok';st.style.display='block';st.textContent='Share code copied!';
+}
+function importGuest(){
+  const text=document.getElementById('port-guest-ta').value.trim();
+  const st=document.getElementById('port-guest-status');
+  try{
+    const p=JSON.parse(text);
+    if(!p.uma_share||!p.uma) throw new Error('Not a valid share code.');
+    const u=p.uma;if(!u.name) throw new Error('Missing name.');
+    const gid=uid();
+    db.guests.push({id:gid,name:u.name,rating:u.rating||0,stats:u.stats||defStats(),apt:u.apt||defApts(),sparks:u.sparks||defSparks(),notes:u.notes||'',added:new Date().toISOString()});
+    if(p.image){imgs[gid]=p.image;saveImgs();}
+    save();st.className='port-status ok';st.style.display='block';st.textContent=`"${u.name}" added as Guest!`;
+    if(activeTab==='roster') renderRoster();
+  }catch(e){st.className='port-status err';st.style.display='block';st.textContent='Error: '+(e.message||'Invalid code.');}
+}
+
+// ── Modal helpers ──────────────────────────────────────────────
+function closeModal(id){document.getElementById(id).classList.remove('on');}
+document.addEventListener('keydown',e=>{if(e.key==='Escape')document.querySelectorAll('.overlay.on').forEach(m=>m.classList.remove('on'));});
+document.querySelectorAll('.overlay').forEach(o=>o.addEventListener('click',e=>{if(e.target===o)o.classList.remove('on');}));
+
+// ── Init ───────────────────────────────────────────────────────
+load();
+renderDashboard();
+</script>
+<script src="/site.js"></script>
+</body>
+</html>
