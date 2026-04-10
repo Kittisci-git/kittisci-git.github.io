@@ -3309,6 +3309,1199 @@
           ]
         }
       ],
+      "Legends of the Sea": [
+        {
+          "id": "fotd2-living-history",
+          "name": "A Living History",
+          "description": "Find Umbra on the Lagoon of Whispers and begin uncovering the tales of legendary pirates.",
+          "rewards": null,
+          "type": "action"
+        },
+        {
+          "id": "fotd2-legends-sea-i",
+          "name": "Legends of the Sea I",
+          "description": "Find Umbra's book on Devil's Ridge, overlooking the sea.",
+          "rewards": null,
+          "type": "action"
+        },
+        {
+          "id": "fotd2-legends-sea-ii",
+          "name": "Legends of the Sea II",
+          "description": "Find Umbra's book on Crescent Isle, where Salty once rested.",
+          "rewards": "Unlocks Sunshine Parrot Set items for purchase.",
+          "type": "action"
+        },
+        {
+          "id": "fotd2-legends-sea-iii",
+          "name": "Legends of the Sea III",
+          "description": "Find Umbra's book on The Devil's Thirst, at a small camp.",
+          "rewards": null,
+          "type": "action"
+        },
+        {
+          "id": "fotd2-legends-sea-iv",
+          "name": "Legends of the Sea IV",
+          "description": "Find Umbra's book on The Crooked Masts, under a Beacon's light.",
+          "rewards": null,
+          "type": "action"
+        },
+        {
+          "id": "fotd2-legends-sea-v",
+          "name": "Legends of the Sea V",
+          "description": "Find Umbra's book on Kraken's Fall, near a camp to the north-east.",
+          "rewards": null,
+          "type": "action"
+        },
+        {
+          "id": "fotd2-legends-sea-vi",
+          "name": "Legends of the Sea VI",
+          "description": "Find Umbra's book in the Pirate Legend Hideout, safely shelved away.",
+          "rewards": null,
+          "type": "action"
+        },
+        {
+          "id": "fotd2-legends-sea-vii",
+          "name": "Legends of the Sea VII",
+          "description": "Find Umbra's book on Hidden Spring Keep, overlooking the fort.",
+          "rewards": null,
+          "type": "action"
+        },
+        {
+          "id": "fotd2-legends-sea-viii",
+          "name": "Legends of the Sea VIII",
+          "description": "Find Umbra's book on Shipwreck Bay, tucked away inside a wreck.",
+          "rewards": null,
+          "type": "action"
+        },
+        {
+          "id": "fotd2-legends-sea-ix",
+          "name": "Legends of the Sea IX",
+          "description": "Find Umbra's book at the Wild Treasures Store, a Seapost out in The Wilds.",
+          "rewards": null,
+          "type": "action"
+        },
+        {
+          "id": "fotd2-legends-sea-x",
+          "name": "Legends of the Sea X",
+          "description": "Find Umbra's book in the Fort of the Damned, discussing the supernatural.",
+          "rewards": null,
+          "type": "action"
+        },
+        {
+          "id": "fotd2-umbras-observations",
+          "name": "Umbra's Observations",
+          "description": "Discover all of Umbra's Journals.",
+          "rewards": null,
+          "type": "action"
+        },
+        {
+          "id": "fotd2-chronicler-of-legend",
+          "name": "Chronicler of Legend",
+          "description": "Uncover the Legends of the Sea for Umbra.",
+          "rewards": "Chronicler of Legend Title",
+          "type": "numeric",
+          "grades": [
+            60
+          ]
+        },
+        {
+          "id": "fotd2-fox-in-snake",
+          "name": "The Fox in the Snake",
+          "description": "Have a drink in the tavern at Dagger Tooth and learn of this dead pirate's story.",
+          "rewards": null,
+          "type": "action"
+        },
+        {
+          "id": "fotd2-missing-presumed",
+          "name": "Missing, Presumed Pirating",
+          "description": "Near the central rock of Lone Cove, a poster remains for a missing pirate.",
+          "rewards": null,
+          "type": "action"
+        },
+        {
+          "id": "fotd2-self-promoting",
+          "name": "Self-Promoting Pistol Pirate",
+          "description": "Dagger Tooth is known for deadly criminals, as a poster on the water tower suggests.",
+          "rewards": null,
+          "type": "action"
+        },
+        {
+          "id": "fotd2-join-the-club",
+          "name": "Join the Club",
+          "description": "On Mermaid's Hideaway, a popular pirate created a social spot overlooking the sea.",
+          "rewards": null,
+          "type": "action"
+        },
+        {
+          "id": "fotd2-nice-to-be-wanted",
+          "name": "Nice to be Wanted",
+          "description": "A popular pirate took refuge near some building remains, on an island in the Shores of Plenty.",
+          "rewards": null,
+          "type": "action"
+        },
+        {
+          "id": "fotd2-seas-most-wanted",
+          "name": "The Sea's Most Wanted",
+          "description": "Complete all commendations within The Sea's Most Wanted collection.",
+          "rewards": null,
+          "type": "numeric",
+          "grades": [
+            5
+          ]
+        },
+        {
+          "id": "fotd2-sleeping-fishes",
+          "name": "Sleeping with the Fishes",
+          "description": "A pirate met their fate on the shores of Mermaid's Hideaway.",
+          "rewards": null,
+          "type": "action"
+        },
+        {
+          "id": "fotd2-aim-high",
+          "name": "Aim High",
+          "description": "On Plunder Outpost, a pirate who liked high places came to rest in a hard-to-reach spot.",
+          "rewards": null,
+          "type": "action"
+        },
+        {
+          "id": "fotd2-not-a-drop-spilled",
+          "name": "...And Not a Drop Spilled",
+          "description": "The tavern at Ancient Spire Outpost has an unusual sign dedicated to an unusual pirate.",
+          "rewards": null,
+          "type": "action"
+        },
+        {
+          "id": "fotd2-not-all-falcons",
+          "name": "Not All Falcons Fly",
+          "description": "On Shipwreck Bay, a pirate's bones can be found beside a Legendary Ship.",
+          "rewards": null,
+          "type": "action"
+        },
+        {
+          "id": "fotd2-run-aground",
+          "name": "Run Aground",
+          "description": "On Salty Sands, a moment when shark triumphed over pirate was captured in art.",
+          "rewards": null,
+          "type": "action"
+        },
+        {
+          "id": "fotd2-the-daredevils",
+          "name": "The Daredevils",
+          "description": "Complete all commendations within The Daredevils collection.",
+          "rewards": null,
+          "type": "numeric",
+          "grades": [
+            5
+          ]
+        },
+        {
+          "id": "fotd2-not-just-sweeping",
+          "name": "Not Just For Sweeping",
+          "description": "There must be a story behind this unusual tavern sign on Sanctuary Outpost.",
+          "rewards": null,
+          "type": "action"
+        },
+        {
+          "id": "fotd2-bound-by-book",
+          "name": "Bound by a Book",
+          "description": "On Smuggler's Bay, in a dark cave, a talented pair left one of their legendary creations.",
+          "rewards": null,
+          "type": "action"
+        },
+        {
+          "id": "fotd2-snake-charmer",
+          "name": "Snake Charmer",
+          "description": "A famous reptile lover spends their time on an appropriately named island, atop a camp.",
+          "rewards": null,
+          "type": "action"
+        },
+        {
+          "id": "fotd2-dog-days",
+          "name": "Dog Days",
+          "description": "There is a hidden camp on Mermaid's Hideaway, made by a popular pirate.",
+          "rewards": null,
+          "type": "action"
+        },
+        {
+          "id": "fotd2-pirate-port-pals",
+          "name": "Pirate Port Pals",
+          "description": "Two talkative pirates left their tankards on an Outpost made of golden sand.",
+          "rewards": null,
+          "type": "action"
+        },
+        {
+          "id": "fotd2-loveable-rogues",
+          "name": "The Loveable Rogues",
+          "description": "Complete all commendations within The Loveable Rogues collection.",
+          "rewards": null,
+          "type": "numeric",
+          "grades": [
+            5
+          ]
+        },
+        {
+          "id": "fotd2-death-by-banana",
+          "name": "Death by Banana",
+          "description": "This pirate lost their way on the beach of Marauder's Arch, and tried to survive on unusual food.",
+          "rewards": null,
+          "type": "action"
+        },
+        {
+          "id": "fotd2-zz-marks-spot",
+          "name": "ZZ Marks the Spot",
+          "description": "A tavern regular at Plunder Outpost became part of the furniture.",
+          "rewards": null,
+          "type": "action"
+        },
+        {
+          "id": "fotd2-going-bananas",
+          "name": "Going Bananas",
+          "description": "Word tells of an unusual barrel on Sanctuary Outpost, near the water tower.",
+          "rewards": null,
+          "type": "action"
+        },
+        {
+          "id": "fotd2-famously-frugal",
+          "name": "Famously Frugal",
+          "description": "In Lost Gold Fort in The Ancient Isles, a list honours the greediest of pirates.",
+          "rewards": null,
+          "type": "action"
+        },
+        {
+          "id": "fotd2-hairy-legacy",
+          "name": "A Hairy Legacy",
+          "description": "Show Umbra the Legacy Beard by speaking to her while wearing it.",
+          "rewards": null,
+          "type": "action"
+        },
+        {
+          "id": "fotd2-the-insatiable",
+          "name": "The Insatiable",
+          "description": "Complete all commendations within The Insatiable collection.",
+          "rewards": null,
+          "type": "numeric",
+          "grades": [
+            5
+          ]
+        },
+        {
+          "id": "fotd2-wide-of-mark",
+          "name": "Wide of the Mark",
+          "description": "A pirate with dubious aim left an unmarked target atop Smuggler's Bay.",
+          "rewards": null,
+          "type": "action"
+        },
+        {
+          "id": "fotd2-precision-pirating",
+          "name": "Precision Pirating",
+          "description": "The Weaponsmith's Shop on Galleon's Grave boasts a famous patron.",
+          "rewards": null,
+          "type": "action"
+        },
+        {
+          "id": "fotd2-legendary-larceny",
+          "name": "Legendary Larceny",
+          "description": "On Smuggler's Bay lived a pirate famed for his stolen hoard. He left a mark on the Southwest Beach.",
+          "rewards": null,
+          "type": "action"
+        },
+        {
+          "id": "fotd2-buckets-of-fun",
+          "name": "Buckets of Fun",
+          "description": "Umbra heard that on Sanctuary Outpost, a tireless worker's bucket was proudly hung as a trophy.",
+          "rewards": null,
+          "type": "action"
+        },
+        {
+          "id": "fotd2-venomous-attack",
+          "name": "A Venomous Attack",
+          "description": "They say that Shark Fin Camp was once defeated by very unusual means.",
+          "rewards": null,
+          "type": "action"
+        },
+        {
+          "id": "fotd2-the-swashbucklers",
+          "name": "The Swashbucklers",
+          "description": "Complete all commendations within The Swashbucklers collection.",
+          "rewards": null,
+          "type": "numeric",
+          "grades": [
+            5
+          ]
+        },
+        {
+          "id": "fotd2-musical-family",
+          "name": "A Musical Family",
+          "description": "Ancient Spire Outpost played host to a kind and gifted musician, who later sold their instrument.",
+          "rewards": null,
+          "type": "action"
+        },
+        {
+          "id": "fotd2-still-life",
+          "name": "Still Life",
+          "description": "Sanctuary Outpost is a beautiful place. The tavern hosts some legendary artwork.",
+          "rewards": null,
+          "type": "action"
+        },
+        {
+          "id": "fotd2-dressed-to-impress",
+          "name": "Dressed to Impress",
+          "description": "In the tavern at Ancient Spire Outpost, there is a painting of four very fancy pirates.",
+          "rewards": null,
+          "type": "action"
+        },
+        {
+          "id": "fotd2-through-eyes-child",
+          "name": "Through The Eyes of a Child",
+          "description": "A young cartographer was known to hone their skills at a camp on Smuggler's Bay.",
+          "rewards": null,
+          "type": "action"
+        },
+        {
+          "id": "fotd2-pirates-in-portrait",
+          "name": "Pirates in Portrait",
+          "description": "On Sailor's Bounty, a set of portraits by a talented pirate await delivery.",
+          "rewards": null,
+          "type": "action"
+        },
+        {
+          "id": "fotd2-the-artistic-souls",
+          "name": "The Artistic Souls",
+          "description": "Complete all commendations within The Artistic Souls collection.",
+          "rewards": null,
+          "type": "numeric",
+          "grades": [
+            5
+          ]
+        },
+        {
+          "id": "fotd2-merrick-roll",
+          "name": "Merrick Roll",
+          "description": "Rumours speak of an odd book left at The Reaper's Hideout.",
+          "rewards": null,
+          "type": "action"
+        },
+        {
+          "id": "fotd2-killer-qualifications",
+          "name": "Killer Qualifications",
+          "description": "On Port Merrick, the pirates advertise their services in the tavern.",
+          "rewards": null,
+          "type": "action"
+        },
+        {
+          "id": "fotd2-dances-with-chickens",
+          "name": "Dances with Chickens",
+          "description": "A strange scene was painted on a large rock on Chicken Isle.",
+          "rewards": null,
+          "type": "action"
+        },
+        {
+          "id": "fotd2-familial-resemblance",
+          "name": "Familial Resemblance",
+          "description": "Where Merrick once camped on Shark Bait Cove, his son now displays his work.",
+          "rewards": null,
+          "type": "action"
+        },
+        {
+          "id": "fotd2-purply-pretty",
+          "name": "Purply Pretty",
+          "description": "Show Umbra the Amethyst Angel Hair dye by speaking to her while wearing it.",
+          "rewards": null,
+          "type": "action"
+        },
+        {
+          "id": "fotd2-piratical-jokers",
+          "name": "The Piratical Jokers",
+          "description": "Complete all commendations within The Piratical Jokers collection.",
+          "rewards": null,
+          "type": "numeric",
+          "grades": [
+            5
+          ]
+        },
+        {
+          "id": "fotd2-one-cross-pirate",
+          "name": "One Cross Pirate",
+          "description": "There's undelivered mail left in some rubble on Sanctuary Outpost.",
+          "rewards": null,
+          "type": "action"
+        },
+        {
+          "id": "fotd2-points-of-contention",
+          "name": "Points of Contention",
+          "description": "Over at Port Merrick, a pirate who loved to write down their thoughts left a mark.",
+          "rewards": null,
+          "type": "action"
+        },
+        {
+          "id": "fotd2-helping-hands",
+          "name": "Helping Hands",
+          "description": "Five names are scratched into a rock on Cannon Cove, found by walking inland from the beach.",
+          "rewards": null,
+          "type": "action"
+        },
+        {
+          "id": "fotd2-see-no-evil",
+          "name": "See No Evil, Hear No Evil, Speak No Evil",
+          "description": "On Sanctuary Outpost, this flag was raised whenever a pirate stepped out of line.",
+          "rewards": null,
+          "type": "action"
+        },
+        {
+          "id": "fotd2-scruffy-scribe",
+          "name": "Scruffy Scribe",
+          "description": "A poetic pirate left a scruffy book inside a cave at Shark Bait Cove, beside a sleeping parrot.",
+          "rewards": null,
+          "type": "action"
+        },
+        {
+          "id": "fotd2-pirate-scribes",
+          "name": "The Pirate Scribes",
+          "description": "Complete all commendations within The Pirate Scribes collection.",
+          "rewards": null,
+          "type": "numeric",
+          "grades": [
+            5
+          ]
+        },
+        {
+          "id": "fotd2-delicious-delivery",
+          "name": "Delicious Delivery",
+          "description": "An unusual merchant delivery ended up on the docks at Morrow's Peak Outpost.",
+          "rewards": null,
+          "type": "action"
+        },
+        {
+          "id": "fotd2-may-contain-boom",
+          "name": "May Contain Boom",
+          "description": "A pirate once made quite the bang over at Port Merrick, somewhere behind the shop.",
+          "rewards": null,
+          "type": "action"
+        },
+        {
+          "id": "fotd2-big-love-small-package",
+          "name": "Big Love in a Small Package",
+          "description": "A parcel and hat on the dock at Galleon's Grave suggest The Wilds may be civilised after all.",
+          "rewards": null,
+          "type": "action"
+        },
+        {
+          "id": "fotd2-putting-ship-friendship",
+          "name": "Putting the Ship in Friendship",
+          "description": "At The Finest Trading Post is a fine work of craftswomanship.",
+          "rewards": null,
+          "type": "action"
+        },
+        {
+          "id": "fotd2-charitable-pirating",
+          "name": "Charitable Pirating",
+          "description": "Show Umbra the Stream Sailor makeup by speaking to her while wearing it.",
+          "rewards": null,
+          "type": "action"
+        },
+        {
+          "id": "fotd2-gift-givers",
+          "name": "The Gift Givers",
+          "description": "Complete all commendations within The Gift Givers collection.",
+          "rewards": null,
+          "type": "numeric",
+          "grades": [
+            5
+          ]
+        },
+        {
+          "id": "fotd2-whos-a-good-boy",
+          "name": "Who's a Good Boy?",
+          "description": "On Galleon's Grave, high up on the wreck, there lived a dog of legendary adorableness.",
+          "rewards": null,
+          "type": "action"
+        },
+        {
+          "id": "fotd2-fools-gold",
+          "name": "Fool's Gold",
+          "description": "On Cannon Cove, a pirate once thought outside the barrel when it came to making gold.",
+          "rewards": null,
+          "type": "action"
+        },
+        {
+          "id": "fotd2-nesting-spot",
+          "name": "Nesting Spot",
+          "description": "High as a Crow's Nest, at Crow's Nest Fortress.",
+          "rewards": null,
+          "type": "action"
+        },
+        {
+          "id": "fotd2-hallowed-ground",
+          "name": "Hallowed Ground",
+          "description": "A pirate brazen enough to deface even the Ferry of the Damned left their mark.",
+          "rewards": null,
+          "type": "action"
+        },
+        {
+          "id": "fotd2-pirate-leg-end",
+          "name": "Pirate Leg End",
+          "description": "Show Umbra the Sea Dog Pegleg by speaking to her while wearing it.",
+          "rewards": null,
+          "type": "action"
+        },
+        {
+          "id": "fotd2-early-settlers",
+          "name": "The Early Settlers",
+          "description": "Complete all commendations within The Early Settlers collection.",
+          "rewards": null,
+          "type": "numeric",
+          "grades": [
+            5
+          ]
+        },
+        {
+          "id": "fotd2-in-good-company",
+          "name": "In Good Company",
+          "description": "A book discovered by a pirate seeking shelter and Sanctuary.",
+          "rewards": null,
+          "type": "action"
+        },
+        {
+          "id": "fotd2-my-first-gold",
+          "name": "My First Gold",
+          "description": "A book at the heart of a tiny island to the far south.",
+          "rewards": null,
+          "type": "action"
+        },
+        {
+          "id": "fotd2-actions-and-words",
+          "name": "Actions and Words",
+          "description": "A book sleeping near the cart of an exhausted Smuggler.",
+          "rewards": null,
+          "type": "action"
+        },
+        {
+          "id": "fotd2-lost-and-found",
+          "name": "Lost and Found",
+          "description": "A book at the mouth of a cave, lost upon a waning moon.",
+          "rewards": null,
+          "type": "action"
+        },
+        {
+          "id": "fotd2-new-flag-to-fly",
+          "name": "A New Flag to Fly",
+          "description": "A book waiting where pirates who speak sharply come to rest.",
+          "rewards": null,
+          "type": "action"
+        },
+        {
+          "id": "fotd2-strange-voyage",
+          "name": "A Strange Voyage",
+          "description": "A book on a rock, gazing out over Death's domain.",
+          "rewards": null,
+          "type": "action"
+        },
+        {
+          "id": "fotd2-unexpected-ending",
+          "name": "An Unexpected Ending",
+          "description": "A book on a pier, near where masked secrets lurk and linger.",
+          "rewards": null,
+          "type": "action"
+        },
+        {
+          "id": "fotd2-feathered-friends",
+          "name": "Feathered Friends",
+          "description": "A book waits where a mighty ship crests twin peaks.",
+          "rewards": null,
+          "type": "action"
+        },
+        {
+          "id": "fotd2-it-never-rains",
+          "name": "It Never Rains",
+          "description": "A book upon the shores at the four bridged islands.",
+          "rewards": null,
+          "type": "action"
+        },
+        {
+          "id": "fotd2-wrecks-of-lost",
+          "name": "Wrecks of the Lost",
+          "description": "A book near where an old lantern still burns faithfully.",
+          "rewards": null,
+          "type": "action"
+        },
+        {
+          "id": "fotd2-soul-searching",
+          "name": "Soul Searching",
+          "description": "A book at a camp, where plundering pirates made their home.",
+          "rewards": null,
+          "type": "action"
+        },
+        {
+          "id": "fotd2-flags-of-friendship",
+          "name": "Flags of Friendship",
+          "description": "A book cast away by a pirate who'd had too much to drink.",
+          "rewards": null,
+          "type": "action"
+        },
+        {
+          "id": "fotd2-fleets-of-flame",
+          "name": "Fleets of Flame",
+          "description": "A book perched crookedly atop a steep slope, high overhead.",
+          "rewards": null,
+          "type": "action"
+        },
+        {
+          "id": "fotd2-my-maiden-voyage",
+          "name": "My Maiden Voyage",
+          "description": "A book safe and snug inside, near mirth and music.",
+          "rewards": "Unlocks Glitterbeard's Sails in the Ship Customization Chest.",
+          "type": "action"
+        },
+        {
+          "id": "fotd2-making-music",
+          "name": "Making Music",
+          "description": "A book left behind at a Hunter's old camp.",
+          "rewards": null,
+          "type": "action"
+        },
+        {
+          "id": "fotd2-head-in-clouds",
+          "name": "Head in the Clouds",
+          "description": "A book waiting to be discovered near a mighty ridge.",
+          "rewards": null,
+          "type": "action"
+        },
+        {
+          "id": "fotd2-reunion",
+          "name": "Reunion",
+          "description": "A book gazing out upon the open sea, near to a faithful friend.",
+          "rewards": null,
+          "type": "action"
+        },
+        {
+          "id": "fotd2-tavern-of-legends",
+          "name": "A Tavern of Legends",
+          "description": "A book in the greenery, where elysian waters bubble forth.",
+          "rewards": null,
+          "type": "action"
+        },
+        {
+          "id": "fotd2-shopping-supplies",
+          "name": "Shopping and Supplies",
+          "description": "A book waits upon the edge of a heavy, bladed weapon.",
+          "rewards": null,
+          "type": "action"
+        },
+        {
+          "id": "fotd2-easy-come-easy-go",
+          "name": "Easy Come, Easy Go",
+          "description": "A book in the beach shelter of one who sought safe harbour.",
+          "rewards": null,
+          "type": "action"
+        },
+        {
+          "id": "fotd2-our-new-home",
+          "name": "Our New Home",
+          "description": "A soggy book lurks at a great, round island to the west.",
+          "rewards": null,
+          "type": "action"
+        },
+        {
+          "id": "fotd2-legend-of-glitterbeard",
+          "name": "The Legend of Glitterbeard",
+          "description": "Carry on the Legend.",
+          "rewards": "Unlocks Glitterbeard's Beard in the Vanity Chest.",
+          "type": "action"
+        },
+        {
+          "id": "fotd2-glittering-chronicle",
+          "name": "A Glittering Chronicle",
+          "description": "Find all of Glitterbeard's journals across the sea.",
+          "rewards": "Unlocks Glitterbeard's Cannon Flare in the Ship Customization Chest.",
+          "type": "action"
+        }
+      ],
+      "Fort of the Damned": [
+        {
+          "id": "aat-crying-sea",
+          "name": "Sent Crying Back to the Sea",
+          "description": "Defeat 5 blue Shadows of Fate.",
+          "rewards": null,
+          "type": "numeric",
+          "grades": [
+            5
+          ]
+        },
+        {
+          "id": "aat-screaming-sea",
+          "name": "Sent Screaming Back to the Sea",
+          "description": "Defeat 25 blue Shadows of Fate.",
+          "rewards": null,
+          "type": "numeric",
+          "grades": [
+            25
+          ]
+        },
+        {
+          "id": "aat-wailing-sea",
+          "name": "Sent Wailing Back to the Sea",
+          "description": "Defeat 50 blue Shadows of Fate.",
+          "rewards": null,
+          "type": "numeric",
+          "grades": [
+            50
+          ]
+        },
+        {
+          "id": "aat-cooling-hearts",
+          "name": "Cooling Burning Hearts",
+          "description": "Defeat 5 red Shadows of Fate.",
+          "rewards": null,
+          "type": "numeric",
+          "grades": [
+            5
+          ]
+        },
+        {
+          "id": "aat-dousing-hearts",
+          "name": "Dousing Burning Hearts",
+          "description": "Defeat 25 red Shadows of Fate.",
+          "rewards": null,
+          "type": "numeric",
+          "grades": [
+            25
+          ]
+        },
+        {
+          "id": "aat-snuffing-hearts",
+          "name": "Snuffing Burning Hearts",
+          "description": "Defeat 50 red Shadows of Fate.",
+          "rewards": null,
+          "type": "numeric",
+          "grades": [
+            50
+          ]
+        },
+        {
+          "id": "aat-bones-rest",
+          "name": "Cursed Bones Laid to Rest",
+          "description": "Defeat 5 green Shadows of Fate.",
+          "rewards": null,
+          "type": "numeric",
+          "grades": [
+            5
+          ]
+        },
+        {
+          "id": "aat-bones-exorcised",
+          "name": "Cursed Bones Exorcised",
+          "description": "Defeat 25 green Shadows of Fate.",
+          "rewards": null,
+          "type": "numeric",
+          "grades": [
+            25
+          ]
+        },
+        {
+          "id": "aat-bones-buried",
+          "name": "Cursed Bones Buried Deep",
+          "description": "Defeat 50 green Shadows of Fate.",
+          "rewards": null,
+          "type": "numeric",
+          "grades": [
+            50
+          ]
+        },
+        {
+          "id": "aat-lightning-discharged",
+          "name": "Lightning-struck Skeletons Discharged",
+          "description": "Defeat 5 white Shadows of Fate.",
+          "rewards": null,
+          "type": "numeric",
+          "grades": [
+            5
+          ]
+        },
+        {
+          "id": "aat-lightning-earthed",
+          "name": "Lightning-struck Skeletons Earthed",
+          "description": "Defeat 25 white Shadows of Fate.",
+          "rewards": null,
+          "type": "numeric",
+          "grades": [
+            25
+          ]
+        },
+        {
+          "id": "aat-lightning-grounded",
+          "name": "Lightning-struck Skeletons Grounded",
+          "description": "Defeat 50 white Shadows of Fate.",
+          "rewards": null,
+          "type": "numeric",
+          "grades": [
+            50
+          ]
+        },
+        {
+          "id": "aat-envenomed-ensnared",
+          "name": "Envenomed and Ensnared",
+          "description": "Defeat 5 purple Shadows of Fate.",
+          "rewards": null,
+          "type": "numeric",
+          "grades": [
+            5
+          ]
+        },
+        {
+          "id": "aat-envenomed-ended",
+          "name": "Envenomed and Ended",
+          "description": "Defeat 25 purple Shadows of Fate.",
+          "rewards": null,
+          "type": "numeric",
+          "grades": [
+            25
+          ]
+        },
+        {
+          "id": "aat-envenomed-entombed",
+          "name": "Envenomed and Entombed",
+          "description": "Defeat 50 purple Shadows of Fate.",
+          "rewards": null,
+          "type": "numeric",
+          "grades": [
+            50
+          ]
+        },
+        {
+          "id": "aat-one-fight",
+          "name": "One More Fight",
+          "description": "Defeat 5 pink Shadows of Fate.",
+          "rewards": null,
+          "type": "numeric",
+          "grades": [
+            5
+          ]
+        },
+        {
+          "id": "aat-one-battle",
+          "name": "One More Battle",
+          "description": "Defeat 25 pink Shadows of Fate.",
+          "rewards": null,
+          "type": "numeric",
+          "grades": [
+            25
+          ]
+        },
+        {
+          "id": "aat-one-war",
+          "name": "One More War",
+          "description": "Defeat 50 pink Shadows of Fate.",
+          "rewards": null,
+          "type": "numeric",
+          "grades": [
+            50
+          ]
+        },
+        {
+          "id": "aat-spectrum-shadows",
+          "name": "A Spectrum of Shadows",
+          "description": "Defeat each colour of Shadows of Fate.",
+          "rewards": null,
+          "type": "numeric",
+          "grades": [
+            6
+          ]
+        },
+        {
+          "id": "aat-summoning-damned",
+          "name": "Summoning the Damned",
+          "description": "Activate the Fort of the Damned by lighting all six Flames of Fate and sacrificing a Ritual Skull.",
+          "rewards": null,
+          "type": "action"
+        },
+        {
+          "id": "aat-defeating-damned",
+          "name": "Defeating the Damned",
+          "description": "Clear the Fort of the Damned of all enemies.",
+          "rewards": null,
+          "type": "action"
+        },
+        {
+          "id": "aat-banishing-damned",
+          "name": "Banishing the Damned",
+          "description": "Clear the Fort of the Damned of all enemies, 10 times.",
+          "rewards": null,
+          "type": "numeric",
+          "grades": [
+            10
+          ]
+        },
+        {
+          "id": "aat-vanquishing-damned",
+          "name": "Vanquishing the Damned",
+          "description": "Clear the Fort of the Damned of all enemies, 25 times.",
+          "rewards": null,
+          "type": "numeric",
+          "grades": [
+            25
+          ]
+        },
+        {
+          "id": "aat-conquering-damned",
+          "name": "Conquering the Damned",
+          "description": "Clear the Fort of the Damned of all enemies, 50 times.",
+          "rewards": "the Raider of the Damned Title",
+          "type": "numeric",
+          "grades": [
+            50
+          ]
+        }
+      ],
+      "Shrouded Spoils": [
+        {
+          "id": "aat-kraken-hunter",
+          "name": "Kraken Hunter",
+          "description": "Defeat a Kraken.",
+          "rewards": null,
+          "type": "action"
+        },
+        {
+          "id": "aat-kraken-master",
+          "name": "Master Kraken Hunter",
+          "description": "Defeat 5 Krakens.",
+          "rewards": "the Master Kraken Hunter Title",
+          "type": "numeric",
+          "grades": [
+            5
+          ]
+        },
+        {
+          "id": "aat-kraken-legendary",
+          "name": "Legendary Kraken Hunter",
+          "description": "Defeat 10 Krakens.",
+          "rewards": "the Legendary Kraken Hunter Title",
+          "type": "numeric",
+          "grades": [
+            10
+          ]
+        },
+        {
+          "id": "aat-hungering-one",
+          "name": "Hunter of the Hungering One",
+          "description": "Defeat the Hungering One in a chance encounter.",
+          "rewards": "the Hunter of The Hungering One Title",
+          "type": "action"
+        },
+        {
+          "id": "aat-crested-queen",
+          "name": "Hunter of the Crested Queen",
+          "description": "Defeat the Crested Queen in a chance encounter.",
+          "rewards": "the Hunter of The Crested Queen Title",
+          "type": "action"
+        },
+        {
+          "id": "aat-shadowmaw",
+          "name": "Hunter of the Shadowmaw",
+          "description": "Defeat the Shadowmaw in a chance encounter.",
+          "rewards": "the Hunter of The Shadowmaw Title",
+          "type": "action"
+        },
+        {
+          "id": "aat-ancient-terror",
+          "name": "Hunter of the Ancient Terror",
+          "description": "Defeat the Ancient Terror in a chance encounter.",
+          "rewards": "the Hunter of The Ancient Terror Title",
+          "type": "action"
+        },
+        {
+          "id": "aat-shrouded-ghost",
+          "name": "Hunter of the Shrouded Ghost",
+          "description": "Defeat the Shrouded Ghost in a chance encounter.",
+          "rewards": "the Hunter of The Shrouded Ghost Title",
+          "type": "action"
+        },
+        {
+          "id": "aat-master-black-powder",
+          "name": "Master of Black Powder",
+          "description": "Sell 10 Stronghold Gunpowder Barrels.",
+          "rewards": null,
+          "type": "numeric",
+          "grades": [
+            10
+          ]
+        },
+        {
+          "id": "aat-golden-master-strongholds",
+          "name": "Golden Master of Strongholds",
+          "description": "Sell 10 Stronghold Chests.",
+          "rewards": null,
+          "type": "numeric",
+          "grades": [
+            10
+          ]
+        },
+        {
+          "id": "aat-mysical-master-strongholds",
+          "name": "Mystical Master of Strongholds",
+          "description": "Sell 10 Stronghold Skulls.",
+          "rewards": null,
+          "type": "numeric",
+          "grades": [
+            10
+          ]
+        },
+        {
+          "id": "aat-ancient-bone-dust",
+          "name": "Master of Ancient Bone Dust",
+          "description": "Sell 10 Crates of Ancient Bone Dust.",
+          "rewards": null,
+          "type": "numeric",
+          "grades": [
+            10
+          ]
+        },
+        {
+          "id": "aat-golden-skeleton-captain",
+          "name": "Golden Skeleton Captain",
+          "description": "Sell 20 Skeleton Captain's Chests.",
+          "rewards": "the Golden Skeleton Captain Title",
+          "type": "numeric",
+          "grades": [
+            20
+          ]
+        },
+        {
+          "id": "aat-mystical-skeleton-captain",
+          "name": "Mystical Skeleton Captain",
+          "description": "Sell 20 Skeleton Captain's Skulls.",
+          "rewards": "the Mystical Skeleton Captain Title",
+          "type": "numeric",
+          "grades": [
+            20
+          ]
+        },
+        {
+          "id": "aat-hoarder-sapphire",
+          "name": "Hoarder of Sapphire Mermaid Gems",
+          "description": "Sell 10 Sapphire Mermaid Gems.",
+          "rewards": null,
+          "type": "numeric",
+          "grades": [
+            10
+          ]
+        },
+        {
+          "id": "aat-hoarder-emerald",
+          "name": "Hoarder of Emerald Mermaid Gems",
+          "description": "Sell 10 Emerald Mermaid Gems.",
+          "rewards": null,
+          "type": "numeric",
+          "grades": [
+            10
+          ]
+        },
+        {
+          "id": "aat-hoarder-ruby",
+          "name": "Hoarder of Ruby Mermaid Gems",
+          "description": "Sell 10 Ruby Mermaid Gems.",
+          "rewards": null,
+          "type": "numeric",
+          "grades": [
+            10
+          ]
+        }
+      ],
+      "Festival of the Damned": [
+        {
+          "id": "aat-flame-lost-seafarers",
+          "name": "The Flame of Lost Seafarers",
+          "description": "Light your lantern with a blue Flame of Fate from the Ferry of the Damned.",
+          "rewards": null,
+          "type": "action"
+        },
+        {
+          "id": "aat-flame-burning-hearts",
+          "name": "The Flame of Burning Hearts",
+          "description": "Light your lantern with a red Flame of Fate from the Ferry of the Damned.",
+          "rewards": null,
+          "type": "action"
+        },
+        {
+          "id": "aat-flame-cursed-bones",
+          "name": "The Flame of Cursed Bones",
+          "description": "Light your lantern with a green Flame of Fate from the Ferry of the Damned.",
+          "rewards": null,
+          "type": "action"
+        },
+        {
+          "id": "aat-flame-treacherous-weather",
+          "name": "The Flame of Treacherous Weather",
+          "description": "Light your lantern with a white Flame of Fate from the Ferry of the Damned.",
+          "rewards": null,
+          "type": "action"
+        },
+        {
+          "id": "aat-flame-viper",
+          "name": "The Flame of the Viper",
+          "description": "Light your lantern with a purple Flame of Fate from the Ferry of the Damned.",
+          "rewards": null,
+          "type": "action"
+        },
+        {
+          "id": "aat-flame-embattled-souls",
+          "name": "The Flame of Embattled Souls",
+          "description": "Light your lantern with a pink Flame of Fate from the Ferry of the Damned.",
+          "rewards": null,
+          "type": "action"
+        },
+        {
+          "id": "aat-light-shores",
+          "name": "Lightbringer of the Shores of Plenty",
+          "description": "Ignite a beacon with a Flame of Fate in The Shores of Plenty.",
+          "rewards": null,
+          "type": "action"
+        },
+        {
+          "id": "aat-light-ancient",
+          "name": "Lightbringer of the Ancient Isles",
+          "description": "Ignite a beacon with a Flame of Fate in The Ancient Isles.",
+          "rewards": null,
+          "type": "action"
+        },
+        {
+          "id": "aat-light-wilds",
+          "name": "Lightbringer of the Wilds",
+          "description": "Ignite a beacon with a Flame of Fate in The Wilds.",
+          "rewards": null,
+          "type": "action"
+        },
+        {
+          "id": "aat-light-devil",
+          "name": "Lightbringer of the Devil's Roar",
+          "description": "Ignite a beacon with a Flame of Fate in The Devil's Roar.",
+          "rewards": null,
+          "type": "action"
+        },
+        {
+          "id": "aat-alliance-damned",
+          "name": "Alliance of the Damned",
+          "description": "Be in an alliance where all ship lanterns are ignited in the same colour.",
+          "rewards": null,
+          "type": "action"
+        },
+        {
+          "id": "aat-party-boat",
+          "name": "The Festival Party Boat",
+          "description": "Light you ship's lanterns using Flames of Fate of all six colours.",
+          "rewards": null,
+          "type": "action"
+        },
+        {
+          "id": "aat-legend-damned",
+          "name": "Legend of the Damned",
+          "description": "Find and light all beacons around the Sea of Thieves with a Flame of Fate.",
+          "rewards": "Legend of the Damned Title",
+          "type": "numeric",
+          "grades": [
+            12
+          ]
+        }
+      ],
       "Forsaken Shores": [
         {
           "id": "aat-discover-fetchers-rest",
